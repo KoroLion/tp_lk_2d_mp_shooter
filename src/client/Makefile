@@ -6,4 +6,4 @@ target:
 	rm ./*.o
 test:
 	python3 -m cpplint *.cpp include/*.hpp
-	cpplint *.cpp include/*.hpp
+	cppcheck *.cpp include/*.hpp
