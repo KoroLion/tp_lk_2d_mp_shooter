@@ -5,7 +5,7 @@ Copyright 2020 LioKor Team (KoroLion, SergTyapkin, altanab, biotyree)
 #include <string>
 
 #include "SDL.h"
-#include "include/game.hpp"
+#include "include/Game.hpp"
 
 Game::Game(std::string title, int width, int height) {
     this->title = title;
@@ -14,9 +14,8 @@ Game::Game(std::string title, int width, int height) {
 }
 
 Game::~Game() {
-    for (auto itr = game_objects.begin(); itr < game_objects.end(); itr++) {
+    for (auto itr = entities.begin(); itr < entities.end(); itr++)
         delete *itr;
-    }
 }
 
 bool Game::start() {
@@ -35,7 +34,7 @@ bool Game::start() {
     }
     this->renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
-    this->game_objects.push_back(new MovingRect(10, 10, 50, 50, 0.5));
+    this->entities.push_back(new MovingRect(10, 10, 50, 50, 0.5));
 
     this->is_running = true;
     while (this->is_running) {
@@ -59,7 +58,7 @@ void Game::render() {
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);  // white background
     SDL_RenderClear(renderer);
 
-    for (auto itr = game_objects.begin(); itr < game_objects.end(); itr++) {
+    for (auto itr = entities.begin(); itr < entities.end(); itr++) {
         (*itr)->update();
         (*itr)->render(renderer);
     }

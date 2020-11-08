@@ -3,9 +3,9 @@ Copyright 2020 LioKor Team (KoroLion, SergTyapkin, altanab, biotyree)
 */
 
 #include "SDL.h"
-#include "include/game_objects.hpp"
+#include "include/Entities.hpp"
 
-void MovingRect::render(SDL_Renderer *renderer) {
+/*void MovingRect::render(SDL_Renderer *renderer) {
     // Drawing green rect with black border
     SDL_Rect r;
     r.x = this->x;
@@ -28,4 +28,4 @@ void MovingRect::update() {
 
     this->x += this->speed;
     this->y = sin(this->x / 10) * 100 + 200;
-}
+}*/
