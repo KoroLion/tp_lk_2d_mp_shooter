@@ -1,16 +1,18 @@
-windows: main.o Game.o Entities.o World.o
-	g++ main.o Game.o Entities.o -o ./build/client.exe -L"lib/x86_64-w64-mingw32/lib" -lmingw32 -lSDL2main -lSDL2 -mwindows
-#	del *.o
+CC="C:\CodeBlocks\MinGW\bin\g++.exe"
+
+windows: main.o Game.o Entities.o World.o Equipments.o
+	$(CC) -o build/client.exe main.o Game.o Entities.o World.o Equipments.o -L"lib/x86_64-w64-mingw32/lib" -lmingw32 -lSDL2main -lSDL2 -mwindows
 
 main.o: main.cpp
-	g++ -c -o main.o main.cpp -I"lib/x86_64-w64-mingw32/include/SDL2"
+	$(CC) -c -o main.o main.cpp -I"lib/x86_64-w64-mingw32/include/SDL2"
 Game.o: Game.cpp
-	g++ -c -o Game.o Game.cpp -I"lib/x86_64-w64-mingw32/include/SDL2"
+	$(CC) -c -o Game.o Game.cpp -I"lib/x86_64-w64-mingw32/include/SDL2"
 Entities.o: Entities.cpp
-	g++ -c -o Entities.o Entities.cpp -I"lib/x86_64-w64-mingw32/include/SDL2"
+	$(CC) -c -o Entities.o Entities.cpp -I"lib/x86_64-w64-mingw32/include/SDL2"
 World.o: World.cpp
-	g++ -c -o World.o World.cpp -I"lib/x86_64-w64-mingw32/include/SDL2"
-
+	$(CC) -c -o World.o World.cpp -I"lib/x86_64-w64-mingw32/include/SDL2"
+Equipments.o: Equipments.cpp
+	$(CC) -c -o Equipments.o Equipments.cpp -I"lib/x86_64-w64-mingw32/include/SDL2"
 
 
 macos:
@@ -21,3 +23,10 @@ macos:
 test:
 	python3 -m cpplint *.cpp include/*.hpp
 	cppcheck *.cpp include/*.hpp
+
+
+clear:
+	del *.o *.exe
+
+run: windows
+	./build/client.exe

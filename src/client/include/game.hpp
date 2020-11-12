@@ -5,21 +5,25 @@ Copyright 2020 LioKor Team (KoroLion, SergTyapkin, altanab, biotyree)
 #ifndef SRC_CLIENT_INCLUDE_GAME_HPP_
 #define SRC_CLIENT_INCLUDE_GAME_HPP_
 
-#include <string>
+#include <vector>
 
 #include "SDL.h"
 #include "Entities.hpp"
 #include "World.hpp"
 
+#define BOX_TEXTURE_ID 0
+
+SDL_Texture* loadTexture(const char* imgName, SDL_Renderer* renderer, SDL_Surface* win_surf);
+
 class Game {
  public:
-    std::string title;
+    const char* title;
     int width, height;
 
-    Game(std::string title, int width, int height);
+    Game(const char* title, int width, int height);
 
     bool start();
-    void stop() { this->is_running = false; }
+    void stop() { this->isRunning = false; }
 
     ~Game();
 
@@ -35,6 +39,9 @@ class Game {
 
     Player* thisPlayer;
     World* world;
+
+    std::vector<const char*> textureNames {"res/textures/box.bmp"};
+    std::vector<SDL_Texture*> textures;
 };
 
 #endif  // SRC_CLIENT_INCLUDE_GAME_HPP_

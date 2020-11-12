@@ -1,69 +1,108 @@
 /*
 Copyright 2020 LioKor Team (KoroLion, SergTyapkin, altanab, biotyree)
 */
+#include <iostream>
 
-#include <string>
+#include <vector>
 
 #include "SDL.h"
 #include "include/Game.hpp"
+#include "include/World.hpp"
+#include "include/Colors.hpp"
 
-Game::Game(std::string title, int width, int height) {
-    this->title = title;
-    this->width = width;
-    this->height = height;
+#define FPS 60
+
+SDL_Texture* loadTexture(const char* imgName, SDL_Renderer* renderer, SDL_Surface* win_surf) {
+    SDL_Surface* tmp_surf = SDL_LoadBMP(imgName);
+    if (tmp_surf == NULL) {
+        std::cout << "Can't load surface: " << SDL_GetError() << std::endl;
+        return NULL;
+    }
+    /*
+    tmp_surf = SDL_ConvertSurface(tmp_surf, win_surf->format, 0);
+    if (tmp_surf == NULL) {
+        std::cout << "Can't convert to new format: " << SDL_GetError() << std::endl;
+        return NULL;
+    }
+    */
+    SDL_Texture* tmp_texture = SDL_CreateTextureFromSurface(renderer, tmp_surf);
+    if (tmp_texture == NULL) {
+        std::cout << "Can't conver surf to texture: " << SDL_GetError() << std::endl;
+        return NULL;
+    }
+
+    return tmp_texture;
+}
+
+Game::Game(const char* _title, int _width, int _height): title(_title), width(_width), height(_height) {
+    if (SDL_Init(SDL_INIT_VIDEO)) {
+        std::cout << "Can't init: " << SDL_GetError() << std::endl;
+        return;
+    }
+
+    window = SDL_CreateWindow(
+        title,               // window title
+        SDL_WINDOWPOS_UNDEFINED,           // initial x position
+        SDL_WINDOWPOS_UNDEFINED,           // initial y position
+        width,                       // width, in pixels
+        height,                      // height, in pixels
+        SDL_WINDOW_OPENGL
+    );
+
+    if (window == NULL) {
+        std::cout << "Can't create window: " << SDL_GetError() << std::endl;
+        return;
+    }
+
+    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC); // аппаратный рендеринг + верт. синхронизация
+    if (renderer == NULL) {
+        std::cout << "Can't create renderer: " << SDL_GetError() << std::endl;
+        return;
+    }
+
+    SDL_Surface* win_surf = SDL_GetWindowSurface(window);
+    for (const char* name: textureNames)
+        textures.push_back(loadTexture(name, renderer, win_surf));
+
+    world = new World(800, 600);
+    world->addEntity(new Obstacle(50,120, 50,50, 30, textures[BOX_TEXTURE_ID]));
+    world->addEntity(new Obstacle(60,30, 60,60, -20, textures[BOX_TEXTURE_ID]));
+    world->addEntity(new Obstacle(30,200, 100,100, 45, textures[BOX_TEXTURE_ID]));
+
 }
 
 Game::~Game() {
-    for (auto itr = entities.begin(); itr < entities.end(); itr++)
-        delete *itr;
+    SDL_DestroyWindow(window);
+    SDL_Quit();
 }
 
 bool Game::start() {
-    SDL_Init(SDL_INIT_VIDEO);
-
-    this->window = SDL_CreateWindow(
-        this->title.c_str(),               // window title
-        SDL_WINDOWPOS_UNDEFINED,           // initial x position
-        SDL_WINDOWPOS_UNDEFINED,           // initial y position
-        this->width,                       // width, in pixels
-        this->height,                      // height, in pixels
-        SDL_WINDOW_OPENGL);
-
-    if (this->window == NULL) {
-        return 1;
-    }
-    this->renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-
-    this->entities.push_back(new MovingRect(10, 10, 50, 50, 0.5));
-
-    this->is_running = true;
-    while (this->is_running) {
+    FILE* f; fprintf(f = fopen("log.txt", "a+"), "%s\n", "Game started"); fclose(f);
+    isRunning = true;
+    while (isRunning) {
         SDL_Event event;
         while (SDL_PollEvent(&event)) {
-            this->handle_event(event);
+            handle_event(event);
         }
 
-        this->render();
+        SDL_SetRenderDrawColor(renderer, SPLITRGBA(white_color));
+        SDL_RenderClear(renderer);
+        update();
+        render();
+        SDL_RenderPresent(renderer);
 
-        SDL_Delay(17);  // ~ 60 FPS
+        SDL_Delay(1000/FPS);
     }
-
-    SDL_DestroyWindow(window);
-    SDL_Quit();
 
     return 0;
 }
 
 void Game::render() {
-    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);  // white background
-    SDL_RenderClear(renderer);
+    world->render(renderer);
+}
 
-    for (auto itr = entities.begin(); itr < entities.end(); itr++) {
-        (*itr)->update();
-        (*itr)->render(renderer);
-    }
-
-    SDL_RenderPresent(renderer);
+void Game::update() {
+    world->update();
 }
 
 void Game::handle_event(SDL_Event event) {
@@ -72,6 +111,6 @@ void Game::handle_event(SDL_Event event) {
         event.window.event == SDL_WINDOWEVENT_CLOSE);
 
     if (quit_event) {
-        this->stop();
+        stop();
     }
 }

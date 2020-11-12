@@ -13,13 +13,15 @@ Copyright 2020 LioKor Team (KoroLion, SergTyapkin, altanab, biotyree)
 
 class World {
  public:
-    World(int _width, int _height): width(_width), height(_height) {;}
+    World(int _width, int _height);
+    ~World();
 
     void render(SDL_Renderer *renderer);
     void update();
+    void addEntity(Entity* entity);
 
  private:
-    vector<Entity*> entities;
+    std::vector<Entity*> entities;
     int width, height;
 };
 

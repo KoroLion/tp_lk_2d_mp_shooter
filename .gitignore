@@ -7,3 +7,5 @@ build/
 *.dll
 *.o
 *.out
+*.txt
+*.save

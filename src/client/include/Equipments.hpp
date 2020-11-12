@@ -24,7 +24,7 @@ class Equipment {
 // 2nd floor---------
 class Armor: public Equipment {
  public:
-    Human(int x, int y, float rotation, float _percent, float _hp):
+    Armor(int x, int y, float rotation, float _percent, float _hp):
         Equipment(x, y, rotation), percent(_percent), hp(_hp) {;}
 
     virtual void render(SDL_Renderer *renderer);
@@ -35,12 +35,11 @@ class Armor: public Equipment {
  protected:
     float hp;
     const float percent;
-    vector<Equipment*> equipment;
 };
 
 class Weapon: public Equipment {
  public:
-    Technic(int x, int y, float rotation, float _damage, float _timeReload, float _timeFireRate, int _capacity):
+    Weapon(int x, int y, float rotation, float _damage, float _timeReload, float _timeFireRate, int _capacity):
         Equipment(x, y, rotation), damage(_damage), timeReload(_timeReload), timeFireRate(_timeFireRate), capacity(_capacity) {;}
 
     virtual void render(SDL_Renderer *renderer);
