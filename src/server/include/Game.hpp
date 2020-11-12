@@ -15,7 +15,10 @@ public:
 
     //checks collision for all obejcts
     void checkCollisions();
+
 private:
+    void gameProcess();
+
     unsigned int time;
     Map *map;
 };

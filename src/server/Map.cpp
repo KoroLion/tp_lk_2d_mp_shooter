@@ -1,7 +1,13 @@
 #include "Map.hpp"
 
-Map::Map(unsigned int _height, unsigned int _width, std::map<unsigned int, GameObject *>){
+Map::Map(){
 
+}
+
+Map::Map(unsigned int _height, unsigned int _width, std::map<unsigned int, GameObject *> _objects){
+    this->height = _height;
+    this->width = _width;
+    this->objects = _objects;
 }
 
 Map::~Map(){

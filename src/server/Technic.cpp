@@ -3,6 +3,15 @@
 Technic::Technic(){
 
 }
+Technic::Technic(unsigned int _width, unsigned int _height, int _angle, unsigned int _speed, unsigned int _damage, unsigned int _hp){
+    this->width = _width;
+    this->height = _height;
+    this->speed = speed;
+    this->angle = _angle;
+    this->damage = _damage;
+    this->hp = _hp;
+}
+
 Technic::~Technic(){
 
 }

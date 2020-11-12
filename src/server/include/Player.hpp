@@ -6,6 +6,7 @@
 class Player : public GameObject {
 public:
     Player();
+    Player(int _radius, int _angle, unsigned int _speed, unsigned int _hp, unsigned int damage);
     ~Player();
 
     void update(unsigned int _time) override;

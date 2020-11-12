@@ -3,6 +3,15 @@
 Player::Player(){
 
 }
+
+Player::Player(int _radius, int _angle, unsigned int _speed, unsigned int _hp, unsigned int _damage){
+        this->radius = _radius;
+        this->angle = _angle;
+        this->speed = _speed;
+        this->hp = _hp;
+        this->damage = _damage;
+}
+
 Player::~Player(){
 
 }

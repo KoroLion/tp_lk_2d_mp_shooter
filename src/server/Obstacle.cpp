@@ -3,6 +3,11 @@
 Obstacle::Obstacle(){
 
 }
+Obstacle::Obstacle(unsigned int _width, unsigned int _height, int _angle){
+    this->width = _width;
+    this->height = _height;
+    this->angle = _angle;
+}
 Obstacle::~Obstacle(){
 
 }

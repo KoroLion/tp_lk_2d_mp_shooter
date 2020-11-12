@@ -2,9 +2,9 @@
 #define TP_LK_2D_MP_SHOOTER_BULLET_H
 
 #include "GameObject.hpp"
-class Techinc : public GameObject{
+class Bullet : public GameObject{
 public:
-    Bullet();
+    Bullet(int, unsigned int, unsigned int);
     ~Bullet();
 
     void update(unsigned int _time) override;

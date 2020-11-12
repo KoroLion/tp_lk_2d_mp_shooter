@@ -5,6 +5,7 @@
 class Obstacle : public GameObject{
 public:
     Obstacle();
+    Obstacle(unsigned int _width, unsigned int _height, int _angle);
     ~Obstacle();
 
     void update(unsigned int _time) override;

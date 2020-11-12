@@ -1,7 +1,14 @@
 #include "Bullet.hpp"
 
 Bullet::Bullet() {
-
+    this->damage = 0;
+    this->speed = 0;
+    this->angle = 0;
+}
+Bullet(int _angle, unsigned int _speed, unsigned int _damage){
+    this->damage = _damage;
+    this->speed = _speed;
+    this->angle = _angle;
 }
 
 Bullet::~Bullet() {

@@ -1,13 +1,18 @@
 #include "Game.hpp"
 
 Game::Game(){
-
+    time = 0;
+    map = new Map();
+    gameProcess();
 }
 
 Game::~Game(){
 
 }
 
+void Game::gameProcess() {
+
+}
 
 void Game::updateObject(unsigned int _id, Command _command, int args){
     map->updateObject(_id, _command, args);

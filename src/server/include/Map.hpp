@@ -8,7 +8,8 @@
 
 class Map{
 public:
-    Map(unsigned int _height, unsigned int _width, std::map<unsigned int, GameObject *>);
+    Map();
+    Map(unsigned int _height, unsigned int _width, std::map<unsigned int, GameObject *> _objects);
     ~Map();
 
     void addObjects(std::map<unsigned int, GameObject *>);
@@ -32,7 +33,7 @@ private:
 
     unsigned int height;
     unsigned int width;
-    std::map<unsigned int, GameObject *>;
+    std::map<unsigned int, GameObject *> objects;
 };
 
 #endif //TP_LK_2D_MP_SHOOTER_MAP_H

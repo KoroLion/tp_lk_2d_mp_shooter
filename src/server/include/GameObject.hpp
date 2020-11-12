@@ -13,6 +13,7 @@ enum MoveDirection{
 class GameObject{
 public:
     GameObject();
+
     virtual ~GameObject() = 0;
 
     virtual void update(unsigned int _time) = 0;
