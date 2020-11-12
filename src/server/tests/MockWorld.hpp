@@ -3,8 +3,6 @@
 
 #include <gtest/gmock.h>
 
-#include "../include/World.hpp"
-
 class GameObject {
 };
 

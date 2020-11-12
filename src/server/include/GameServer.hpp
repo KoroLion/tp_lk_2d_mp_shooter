@@ -1,27 +1,12 @@
 #ifndef SRC_INCLUDE_GAMESERVER_HPP_
 #define SRC_INCLUDE_GAMESERVER_HPP_
 
+#include <thread>
 #include <string>
 #include <vector>
 
 #include "World.hpp"
-
-#ifdef _WIN32
-    #include <windows.h>
-#else
-    #include <unistd.h>
-#endif // _WIN32
-
-void sleepcp(int milliseconds);
-
-void sleepcp(int milliseconds) // Cross-platform sleep function
-{
-    #ifdef _WIN32
-        Sleep(milliseconds);
-    #else
-        usleep(milliseconds * 1000);
-    #endif // _WIN32
-}
+#include "utils.hpp"
 
 class Socket {
  public:
@@ -69,13 +54,13 @@ class UDPServer {
 
 class GameServer: public UDPServer {
  private:
-     World *w;
+     std::shared_ptr<World> w;
      std::thread notify_clients_thread;
      static std::string stringify_objects(std::vector<GameObject*> objs) {
          return std::string("");
      }
  public:
-    GameServer(std::string bind_adr, int port, World *w):
+    GameServer(std::string bind_adr, int port, std::shared_ptr<World> w):
         UDPServer(bind_adr, port), w(w) {}
     ~GameServer() {}
 
@@ -85,7 +70,7 @@ class GameServer: public UDPServer {
                 std::string data = stringify_objects(w->get_objects(itr->get_id()));
                 itr->send(data);
             }
-            sleepcp(100);
+            sleep_ms(100);
         }
     }
 

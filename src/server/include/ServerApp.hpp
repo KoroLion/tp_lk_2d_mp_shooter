@@ -9,18 +9,17 @@
 
 class ServerApp {
  private:
-    World *w;
-    GameServer *gs;
+    std::shared_ptr<World> w;
+    std::unique_ptr<GameServer> gs;
 
     std::thread gs_thread;
     std::thread w_thread;
  public:
-    ServerApp() {
-        w = new World;
-        gs = new GameServer("0.0.0.0", 23000, w);
+    ServerApp(std::string bind_addr, int port) {
+        w = std::make_shared<World>();
+        gs = std::make_unique<GameServer>(bind_addr, port, w);
     }
     ~ServerApp() {
-        delete gs;
     }
     void gs_serve() {
         gs->start();
