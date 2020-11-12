@@ -18,8 +18,12 @@ void Map::updateObject(unsigned int _id, Command _command, unsigned int _arg){
 
 }
 
-GameObject *Map::getObject(unsigned int _id){
+void Map::deleteObject(unsigned int _id) {
 
+}
+
+GameObject *Map::getObject(unsigned int _id){
+    return this->objects[_id];
 }
 
 //returns all objects, which object with id == _id can see

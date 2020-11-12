@@ -18,6 +18,9 @@ public:
 
     //called by GameServer and returns all objects, which object with id == _id can see
     std::vector<GameObject *> getObjects(unsigned int _id);
+
+    void createPlayer();
+    void disconnectPlayer();
 private:
     void processEvents();
 

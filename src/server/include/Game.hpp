@@ -8,7 +8,7 @@ public:
     ~Game();
 
     void updateObject(unsigned int _id, Command _command, int args);
-    void updateMap(unsigned int _time);
+    void updateMap();
 
     //returns all objects, which object with id == _id can see
     std::vector<GameObject *> getObjects(unsigned int _id);

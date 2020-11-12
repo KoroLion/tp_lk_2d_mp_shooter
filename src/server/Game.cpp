@@ -10,17 +10,17 @@ Game::~Game(){
 
 
 void Game::updateObject(unsigned int _id, Command _command, int args){
-
+    map->updateObject(_id, _command, args);
 }
 
-void Game::updateMap(unsigned int _time){
-
+void Game::updateMap(){
+    map->updateObjects(this->time);
 }
 
 
 //returns all objects, which object with id == _id can see
 std::vector<GameObject *> Game::getObjects(unsigned int _id){
-
+    return map->getObjects(_id);
 }
 
 

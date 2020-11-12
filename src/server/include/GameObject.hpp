@@ -19,13 +19,13 @@ public:
     virtual int getType() = 0;
 
     unsigned int getId();
-    void setId();
+    void setId(unsigned int);
 
     Coordinates getCoordinates();
-    void setCoordinates();
+    void setCoordinates(Coordinates);
 
     unsigned int getTime();
-    void setTime();
+    void setTime(unsigned int);
 
     MoveDirection getDirection();
     void setDirection(MoveDirection _direction);

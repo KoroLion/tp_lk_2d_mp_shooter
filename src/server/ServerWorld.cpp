@@ -26,3 +26,6 @@ std::vector<GameObject *> ServerWorld::getObjects(unsigned int _id){
 void ServerWorld::processEvents(){
 
 }
+
+void ServerWorld::createPlayer();
+void ServerWorld::disconnectPlayer();

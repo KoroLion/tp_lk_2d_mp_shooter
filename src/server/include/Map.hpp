@@ -14,6 +14,7 @@ public:
     void addObjects(std::map<unsigned int, GameObject *>);
     void updateObjects(unsigned int _time);
     void updateObject(unsigned int _id, Command _command, unsigned int _arg);
+    void deleteObject(unsigned int _id);
 
     GameObject *getObject(unsigned int _id);
 
