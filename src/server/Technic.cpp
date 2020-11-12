@@ -1,4 +1,4 @@
-#include "Technic.h"
+#include "Technic.hpp"
 
 Technic::Technic(){
 

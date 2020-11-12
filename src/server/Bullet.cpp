@@ -1,4 +1,4 @@
-#include "Bullet.h"
+#include "Bullet.hpp"
 
 Bullet::Bullet() {
 

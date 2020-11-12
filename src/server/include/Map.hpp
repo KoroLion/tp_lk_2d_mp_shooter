@@ -3,8 +3,8 @@
 
 #include <map>
 #include <vector>
-#include "GameObject.h"
-#include "Command.h"
+#include "GameObject.hpp"
+#include "Command.hpp"
 
 class Map{
 public:
@@ -21,7 +21,7 @@ public:
     std::vector<GameObject *> GetObjects(unsigned int _id);
 
     //checks collision for all obejcts
-    void CheckCollisions();
+    void CheckCollisions(unsigned int _time);
 
 private:
     //checks collision for object with id == _id with other objects

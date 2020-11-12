@@ -1,7 +1,7 @@
 #ifndef TP_LK_2D_MP_SHOOTER_BULLET_H
 #define TP_LK_2D_MP_SHOOTER_BULLET_H
 
-#include "GameObject.h"
+#include "GameObject.hpp"
 class Techinc : public GameObject{
 public:
     Bullet();

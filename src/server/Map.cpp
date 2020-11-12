@@ -1,4 +1,4 @@
-#include "Map.h"
+#include "Map.hpp"
 
 Map::Map(unsigned int _height, unsigned int _width, std::map<unsigned int, GameObject *>){
 

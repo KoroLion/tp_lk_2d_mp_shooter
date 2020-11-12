@@ -1,7 +1,7 @@
 #ifndef TP_LK_2D_MP_SHOOTER_EVENT_H
 #define TP_LK_2D_MP_SHOOTER_EVENT_H
 
-#include "Command.h"
+#include "Command.hpp"
 
 struct Event{
     unsigned int id;

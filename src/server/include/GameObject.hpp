@@ -1,6 +1,6 @@
 #ifndef TP_LK_2D_MP_SHOOTER_GAMEOBJECT_H
 
-#include "Coordinates.h"
+#include "Coordinates.hpp"
 
 enum MoveDirection{
     NO_MOVE,

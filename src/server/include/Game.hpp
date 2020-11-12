@@ -1,6 +1,6 @@
 #ifndef TP_LK_2D_MP_SHOOTER_GAME_H
 
-#include "Map.h"
+#include "Map.hpp"
 
 class Game{
 public:

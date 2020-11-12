@@ -1,7 +1,7 @@
 #ifndef TP_LK_2D_MP_SHOOTER_OBSTACLE_H
 #define TP_LK_2D_MP_SHOOTER_OBSTACLE_H
 
-#include "GameObject.h"
+#include "GameObject.hpp"
 class Obstacle : public GameObject{
 public:
     Obstacle();

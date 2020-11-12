@@ -1,8 +1,8 @@
 #ifndef TP_LK_2D_MP_SHOOTER_SERVERWORLD_H
 #define TP_LK_2D_MP_SHOOTER_SERVERWORLD_H
 
-#include "Game.h"
-#include "Event.h"
+#include "Game.hpp"
+#include "Event.hpp"
 #include <queue>
 
 class ServerWorld{
