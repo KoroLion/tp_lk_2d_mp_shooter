@@ -34,7 +34,8 @@ class Client {
     int id;
     Socket s;
  public:
-    Client(int id, Socket s);
+    Client(int id, Socket s): id(id), s(s) {}
+    ~Client() {}
     int get_id() { return id; }
     int send(std::string message) { return s.write(message); };
     std::string recv() { return s.read(); };
