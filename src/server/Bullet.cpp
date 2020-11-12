@@ -8,33 +8,33 @@ Bullet::~Bullet() {
 
 }
 
-void Bullet::Update(unsigned int _time) override{
+void Bullet::update(unsigned int _time) override{
 
 }
 
-int Bullet::GetType() override{
+int Bullet::getType() override{
 
 }
 
-int Bullet::GetAngle(){
+int Bullet::getAngle(){
     return this->angle;
 }
 
-unsigned int Bullet::GetSpeed(){
+unsigned int Bullet::getSpeed(){
     return this->speed;
 }
 
-unsigned int Bullet::GetDamage(){
+unsigned int Bullet::getDamage(){
     return this->damage;
 }
 
-void Bullet::SetAngle(int _angle){
+void Bullet::setAngle(int _angle){
     this->angle = _angle;
 }
-void Bullet::SetSpeed(unsigned int _speed){
+void Bullet::setSpeed(unsigned int _speed){
     this->speed = _speed;
 }
 
-void Bullet::SetDamage(unsigned int _damage){
+void Bullet::setDamage(unsigned int _damage){
     this->damage = _damage;
 }

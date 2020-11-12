@@ -7,16 +7,16 @@ public:
     Bullet();
     ~Bullet();
 
-    void Update(unsigned int _time) override;
-    int GetType() override ;
+    void update(unsigned int _time) override;
+    int getType() override ;
 
-    int GetAngle();
-    unsigned int GetSpeed();
-    unsigned int GetDamage();
+    int getAngle();
+    unsigned int getSpeed();
+    unsigned int getDamage();
 
-    void SetAngle(int);
-    void SetSpeed(unsigned int);
-    void SetDamage(unsigned int);
+    void setAngle(int);
+    void setSpeed(unsigned int);
+    void setDamage(unsigned int);
 private:
     int angle;
     unsigned int speed;

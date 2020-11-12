@@ -8,20 +8,20 @@ public:
     Player();
     ~Player();
 
-    void Update(unsigned int _time) override;
-    int GetType() override ;
+    void update(unsigned int _time) override;
+    int getType() override ;
 
-    int GetRadius();
-    int GetAngle();
-    unsigned int GetSpeed();
-    unsigned int GetHp();
-    unsigned int GetDamage();
+    int getRadius();
+    int getAngle();
+    unsigned int getSpeed();
+    unsigned int getHp();
+    unsigned int getDamage();
 
-    void SetRadius(int);
-    void SetAngle(int);
-    void SetSpeed(unsigned int);
-    void SetHp(unsigned int);
-    void SetDamage(unsigned int);
+    void setRadius(int);
+    void setAngle(int);
+    void setSpeed(unsigned int);
+    void setHp(unsigned int);
+    void setDamage(unsigned int);
 private:
     int radius;
     int angle;

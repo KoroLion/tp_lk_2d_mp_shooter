@@ -7,29 +7,29 @@ Obstacle::~Obstacle(){
 
 }
 
-void Obstacle::Update(unsigned int _time) override{
+void Obstacle::update(unsigned int _time) override{
 
 }
-int Obstacle::GetType() override {
-
-}
-
-unsigned int Obstacle::GetWidth(){
-
-}
-unsigned int Obstacle::GetHeight(){
-
-}
-int Obstacle::GetAngle(){
+int Obstacle::getType() override {
 
 }
 
-void Obstacle::SetWidth(unsigned int _width){
+unsigned int Obstacle::getWidth(){
 
 }
-void Obstacle::SetHeight(unsigned int _height){
+unsigned int Obstacle::getHeight(){
 
 }
-void Obstacle::SetAngle(int _angle){
+int Obstacle::getAngle(){
+
+}
+
+void Obstacle::setWidth(unsigned int _width){
+
+}
+void Obstacle::setHeight(unsigned int _height){
+
+}
+void Obstacle::setAngle(int _angle){
 
 }

@@ -10,16 +10,16 @@ public:
     ServerWorld();
     ~ServerWorld();
 
-    void StartGame();
-    void EndGame();
+    void startGame();
+    void endGame();
 
     //called by GameServer for each event
-    void AddEvent(unsigned int _id, Command _command, int args);
+    void addEvent(unsigned int _id, Command _command, int args);
 
     //called by GameServer and returns all objects, which object with id == _id can see
-    std::vector<GameObject *> GetObjects(unsigned int _id);
+    std::vector<GameObject *> getObjects(unsigned int _id);
 private:
-    void ProcessEvents();
+    void processEvents();
 
     Game *game;
     std::queue<Event> events;

@@ -7,47 +7,47 @@ Technic::~Technic(){
 
 }
 
-void Technic::Update(unsigned int _time) override{
+void Technic::update(unsigned int _time) override{
 
 }
-int Technic::GetType() override {
-
-}
-
-unsigned int Technic::GetWidth(){
-
-}
-unsigned int Technic::GetHeight(){
-
-}
-int Technic::GetAngle(){
-
-}
-unsigned int Technic::GetSpeed(){
-
-}
-unsigned int Technic::GetHp(){
-
-}
-unsigned int Technic::GetDamage(){
+int Technic::getType() override {
 
 }
 
-void Technic::SetWidth(unsigned int){
+unsigned int Technic::getWidth(){
 
 }
-void Technic::SetHeight(unsigned int){
+unsigned int Technic::getHeight(){
 
 }
-void Technic::SetAngle(int){
+int Technic::getAngle(){
 
 }
-void Technic::SetSpeed(unsigned int){
+unsigned int Technic::getSpeed(){
 
 }
-void Technic::SetHp(unsigned int){
+unsigned int Technic::getHp(){
 
 }
-void Technic::SetDamage(unsigned int){
+unsigned int Technic::getDamage(){
+
+}
+
+void Technic::setWidth(unsigned int){
+
+}
+void Technic::setHeight(unsigned int){
+
+}
+void Technic::setAngle(int){
+
+}
+void Technic::setSpeed(unsigned int){
+
+}
+void Technic::setHp(unsigned int){
+
+}
+void Technic::setDamage(unsigned int){
 
 }

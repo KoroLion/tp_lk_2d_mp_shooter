@@ -8,35 +8,35 @@ Map::~Map(){
 
 }
 
-void Map::AddObjects(std::map<unsigned int, GameObject *>){
+void Map::addObjects(std::map<unsigned int, GameObject *>){
 
 }
-void Map::UpdateObjects(unsigned int _time){
+void Map::updateObjects(unsigned int _time){
 
 }
-void Map::UpdateObject(unsigned int _id, Command _command, unsigned int _arg){
+void Map::updateObject(unsigned int _id, Command _command, unsigned int _arg){
 
 }
 
-GameObject *Map::GetObject(unsigned int _id){
+GameObject *Map::getObject(unsigned int _id){
 
 }
 
 //returns all objects, which object with id == _id can see
-std::vector<GameObject *> Map::GetObjects(unsigned int _id){
+std::vector<GameObject *> Map::getObjects(unsigned int _id){
 
 }
 
 //checks collision for all obejcts
-void Map::CheckCollisions(){
+void Map::checkCollisions(){
 
 }
 
 //checks collision for object with id == _id with other objects
-void Map::Collision(unsigned int _id){
+void Map::collision(unsigned int _id){
 
 }
 //resolve collision for two objects with ids: _id1 and _id2
-void Map::ResolveCollision(unsigned int _id1, unsigned int _id2){
+void Map::resolveCollision(unsigned int _id1, unsigned int _id2){
 
 }

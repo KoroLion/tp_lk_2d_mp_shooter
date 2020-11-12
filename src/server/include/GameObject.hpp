@@ -15,20 +15,20 @@ public:
     GameObject();
     virtual ~GameObject() = 0;
 
-    virtual void Update(unsigned int _time) = 0;
-    virtual int GetType() = 0;
+    virtual void update(unsigned int _time) = 0;
+    virtual int getType() = 0;
 
-    unsigned int GetId();
-    void SetId();
+    unsigned int getId();
+    void setId();
 
-    Coordinates GetCoordinates();
-    void SetCoordinates();
+    Coordinates getCoordinates();
+    void setCoordinates();
 
-    unsigned int GetTime();
-    void SetTime();
+    unsigned int getTime();
+    void setTime();
 
-    MoveDirection GetDirection();
-    void SetDirection(MoveDirection _direction);
+    MoveDirection getDirection();
+    void setDirection(MoveDirection _direction);
 
 private:
     unsigned int id;

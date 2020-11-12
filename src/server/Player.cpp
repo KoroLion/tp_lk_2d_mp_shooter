@@ -7,41 +7,41 @@ Player::~Player(){
 
 }
 
-void Player::Update(unsigned int _time) override{
+void Player::update(unsigned int _time) override{
 
 }
-int Player::GetType() override {
-
-}
-
-int Player::GetRadius(){
-
-}
-int Player::GetAngle(){
-
-}
-unsigned int Player::GetSpeed(){
-
-}
-unsigned int Player::GetHp(){
-
-}
-unsigned int Player::GetDamage(){
+int Player::getType() override {
 
 }
 
-void Player::SetRadius(int _radius){
+int Player::getRadius(){
 
 }
-void Player::SetAngle(int _angle){
+int Player::getAngle(){
 
 }
-void Player::SetSpeed(unsigned int _speed){
+unsigned int Player::getSpeed(){
 
 }
-void Player::SetHp(unsigned int _hp){
+unsigned int Player::getHp(){
 
 }
-void Player::SetDamage(unsigned int _damage){
+unsigned int Player::getDamage(){
+
+}
+
+void Player::setRadius(int _radius){
+
+}
+void Player::setAngle(int _angle){
+
+}
+void Player::setSpeed(unsigned int _speed){
+
+}
+void Player::setHp(unsigned int _hp){
+
+}
+void Player::setDamage(unsigned int _damage){
 
 }

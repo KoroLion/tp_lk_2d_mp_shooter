@@ -11,23 +11,23 @@ public:
     Map(unsigned int _height, unsigned int _width, std::map<unsigned int, GameObject *>);
     ~Map();
 
-    void AddObjects(std::map<unsigned int, GameObject *>);
-    void UpdateObjects(unsigned int _time);
-    void UpdateObject(unsigned int _id, Command _command, unsigned int _arg);
+    void addObjects(std::map<unsigned int, GameObject *>);
+    void updateObjects(unsigned int _time);
+    void updateObject(unsigned int _id, Command _command, unsigned int _arg);
 
-    GameObject *GetObject(unsigned int _id);
+    GameObject *getObject(unsigned int _id);
 
     //returns all objects, which object with id == _id can see
-    std::vector<GameObject *> GetObjects(unsigned int _id);
+    std::vector<GameObject *> getObjects(unsigned int _id);
 
     //checks collision for all obejcts
-    void CheckCollisions(unsigned int _time);
+    void checkCollisions(unsigned int _time);
 
 private:
     //checks collision for object with id == _id with other objects
-    void Collision(unsigned int _id);
+    void collision(unsigned int _id);
     //resolve collision for two objects with ids: _id1 and _id2
-    void ResolveCollision(unsigned int _id1, unsigned int _id2);
+    void resolveCollision(unsigned int _id1, unsigned int _id2);
 
     unsigned int height;
     unsigned int width;

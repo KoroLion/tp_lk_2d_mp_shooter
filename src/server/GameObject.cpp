@@ -4,34 +4,34 @@ GameObject::GameObject(){
 
 }
 
-unsigned int GameObject::GetId(){
+unsigned int GameObject::getId(){
 
 }
 
-void GameObject::SetId(){
+void GameObject::setId(){
 
 }
 
-Coordinates GameObject::GetCoordinates(){
+Coordinates GameObject::getCoordinates(){
 
 }
 
-void GameObject::SetCoordinates(){
+void GameObject::setCoordinates(){
 
 }
 
-unsigned int GameObject::GetTime(){
+unsigned int GameObject::getTime(){
 
 }
 
-void GameObject::SetTime(){
+void GameObject::setTime(){
 
 }
 
-MoveDirection GameObject::GetDirection(){
+MoveDirection GameObject::getDirection(){
 
 }
 
-void GameObject::SetDirection(MoveDirection _direction){
+void GameObject::setDirection(MoveDirection _direction){
 
 }

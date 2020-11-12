@@ -7,22 +7,22 @@ public:
     Technic();
     ~Technic();
 
-    void Update(unsigned int _time) override;
-    int GetType() override ;
+    void update(unsigned int _time) override;
+    int getType() override ;
 
-    unsigned int GetWidth();
-    unsigned int GetHeight();
-    int GetAngle();
-    unsigned int GetSpeed();
-    unsigned int GetHp();
-    unsigned int GetDamage();
+    unsigned int getWidth();
+    unsigned int getHeight();
+    int getAngle();
+    unsigned int getSpeed();
+    unsigned int getHp();
+    unsigned int getDamage();
 
-    void SetWidth(unsigned int);
-    void SetHeight(unsigned int);
-    void SetAngle(int);
-    void SetSpeed(unsigned int);
-    void SetHp(unsigned int);
-    void SetDamage(unsigned int);
+    void setWidth(unsigned int);
+    void setHeight(unsigned int);
+    void setAngle(int);
+    void setSpeed(unsigned int);
+    void setHp(unsigned int);
+    void setDamage(unsigned int);
 private:
     unsigned int width;
     unsigned int height;

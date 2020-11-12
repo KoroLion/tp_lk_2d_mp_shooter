@@ -7,14 +7,14 @@ public:
     Game();
     ~Game();
 
-    void UpdateObject(unsigned int _id, Command _command, int args);
-    void UpdateMap(unsigned int _time);
+    void updateObject(unsigned int _id, Command _command, int args);
+    void updateMap(unsigned int _time);
 
     //returns all objects, which object with id == _id can see
-    std::vector<GameObject *> GetObjects(unsigned int _id);
+    std::vector<GameObject *> getObjects(unsigned int _id);
 
     //checks collision for all obejcts
-    void CheckCollisions();
+    void checkCollisions();
 private:
     unsigned int time;
     Map *map;

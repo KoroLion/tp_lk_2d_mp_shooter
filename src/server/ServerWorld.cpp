@@ -7,22 +7,22 @@ ServerWorld::~ServerWorld(){
 
 }
 
-void ServerWorld::StartGame(){
+void ServerWorld::startGame(){
 
 }
-void ServerWorld::EndGame(){
+void ServerWorld::endGame(){
 
 }
 
 //called by GameServer for each event
-void ServerWorld::AddEvent(unsigned int _id, Command _command, int args){
+void ServerWorld::addEvent(unsigned int _id, Command _command, int args){
 
 }
 
 //called by GameServer and returns all objects, which object with id == _id can see
-std::vector<GameObject *> ServerWorld::GetObjects(unsigned int _id){
+std::vector<GameObject *> ServerWorld::getObjects(unsigned int _id){
 
 }
-void void PServerWorld::rocessEvents();ProcessEvents(){
+void ServerWorld::processEvents(){
 
 }
