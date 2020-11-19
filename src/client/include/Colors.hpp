@@ -8,6 +8,7 @@ Copyright 2020 LioKor Team (KoroLion, SergTyapkin, altanab, biotyree)
 #include "Entities.hpp"
 
 #define SPLITRGBA(color) color.R, color.G, color.B, color.A
+#define SPLITRGB(color) color.R, color.G, color.B
 
 typedef struct {
     int R, G, B, A;

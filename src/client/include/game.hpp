@@ -1,5 +1,5 @@
 /*
-Copyright 2020 LioKor Team (KoroLion, SergTyapkin, altanab, biotyree)
+Copyright 2020 LioKor Team (KoroLion, SergTyapkin, altanab)
 */
 
 #ifndef SRC_CLIENT_INCLUDE_GAME_HPP_
@@ -8,8 +8,8 @@ Copyright 2020 LioKor Team (KoroLion, SergTyapkin, altanab, biotyree)
 #include <vector>
 
 #include "SDL.h"
-#include "Entities.hpp"
 #include "World.hpp"
+#include "Camera.hpp"
 
 #define BOX_TEXTURE_ID 0
 
@@ -17,9 +17,6 @@ SDL_Texture* loadTexture(const char* imgName, SDL_Renderer* renderer, SDL_Surfac
 
 class Game {
  public:
-    const char* title;
-    int width, height;
-
     Game(const char* title, int width, int height);
 
     bool start();
@@ -28,17 +25,23 @@ class Game {
     ~Game();
 
  private:
+    const char* title;
+    int width, height;
+    unsigned int time;
+
     SDL_Window *window;
     SDL_Renderer *renderer;
 
-    void handle_event(SDL_Event);
+    void handleEvent(SDL_Event);
+    void keyboardEvents();
     void update();
     void render();
 
     bool isRunning;
 
-    Player* thisPlayer;
+    Player* player;
     World* world;
+    Camera* camera;
 
     std::vector<const char*> textureNames {"res/textures/box.bmp"};
     std::vector<SDL_Texture*> textures;

@@ -5,7 +5,7 @@
 
 
 int main(int argc, char **argv) {
-    Game game("Client.exe vsegda prav!", 1000, 480);
+    Game game("Client.exe vsegda prav!", 1000, 500);
     if (game.start()) {
         std::cout << "ERROR: Unable to start the game!" << std::endl;
     }
