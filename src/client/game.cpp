@@ -42,7 +42,6 @@ SDL_Texture* loadTexture(const char* imgName, SDL_Renderer* renderer, SDL_Surfac
         std::cout << "Can't conver surf to texture: " << SDL_GetError() << std::endl;
         return NULL;
     }
-
     return tmp_texture;
 }
 
@@ -82,7 +81,7 @@ Game::Game(const char* _title, int _width, int _height): title(_title), width(_w
 
     world = new World(WINDOW_WIDTH, WINDOW_HEIGHT);
 
-    Entity* targetForCamera = player = new Player(200,200, 40,40, 0, textures[BOX_TEXTURE_ID], 5);
+    Entity* targetForCamera = player = new Player(200,200, 40,100, 0, textures[BOX_TEXTURE_ID], 5);
     world->addEntity(0, targetForCamera);
 
     world->addEntity(1, new Obstacle(0,0, 0,0, 0, textures[BOX_TEXTURE_ID]));
@@ -90,20 +89,20 @@ Game::Game(const char* _title, int _width, int _height): title(_title), width(_w
     world->addEntity(3, new Obstacle(0,0, 0,0, 0, textures[BOX_TEXTURE_ID]));
 
     std::map<int, Entity*>* targetEntities = new std::map<int, Entity*>;
-    targetEntities->insert(std::pair<const int, Entity*>(1, new Obstacle(50,120, 5,5, 30, NULL)));
+    targetEntities->insert(std::pair<const int, Entity*>(1, new Obstacle(50,120, 50,50, 30, NULL)));
     targetEntities->insert(std::pair<const int, Entity*>(2, new Obstacle(60,30, 60,60, -20, NULL)));
-    targetEntities->insert(std::pair<const int, Entity*>(3, new Obstacle(30,200, 5,5, 45, NULL)));
+    targetEntities->insert(std::pair<const int, Entity*>(3, new Obstacle(300,250, 100,100, 0, NULL)));
 
     world->setTarget(targetEntities, 0);
 
     targetEntities = new std::map<int, Entity*>;
-    targetEntities->insert(std::pair<const int, Entity*>(1, new Obstacle(50,120, 5,5, 30, NULL)));
-    targetEntities->insert(std::pair<const int, Entity*>(2, new Obstacle(300,300, 60,60, 200, NULL)));
-    targetEntities->insert(std::pair<const int, Entity*>(3, new Obstacle(30,200, 10,10, 45, NULL)));
+    targetEntities->insert(std::pair<const int, Entity*>(1, new Obstacle(50,120, 50,50, 30, NULL)));
+    targetEntities->insert(std::pair<const int, Entity*>(2, new Obstacle(60,30, 60,60, 200, NULL)));
+    targetEntities->insert(std::pair<const int, Entity*>(3, new Obstacle(300,250, 100,100, 0, NULL)));
 
     world->setTarget(targetEntities, 10000);
 
-    camera = new Camera(300,300, WINDOW_WIDTH, WINDOW_HEIGHT, 0, world, targetForCamera, SEEK_ROTATION);
+    camera = new Camera(width/2, height/2, WINDOW_WIDTH, WINDOW_HEIGHT, 0, world, targetForCamera, SEEK_ROTATION);
 }
 
 Game::~Game() {
@@ -184,16 +183,7 @@ void Game::handleEvent(SDL_Event event) {
             player->rotateRelative(mouseX * MOUSE_SENSIVITY);
         } else {
             SDL_GetMouseState(&mouseX, &mouseY);
-            if (mouseX - width/2 == 0)
-                if (mouseY > height/2)
-                    player->setRotation(90);
-                else
-                    player->setRotation(-90);
-            else
-                if (mouseX < width/2)
-                    player->setRotation(atan((float)(mouseY-height/2) / (float)(mouseX-width/2)) / M_PI*180 + 180);
-                else
-                    player->setRotation(atan((float)(mouseY-height/2) / (float)(mouseX-width/2)) / M_PI*180);
+            player->setRotation(getAngle(width/2, height/2, mouseX, mouseY));
         }
         break;
     }
@@ -201,18 +191,29 @@ void Game::handleEvent(SDL_Event event) {
 
 void Game::keyboardEvents() {
     const Uint8 *keys = SDL_GetKeyboardState(0);
-    if (keys[SDL_SCANCODE_W])
-        player->moveRelative(0);
-    if (keys[SDL_SCANCODE_A])
-        if (USE_MOUSE_FOR_ROTATE)
-            player->moveRelative(-90);
-        else
-            player->rotateRelative(-10);
-    if (keys[SDL_SCANCODE_S])
-        player->moveRelative(180);
-    if (keys[SDL_SCANCODE_D])
-        if (USE_MOUSE_FOR_ROTATE)
-            player->moveRelative(90);
-        else
-            player->rotateRelative(10);
+    if (SEEK_ROTATION || !USE_MOUSE_FOR_ROTATE) {
+        if (keys[SDL_SCANCODE_W])
+            player->moveRelative(0);
+        if (keys[SDL_SCANCODE_A])
+            if (USE_MOUSE_FOR_ROTATE)
+                player->moveRelative(-90);
+            else
+                player->rotateRelative(-10);
+        if (keys[SDL_SCANCODE_S])
+            player->moveRelative(180);
+        if (keys[SDL_SCANCODE_D])
+            if (USE_MOUSE_FOR_ROTATE)
+                player->moveRelative(90);
+            else
+                player->rotateRelative(10);
+    } else {
+        if (keys[SDL_SCANCODE_W])
+            player->moveAbsolute(0, -player->getSpeed());
+        if (keys[SDL_SCANCODE_A])
+            player->moveAbsolute(-player->getSpeed(), 0);
+        if (keys[SDL_SCANCODE_S])
+            player->moveAbsolute(0, player->getSpeed());
+        if (keys[SDL_SCANCODE_D])
+            player->moveAbsolute(player->getSpeed(), 0);
+    }
 }

@@ -10,6 +10,8 @@ Copyright 2020 LioKor Team (KoroLion, SergTyapkin, altanab)
 #include "SDL.h"
 #include "Equipments.hpp"
 
+float getAngle(float centerX, float centerY, float x, float y);
+
 SDL_Texture* loadTexture(SDL_Texture* _texture);
 
 // 1st floor --------
@@ -22,7 +24,7 @@ class Entity {
     virtual void update() {;}
     void updateToTarget(Entity* lastTarget, Entity* target, float percentage);
 
-    void moveAngledAbsolute(float toForward, float toSide, float absoluteAngle = 0);
+    virtual void moveAbsolute(float toForward, float toSide, float absoluteAngle = 0);
     void rotateRelative(float addRotation) {rotation += addRotation;}
 
     float getX() {return x;}
@@ -48,6 +50,8 @@ class Player: public Entity {
     //virtual void update();
 
     void moveRelative(float addAngle);
+
+    float getSpeed() {return speed;}
 
     ~Player() {;}
  protected:

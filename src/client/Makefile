@@ -17,6 +17,8 @@ Equipments.o: Equipments.cpp
 	$(CC) -c -o Equipments.o Equipments.cpp -I"lib/x86_64-w64-mingw32/include/SDL2"
 Camera.o: Camera.cpp
 	$(CC) -c -o Camera.o Camera.cpp -I"lib/x86_64-w64-mingw32/include/SDL2"
+#Colors.o: Colors.cpp
+#	$(CC) -c -o Colors.o Colors.cpp
 mockUDPClient.o: mockUDPClient.cpp
 	$(CC) -c -o mockUDPClient.o mockUDPClient.cpp -I"lib/gmock-gtest/include" -I"lib/x86_64-w64-mingw32/include/SDL2"
 
