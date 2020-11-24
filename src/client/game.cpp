@@ -17,7 +17,7 @@ Copyright 2020 LioKor Team (KoroLion, SergTyapkin, altanab)
 #define WINDOW_WIDTH 1000
 #define WINDOW_HEIGHT 500
 
-#define FPS 30
+#define FPS 60
 
 #define SEEK_ROTATION true
 #define USE_MOUSE_FOR_ROTATE true
@@ -81,28 +81,28 @@ Game::Game(const char* _title, int _width, int _height): title(_title), width(_w
 
     world = new World(WINDOW_WIDTH, WINDOW_HEIGHT);
 
-    Entity* targetForCamera = player = new Player(200,200, 40,100, 0, textures[BOX_TEXTURE_ID], 5);
+    Entity* targetForCamera = player = new Player(200,200,5, 40,40, 0, textures[BOX_TEXTURE_ID], 5);
     world->addEntity(0, targetForCamera);
 
-    world->addEntity(1, new Obstacle(0,0, 0,0, 0, textures[BOX_TEXTURE_ID]));
-    world->addEntity(2, new Obstacle(0,0, 0,0, 0, textures[BOX_TEXTURE_ID]));
-    world->addEntity(3, new Obstacle(0,0, 0,0, 0, textures[BOX_TEXTURE_ID]));
+    world->addEntity(1, new Obstacle(0,0,1, 0,0, 0, textures[BOX_TEXTURE_ID]));
+    world->addEntity(2, new Obstacle(0,0,1, 0,0, 0, textures[BOX_TEXTURE_ID]));
+    world->addEntity(3, new Obstacle(0,0,2, 0,0, 0, textures[BOX_TEXTURE_ID]));
 
     std::map<int, Entity*>* targetEntities = new std::map<int, Entity*>;
-    targetEntities->insert(std::pair<const int, Entity*>(1, new Obstacle(50,120, 50,50, 30, NULL)));
-    targetEntities->insert(std::pair<const int, Entity*>(2, new Obstacle(60,30, 60,60, -20, NULL)));
-    targetEntities->insert(std::pair<const int, Entity*>(3, new Obstacle(300,250, 100,100, 0, NULL)));
+    targetEntities->insert(std::pair<const int, Entity*>(1, new Obstacle(50,120,0, 50,50, 30, NULL)));
+    targetEntities->insert(std::pair<const int, Entity*>(2, new Obstacle(60,30,0, 60,60, -20, NULL)));
+    targetEntities->insert(std::pair<const int, Entity*>(3, new Obstacle(300,250,0, 100,200, 0, NULL)));
 
     world->setTarget(targetEntities, 0);
 
     targetEntities = new std::map<int, Entity*>;
-    targetEntities->insert(std::pair<const int, Entity*>(1, new Obstacle(50,120, 50,50, 30, NULL)));
-    targetEntities->insert(std::pair<const int, Entity*>(2, new Obstacle(60,30, 60,60, 200, NULL)));
-    targetEntities->insert(std::pair<const int, Entity*>(3, new Obstacle(300,250, 100,100, 0, NULL)));
+    targetEntities->insert(std::pair<const int, Entity*>(1, new Obstacle(50,120,0, 50,50, 30, NULL)));
+    targetEntities->insert(std::pair<const int, Entity*>(2, new Obstacle(60,30,0, 60,60, 200, NULL)));
+    targetEntities->insert(std::pair<const int, Entity*>(3, new Obstacle(300,250,0, 100,200, 0, NULL)));
 
     world->setTarget(targetEntities, 10000);
 
-    camera = new Camera(width/2, height/2, WINDOW_WIDTH, WINDOW_HEIGHT, 0, world, targetForCamera, SEEK_ROTATION);
+    camera = new Camera(width/2, height/2, 10, 60, WINDOW_WIDTH, WINDOW_HEIGHT, 0, world, targetForCamera, SEEK_ROTATION);
 }
 
 Game::~Game() {
@@ -120,7 +120,7 @@ bool Game::start() {
             handleEvent(event);
         keyboardEvents();
 
-        SDL_SetRenderDrawColor(renderer, SPLITRGBA(white_color));
+        SDL_SetRenderDrawColor(renderer, WHITE_RGBA);
         SDL_RenderClear(renderer);
         update();
         render();

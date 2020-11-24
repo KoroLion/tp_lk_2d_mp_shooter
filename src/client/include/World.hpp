@@ -15,7 +15,7 @@ class World {
     World(unsigned int _width, unsigned int _height);
     ~World();
 
-    void render(SDL_Renderer *renderer, float baseX = 0, float baseY = 0, float centerRotation = 0, float centerX = 0, float centerY = 0);
+    void render(SDL_Renderer *renderer, float baseX = 0, float baseY = 0, float centerRotation = 0, float centerX = 0, float centerY = 0, float altitude = 10, float angle = 60);
     void update(unsigned int time);
     void addEntity(int id, Entity* entity);
     void deleteEntity(int id);

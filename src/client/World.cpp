@@ -33,9 +33,9 @@ void World::setTarget(std::map<int, Entity*>* _target, unsigned int _time) {
     timeTarget = _time;
 }
 
-void World::render(SDL_Renderer *renderer, float baseX, float baseY, float centerRotation, float centerX, float centerY) {
+void World::render(SDL_Renderer *renderer, float baseX, float baseY, float centerRotation, float centerX, float centerY, float altitude, float angle) {
     for (auto itr: entities) {
-        itr.second->render(renderer, baseX, baseY, centerRotation, centerX, centerY);
+        itr.second->render(renderer, baseX, baseY, centerRotation, centerX, centerY, altitude, angle);
     }
 }
 
