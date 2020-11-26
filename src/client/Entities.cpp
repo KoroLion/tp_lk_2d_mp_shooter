@@ -54,13 +54,13 @@ float distance(float x1, float y1, float x2, float y2) {
     return sqrt((x2-x1)*(x2-x1) + (y2-y1)*(y2-y1));
 }
 
-void drawPoint(SDL_Renderer* renderer, int x, int y, int width, int r, int g, int b, int a) {
+void drawPoint(SDL_Renderer* renderer, int x, int y, int width, Uint8 r, Uint8 g, Uint8 b, Uint8 a) {
     SDL_SetRenderDrawColor(renderer, r, g, b, a);
     SDL_Rect render_rect {x-width/2, y-width/2, width, width};
     SDL_RenderFillRect(renderer, &render_rect);
 }
 
-void drawLine(SDL_Renderer* renderer, float x1, float y1, float x2, float y2, int width, int r, int g, int b, int a) {
+void drawLine(SDL_Renderer* renderer, float x1, float y1, float x2, float y2, int width, Uint8 r, Uint8 g, Uint8 b, Uint8 a) {
     float patterns = distance(x1,y1, x2,y2)/width;
     float xDif = (x2-x1) / patterns;
     float yDif = (y2-y1) / patterns;
@@ -87,7 +87,9 @@ void drawLine(SDL_Renderer* renderer, float x1, float y1, float x2, float y2, in
     }
 }*/
 void renderAsHorizontalTrapeze(SDL_Renderer *renderer, SDL_Texture* texture, float anchorX, float anchorY, float width, float height,
-                               float rotation, float leftRotation, float rightRotation, float patterns) {
+                               float rotation, float leftRotation, float rightRotation, float patterns,
+                               Uint8 r_highlite, Uint8 g_highlite, Uint8 b_highlite, int highliteHeight, float highliteVal) {
+    highliteVal = 1 - highliteVal;
     int texture_w, texture_h;
     SDL_QueryTexture(texture, NULL, NULL, &texture_w, &texture_h);
     float hDif = texture_h / patterns;
@@ -98,23 +100,33 @@ void renderAsHorizontalTrapeze(SDL_Renderer *renderer, SDL_Texture* texture, flo
     float leftXDif = leftYDif * tan(leftRotation /180*M_PI);
 
     float widthDif = (trapezeHeight * tan((leftRotation-rotation) /180*M_PI) - trapezeHeight * tan((rightRotation-rotation) /180*M_PI)) / patterns;
-    float heightDif = trapezeHeight/patterns+2;
+    float heightDif = trapezeHeight/patterns + 3;
 
     SDL_Point rotatePoint {0, 0};
-    for (float clipY = 0; clipY < texture_h; clipY += hDif) {
+    float clipY = 0;
+    int highliteDifs = highliteHeight / heightDif;
+    float highliter;
+    for (int i = 0; i < patterns; i++) {
+        if (i < highliteDifs && (highliter = highliteVal+(float)(i+1)/highliteDifs) < 1) {
+            SDL_SetTextureColorMod(texture, r_highlite + (255-r_highlite)*highliter, g_highlite + (255-g_highlite)*highliter, b_highlite + (255-b_highlite)*highliter);
+        } else if (i == highliteDifs)
+            SDL_SetTextureColorMod(texture, WHITE_RGB);
         SDL_Rect clip_rect {0, (int)(clipY), (int)(texture_w), (int)(clipY + hDif)};
         //drawPoint(renderer, anchorX, anchorY, 5, 0x00, 0xFF, 0xFF, 0xFF);
         SDL_Rect render_rect {(int)(anchorX), (int)(anchorY), (int)(width), (int)(heightDif)};
         SDL_RenderCopyEx(renderer, texture, &clip_rect, &render_rect, rotation, &rotatePoint, SDL_FLIP_NONE);
+        clipY += hDif;
         width += widthDif;
         anchorY += leftYDif;
         anchorX -= leftXDif;
     }
-    //drawPoint(renderer, anchorX, anchorY, 3);
+    SDL_SetTextureColorMod(texture, WHITE_RGB);
 }
 
 void renderAsVerticalTrapeze(SDL_Renderer *renderer, SDL_Texture* texture, float anchorX, float anchorY, float height, float width,
-                             float rotation, float leftRotation, float rightRotation, float patterns) {
+                             float rotation, float leftRotation, float rightRotation, float patterns,
+                             Uint8 r_highlite, Uint8 g_highlite, Uint8 b_highlite, int highliteHeight, float highliteVal) {
+    highliteVal = 1 - highliteVal;
     int texture_w, texture_h;
     SDL_QueryTexture(texture, NULL, NULL, &texture_w, &texture_h);
     float wDif = texture_w / patterns;
@@ -125,19 +137,27 @@ void renderAsVerticalTrapeze(SDL_Renderer *renderer, SDL_Texture* texture, float
     float leftYDif = leftXDif * tan(leftRotation /180*M_PI);
 
     float heightDif = (-trapezeHeight * tan((leftRotation-rotation) /180*M_PI) + trapezeHeight * tan((rightRotation-rotation) /180*M_PI)) / patterns;
-    float widthDif = trapezeHeight/patterns+2;
+    float widthDif = trapezeHeight/patterns + 3;
 
     SDL_Point rotatePoint {0, 0};
-    for (float clipX = 0; clipX < texture_w; clipX += wDif) {
+    float clipX = 0;
+    int highliteDifs = highliteHeight / widthDif;
+    float highliter;
+    for (int i = 0; i < patterns; i++) {
+        if (i < highliteDifs && (highliter = highliteVal+(float)(i+1)/highliteDifs) < 1) {
+            SDL_SetTextureColorMod(texture, r_highlite + (255-r_highlite)*highliter, g_highlite + (255-g_highlite)*highliter, b_highlite + (255-b_highlite)*highliter);
+        } else if (i == highliteDifs)
+            SDL_SetTextureColorMod(texture, WHITE_RGB);
         SDL_Rect clip_rect {(int)(clipX), 0, (int)(clipX + wDif), (int)(texture_h)};
         //drawPoint(renderer, anchorX, anchorY, 5, 0x00, 0xFF, 0xFF, 0xFF);
         SDL_Rect render_rect {(int)(anchorX), (int)(anchorY), (int)(widthDif), (int)(height)};
         SDL_RenderCopyEx(renderer, texture, &clip_rect, &render_rect, rotation, &rotatePoint, SDL_FLIP_NONE);
+        clipX += wDif;
         height += heightDif;
         anchorY += leftYDif;
         anchorX += leftXDif;
     }
-    //drawPoint(renderer, anchorX, anchorY, 3);
+    SDL_SetTextureColorMod(texture, WHITE_RGB);
 }
 
 void Entity::render(SDL_Renderer *renderer, float baseX, float baseY, float centerRotation, float centerX, float centerY, float altitude, float angleX) {
@@ -155,8 +175,8 @@ void Entity::render(SDL_Renderer *renderer, float baseX, float baseY, float cent
 
     centerRotation = rotation - centerRotation; // now it's absolute rotation
 
-    SDL_Rect render_rect {(int)(resX - width/2), (int)(resY - height/2), (int)(width), (int)(height)};
-    SDL_RenderCopyEx(renderer, texture, NULL, &render_rect, centerRotation, NULL, SDL_FLIP_NONE);
+    SDL_Rect render_rect {(int)(resX - width/2), (int)(resY - height/2), (int)(width), (int)(height)}; //bottom
+    //SDL_RenderCopyEx(renderer, texture, NULL, &render_rect, centerRotation, NULL, SDL_FLIP_NONE);
 
     float cosRot = cos(centerRotation/180*M_PI);
     float sinRot = sin(centerRotation/180*M_PI);
@@ -173,30 +193,32 @@ void Entity::render(SDL_Renderer *renderer, float baseX, float baseY, float cent
     //float angleY = angleX * (width/height);
     float k_3D = 1/(altitude-z)*altitude;
     float trapezeHeight = distance(xLeftUp-centerX,yLeftUp-centerY, (xLeftUp-centerX)*k_3D,(yLeftUp-centerY)*k_3D);
-    float accuracy = trapezeHeight/4;
+    float accuracy = trapezeHeight/1;
+    float highliteHeight = 200;
+    float highliteVal = 0.7;
     if (!isIntersect(xLeftUp,yLeftUp,   centerX,centerY,  xLeftDown,yLeftDown, xRightUp,yRightUp) && // up
         !isIntersect(xRightUp,yRightUp, centerX,centerY,  xLeftUp,yLeftUp, xRightDown,yRightDown))
         renderAsHorizontalTrapeze(renderer, texture, xLeftUp, yLeftUp, width, trapezeHeight, centerRotation,
                                   getAngle(centerX, centerY, xLeftUp, yLeftUp) - 90,
-                                  getAngle(centerX, centerY, xRightUp, yRightUp) - 90, accuracy);
+                                  getAngle(centerX, centerY, xRightUp, yRightUp) - 90, accuracy, BLUE_RGB, highliteHeight, highliteVal);
     if (!isIntersect(xLeftUp,yLeftUp,     centerX,centerY,  xLeftDown,yLeftDown, xRightUp,yRightUp) &&  // left
         !isIntersect(xLeftDown,yLeftDown, centerX,centerY,  xLeftUp,yLeftUp, xRightDown,yRightDown))
         renderAsVerticalTrapeze(renderer, texture, xLeftUp, yLeftUp, height, trapezeHeight, centerRotation,
                                 getAngle(centerX, centerY, xLeftUp, yLeftUp),
-                                getAngle(centerX, centerY, xLeftDown, yLeftDown), accuracy);
+                                getAngle(centerX, centerY, xLeftDown, yLeftDown), accuracy, BLUE_RGB, highliteHeight, highliteVal);
 
     trapezeHeight = distance(xRightDown-centerX,yRightDown-centerY, (xRightDown-centerX)*k_3D,(yRightDown-centerY)*k_3D);
-    accuracy = trapezeHeight/4;
+    accuracy = trapezeHeight/1;
     if (!isIntersect(xRightDown,yRightDown, centerX,centerY,  xLeftDown,yLeftDown, xRightUp,yRightUp) && // down
         !isIntersect(xLeftDown,yLeftDown,   centerX,centerY,  xLeftUp,yLeftUp, xRightDown,yRightDown))
         renderAsHorizontalTrapeze(renderer, texture, xRightDown, yRightDown, width, trapezeHeight, centerRotation + 180,
                                   getAngle(centerX, centerY, xRightDown, yRightDown) - 90,
-                                  getAngle(centerX, centerY, xLeftDown, yLeftDown) - 90, accuracy);
+                                  getAngle(centerX, centerY, xLeftDown, yLeftDown) - 90, accuracy, BLUE_RGB, highliteHeight, highliteVal);
     if (!isIntersect(xRightDown,yRightDown, centerX,centerY,  xLeftDown,yLeftDown, xRightUp,yRightUp) && // right
         !isIntersect(xRightUp,yRightUp,     centerX,centerY,  xLeftUp,yLeftUp, xRightDown,yRightDown))
         renderAsVerticalTrapeze(renderer, texture, xRightDown, yRightDown, height, trapezeHeight, centerRotation + 180,
                                 getAngle(centerX, centerY, xRightDown, yRightDown),
-                                getAngle(centerX, centerY, xRightUp, yRightUp), accuracy);
+                                getAngle(centerX, centerY, xRightUp, yRightUp), accuracy, BLUE_RGB, highliteHeight, highliteVal);
     //SDL_Rect render_rect {(int)(resX - width/2), (int)(resY - height/2), (int)(width), (int)(height)};
     render_rect.w *= k_3D;
     render_rect.h *= k_3D;

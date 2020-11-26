@@ -11,9 +11,6 @@ Copyright 2020 LioKor Team (KoroLion, SergTyapkin, altanab)
 #include "World.hpp"
 #include "Camera.hpp"
 
-#define BOX_TEXTURE_ID 0
-
-SDL_Texture* loadTexture(const char* imgName, SDL_Renderer* renderer, SDL_Surface* win_surf);
 
 class Game {
  public:
@@ -43,7 +40,6 @@ class Game {
     World* world;
     Camera* camera;
 
-    std::vector<const char*> textureNames {"res/textures/box.bmp"};
     std::vector<SDL_Texture*> textures;
 };
 

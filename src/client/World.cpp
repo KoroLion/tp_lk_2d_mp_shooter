@@ -2,13 +2,15 @@
 Copyright 2020 LioKor Team (KoroLion, SergTyapkin, altanab)
 */
 #include <iostream>
+#include <math.h>
 #include <map>
 
 #include "SDL.h"
 #include "include/World.hpp"
 
-World::World(unsigned int _width, unsigned int _height): width(_width), height(_height) {
-;
+World::World(unsigned int _width, unsigned int _height, SDL_Texture* _bgTexture, SDL_Texture* _bgVignetteTexture):
+    width(_width), height(_height), bgTexture(_bgTexture), bgVignetteTexture(_bgVignetteTexture) {
+    ;
 }
 
 World::~World () {
@@ -34,6 +36,41 @@ void World::setTarget(std::map<int, Entity*>* _target, unsigned int _time) {
 }
 
 void World::render(SDL_Renderer *renderer, float baseX, float baseY, float centerRotation, float centerX, float centerY, float altitude, float angle) {
+    float radAngle = -centerRotation/180*M_PI;
+
+    int widthBg = width;
+    int heightBg = height;
+    int y = - (int)centerY % heightBg - heightBg;
+    if (centerY < 0)
+        y -= heightBg;
+    int startX = - (int)centerX % widthBg - widthBg;
+    if (centerX < 0)
+        startX -= widthBg;
+    while (y < (centerY-baseY)*2 + heightBg) {
+        int yRes = (baseY+y >= 0 ? (int)(baseY+y)/heightBg : (int)(baseY+y)/heightBg-1) % 2;
+        int x = startX;
+        while (x < (centerX-baseX)*2 + widthBg) {
+            int xRes = (baseX+x >= 0 ? (int)(baseX+x)/widthBg : (int)(baseX+x)/widthBg-1) % 2;
+            int resX = x*cos(radAngle) - y*sin(radAngle);
+            int resY = x*sin(radAngle) + y*cos(radAngle);
+            SDL_Rect render_rect {resX-1, resY-1, widthBg+1, heightBg+1};
+            if (xRes % 2 == 0) {
+                if (yRes % 2 == 0)
+                    SDL_RenderCopyEx(renderer, bgTexture, NULL, &render_rect, 180 - centerRotation, NULL, SDL_FLIP_NONE);
+                else
+                    SDL_RenderCopyEx(renderer, bgTexture, NULL, &render_rect, -centerRotation, NULL, SDL_FLIP_HORIZONTAL);
+            } else {
+                if (yRes % 2 == 0)
+                    SDL_RenderCopyEx(renderer, bgTexture, NULL, &render_rect, -centerRotation, NULL, SDL_FLIP_VERTICAL);
+                else
+                    SDL_RenderCopyEx(renderer, bgTexture, NULL, &render_rect, -centerRotation, NULL, SDL_FLIP_NONE);
+            }
+            x += widthBg;
+        }
+        y += heightBg;
+    }
+    SDL_Rect render_rect {0, 0, (int)(width), (int)(height)};
+    SDL_RenderCopy(renderer, bgVignetteTexture, NULL, &render_rect);
     for (auto itr: entities) {
         itr.second->render(renderer, baseX, baseY, centerRotation, centerX, centerY, altitude, angle);
     }

@@ -23,13 +23,18 @@ Copyright 2020 LioKor Team (KoroLion, SergTyapkin, altanab)
 #define USE_MOUSE_FOR_ROTATE true
 #define MOUSE_SENSIVITY 0.1
 
+#define BOX_TEXTURE_ID         0
+#define BG_TEXTURE_ID          1
+#define BG_VIGNETTE_TEXTURE_ID 2
 
-SDL_Texture* loadTexture(const char* imgName, SDL_Renderer* renderer, SDL_Surface* win_surf) {
+SDL_Texture* loadTexture(const char* imgName, SDL_Renderer* renderer, SDL_Surface* win_surf, Uint8 r = -1, Uint8 g = -1, Uint8 b = -1) {
     SDL_Surface* tmp_surf = SDL_LoadBMP(imgName);
     if (tmp_surf == NULL) {
         std::cout << "Can't load surface: " << SDL_GetError() << std::endl;
         return NULL;
     }
+    if (r != -1)
+        SDL_SetColorKey(tmp_surf, SDL_TRUE, SDL_MapRGB(tmp_surf->format, r,g,b));
     /*
     tmp_surf = SDL_ConvertSurface(tmp_surf, win_surf->format, 0);
     if (tmp_surf == NULL) {
@@ -51,38 +56,35 @@ Game::Game(const char* _title, int _width, int _height): title(_title), width(_w
         return;
     }
 
-    window = SDL_CreateWindow(
-        title,               // window title
-        WINDOW_X_INIT,           // initial x position
-        WINDOW_Y_INIT,           // initial y position
-        width,                       // width, in pixels
-        height,                      // height, in pixels
-        SDL_WINDOW_OPENGL | SDL_WINDOW_INPUT_GRABBED
-    );
+    if ((window = SDL_CreateWindow(title, WINDOW_X_INIT, WINDOW_Y_INIT, width, height, SDL_WINDOW_OPENGL | SDL_WINDOW_INPUT_GRABBED)) == NULL) {
+        std::cout << "Can't create window: " << SDL_GetError() << std::endl;
+        return;
+    }
+
     if (SEEK_ROTATION && USE_MOUSE_FOR_ROTATE) {
         //SDL_SetRelativeMouseMode(SDL_TRUE);
         SDL_ShowCursor(SDL_DISABLE);
     }
 
-    if (window == NULL) {
-        std::cout << "Can't create window: " << SDL_GetError() << std::endl;
-        return;
-    }
-
-    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC); // аппаратный рендеринг + верт. синхронизация
-    if (renderer == NULL) {
+    if ((renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC)) == NULL) { // аппаратный рендеринг + верт. синхронизация
         std::cout << "Can't create renderer: " << SDL_GetError() << std::endl;
         return;
     }
 
+    // --- loading textures ---
     SDL_Surface* win_surf = SDL_GetWindowSurface(window);
+    std::vector<const char*> textureNames {"res/textures/box.bmp", "res/textures/bg_1.bmp", "res/textures/bg_vignette.bmp"};
     for (const char* name: textureNames)
-        textures.push_back(loadTexture(name, renderer, win_surf));
+        textures.push_back(loadTexture(name, renderer, win_surf, WHITE_RGB));
+    // --- modding textures ---
+    SDL_SetTextureAlphaMod(textures[BG_VIGNETTE_TEXTURE_ID], 0xCC);
+    //SDL_SetTextureBlendMode(textures[BG_VIGNETTE_TEXTURE_ID], SDL_BLENDMODE_BLEND);
+    SDL_SetTextureColorMod(textures[BG_TEXTURE_ID], CYAN_RGB);
 
-    world = new World(WINDOW_WIDTH, WINDOW_HEIGHT);
+    world = new World(WINDOW_WIDTH, WINDOW_HEIGHT, textures[BG_TEXTURE_ID], textures[BG_VIGNETTE_TEXTURE_ID]);
 
-    Entity* targetForCamera = player = new Player(200,200,5, 40,40, 0, textures[BOX_TEXTURE_ID], 5);
-    world->addEntity(0, targetForCamera);
+    player = new Player(200,200,5, 40,40, 0, textures[BOX_TEXTURE_ID], 5);
+    world->addEntity(0, player);
 
     world->addEntity(1, new Obstacle(0,0,1, 0,0, 0, textures[BOX_TEXTURE_ID]));
     world->addEntity(2, new Obstacle(0,0,1, 0,0, 0, textures[BOX_TEXTURE_ID]));
@@ -102,7 +104,7 @@ Game::Game(const char* _title, int _width, int _height): title(_title), width(_w
 
     world->setTarget(targetEntities, 10000);
 
-    camera = new Camera(width/2, height/2, 10, 60, WINDOW_WIDTH, WINDOW_HEIGHT, 0, world, targetForCamera, SEEK_ROTATION);
+    camera = new Camera(width/2, height/2, 10, 60, WINDOW_WIDTH, WINDOW_HEIGHT, 0, world, player, SEEK_ROTATION);
 }
 
 Game::~Game() {
