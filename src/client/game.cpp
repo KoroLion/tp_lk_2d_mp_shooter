@@ -11,6 +11,7 @@ Copyright 2020 LioKor Team (KoroLion, SergTyapkin, altanab)
 #include "include/World.hpp"
 #include "include/Camera.hpp"
 #include "include/Colors.hpp"
+#include "include/Entities.hpp"
 
 #define WINDOW_X_INIT 300
 #define WINDOW_Y_INIT 300
@@ -19,13 +20,17 @@ Copyright 2020 LioKor Team (KoroLion, SergTyapkin, altanab)
 
 #define FPS 60
 
-#define SEEK_ROTATION true
+#define SEEK_ROTATION false
 #define USE_MOUSE_FOR_ROTATE true
 #define MOUSE_SENSIVITY 0.1
 
-#define BOX_TEXTURE_ID         0
-#define BG_TEXTURE_ID          1
-#define BG_VIGNETTE_TEXTURE_ID 2
+#define BOX_TEXTURE_ID              0
+#define BG_TEXTURE_ID               1
+#define BG_VIGNETTE_TEXTURE_ID      2
+#define PLAYER_TEXTURE_ID           3
+#define BULLET_TEXTURE_ID           4
+#define LIGHT_TRASSER_TEXTURE_ID    5
+#define STRAIGHT_TRASSER_TEXTURE_ID 6
 
 SDL_Texture* loadTexture(const char* imgName, SDL_Renderer* renderer, SDL_Surface* win_surf, Uint8 r = -1, Uint8 g = -1, Uint8 b = -1) {
     SDL_Surface* tmp_surf = SDL_LoadBMP(imgName);
@@ -73,7 +78,8 @@ Game::Game(const char* _title, int _width, int _height): title(_title), width(_w
 
     // --- loading textures ---
     SDL_Surface* win_surf = SDL_GetWindowSurface(window);
-    std::vector<const char*> textureNames {"res/textures/box.bmp", "res/textures/bg_1.bmp", "res/textures/bg_vignette.bmp"};
+    std::vector<const char*> textureNames {"res/textures/box.bmp", "res/textures/bg_1.bmp", "res/textures/bg_vignette.bmp", "res/textures/player.bmp",
+                                           "res/textures/bullet.bmp", "res/textures/light_trasser.bmp", "res/textures/straight_trasser.bmp"};
     for (const char* name: textureNames)
         textures.push_back(loadTexture(name, renderer, win_surf, WHITE_RGB));
     // --- modding textures ---
@@ -83,24 +89,24 @@ Game::Game(const char* _title, int _width, int _height): title(_title), width(_w
 
     world = new World(WINDOW_WIDTH, WINDOW_HEIGHT, textures[BG_TEXTURE_ID], textures[BG_VIGNETTE_TEXTURE_ID]);
 
-    player = new Player(200,200,5, 40,40, 0, textures[BOX_TEXTURE_ID], 5);
+    player = new Player(200,200,2, 40,40, 0, textures[PLAYER_TEXTURE_ID], 5);
     world->addEntity(0, player);
 
-    world->addEntity(1, new Obstacle(0,0,1, 0,0, 0, textures[BOX_TEXTURE_ID]));
-    world->addEntity(2, new Obstacle(0,0,1, 0,0, 0, textures[BOX_TEXTURE_ID]));
-    world->addEntity(3, new Obstacle(0,0,2, 0,0, 0, textures[BOX_TEXTURE_ID]));
+    world->addEntity(1, new Obstacle(0,0,0, 0,0, 0, textures[BOX_TEXTURE_ID]));
+    world->addEntity(2, new Obstacle(0,0,0, 0,0, 0, textures[BOX_TEXTURE_ID]));
+    world->addEntity(3, new Obstacle(0,0,0, 0,0, 0, textures[BOX_TEXTURE_ID]));
 
     std::map<int, Entity*>* targetEntities = new std::map<int, Entity*>;
-    targetEntities->insert(std::pair<const int, Entity*>(1, new Obstacle(50,120,0, 50,50, 30, NULL)));
-    targetEntities->insert(std::pair<const int, Entity*>(2, new Obstacle(60,30,0, 60,60, -20, NULL)));
-    targetEntities->insert(std::pair<const int, Entity*>(3, new Obstacle(300,250,0, 100,200, 0, NULL)));
+    targetEntities->insert(std::pair<const int, Entity*>(1, new Obstacle(50,120,1, 50,50, 30, NULL)));
+    targetEntities->insert(std::pair<const int, Entity*>(2, new Obstacle(60,30,1, 60,60, -20, NULL)));
+    targetEntities->insert(std::pair<const int, Entity*>(3, new Obstacle(300,250,2, 100,200, 0, NULL)));
 
     world->setTarget(targetEntities, 0);
 
     targetEntities = new std::map<int, Entity*>;
-    targetEntities->insert(std::pair<const int, Entity*>(1, new Obstacle(50,120,0, 50,50, 30, NULL)));
-    targetEntities->insert(std::pair<const int, Entity*>(2, new Obstacle(60,30,0, 60,60, 200, NULL)));
-    targetEntities->insert(std::pair<const int, Entity*>(3, new Obstacle(300,250,0, 100,200, 0, NULL)));
+    targetEntities->insert(std::pair<const int, Entity*>(1, new Obstacle(50,120,1, 50,50, 30, NULL)));
+    targetEntities->insert(std::pair<const int, Entity*>(2, new Obstacle(60,30,1, 60,60, 200, NULL)));
+    targetEntities->insert(std::pair<const int, Entity*>(3, new Obstacle(300,250,2, 100,200, 0, NULL)));
 
     world->setTarget(targetEntities, 10000);
 
@@ -119,7 +125,7 @@ bool Game::start() {
     while (isRunning) {
         SDL_Event event;
         while (SDL_PollEvent(&event))
-            handleEvent(event);
+            handleEvent(&event);
         keyboardEvents();
 
         SDL_SetRenderDrawColor(renderer, WHITE_RGBA);
@@ -143,13 +149,13 @@ void Game::update() {
     camera->update();
 }
 
-void Game::handleEvent(SDL_Event event) {
-    bool quit_event = event.type == SDL_QUIT || event.key.keysym.sym == SDLK_ESCAPE ||
-        (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_CLOSE);
+void Game::handleEvent(SDL_Event* event) {
+    bool quit_event = event->type == SDL_QUIT || event->key.keysym.sym == SDLK_ESCAPE ||
+        (event->type == SDL_WINDOWEVENT && event->window.event == SDL_WINDOWEVENT_CLOSE);
 
     if (quit_event)
         stop();
-    switch (event.type) {
+    switch (event->type) {
     /*case SDL_KEYDOWN:
         switch (event.key.keysym.sym) {
         case SDLK_w:
@@ -186,6 +192,13 @@ void Game::handleEvent(SDL_Event event) {
         } else {
             SDL_GetMouseState(&mouseX, &mouseY);
             player->setRotation(getAngle(width/2, height/2, mouseX, mouseY));
+        }
+        break;
+    case SDL_MOUSEBUTTONDOWN:
+        switch (event->button.button) {
+        case SDL_BUTTON_LEFT:
+            player->shoot(world, textures[BULLET_TEXTURE_ID], textures[LIGHT_TRASSER_TEXTURE_ID], textures[STRAIGHT_TRASSER_TEXTURE_ID]);
+            break;
         }
         break;
     }

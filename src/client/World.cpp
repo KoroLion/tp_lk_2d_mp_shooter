@@ -1,12 +1,12 @@
 /*
 Copyright 2020 LioKor Team (KoroLion, SergTyapkin, altanab)
 */
-#include <iostream>
 #include <math.h>
 #include <map>
 
 #include "SDL.h"
 #include "include/World.hpp"
+#include "include/Animations.hpp"
 
 World::World(unsigned int _width, unsigned int _height, SDL_Texture* _bgTexture, SDL_Texture* _bgVignetteTexture):
     width(_width), height(_height), bgTexture(_bgTexture), bgVignetteTexture(_bgVignetteTexture) {
@@ -21,9 +21,8 @@ World::~World () {
 void World::addEntity(int id, Entity* entity) {
     entities.insert(std::pair<const int, Entity*>(id, entity));
 }
-
-void World::deleteEntity(int id) {
-    entities.erase(id);
+void World::addAnimation(Animation* animation) {
+    animations.push_back(animation);
 }
 
 void World::setTarget(std::map<int, Entity*>* _target, unsigned int _time) {
@@ -71,21 +70,33 @@ void World::render(SDL_Renderer *renderer, float baseX, float baseY, float cente
     }
     SDL_Rect render_rect {0, 0, (int)(width), (int)(height)};
     SDL_RenderCopy(renderer, bgVignetteTexture, NULL, &render_rect);
+
+    for (auto itr: animations) {
+        itr->render(renderer, baseX, baseY, centerRotation, centerX, centerY, angle);
+    }
+
     for (auto itr: entities) {
         itr.second->render(renderer, baseX, baseY, centerRotation, centerX, centerY, altitude, angle);
     }
 }
 
 void World::update(unsigned int time) {
+    for (auto itr = animations.begin(); itr != animations.end(); itr++) {
+        if (!(*itr)->update())
+            animations.erase(itr);
+    }
+
     auto targetEnd = (*target).end();
     auto lastTargetEnd = (*lastTarget).end();
     float percentage = ((float)(time-timeLastTarget))/((float)(timeTarget-timeLastTarget));
-    for (auto itr: entities) {
-        auto targetItr = (*target).find(itr.first);
-        auto lastTargetItr = (*lastTarget).find(itr.first);
+    for (auto itr = entities.begin(); itr != entities.end(); itr++) {
+        auto targetItr = (*target).find(itr->first);
+        auto lastTargetItr = (*lastTarget).find(itr->first);
         if (targetItr != targetEnd && lastTargetItr != lastTargetEnd)
-            itr.second->updateToTarget(lastTargetItr->second, targetItr->second, percentage);
-        itr.second->update();
+            itr->second->updateToTarget(lastTargetItr->second, targetItr->second, percentage);
+        else
+            if (!itr->second->update())
+                entities.erase(itr);
     }
 }
 

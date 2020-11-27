@@ -7,12 +7,14 @@ Copyright 2020 LioKor Team (KoroLion, SergTyapkin, altanab)
 
 #include <vector>
 
+class Entity;
+
 #include "SDL.h"
 #include "Equipments.hpp"
+#include "World.hpp"
 
 float getAngle(float centerX, float centerY, float x, float y);
-
-SDL_Texture* loadTexture(SDL_Texture* _texture);
+float distance(float x1, float y1, float x2, float y2);
 
 // 1st floor --------
 class Entity {
@@ -21,7 +23,7 @@ class Entity {
         x(_x), y(_y), z(_z), width(_width), height(_height), rotation(_rotation), texture(_texture) {;}
 
     virtual void render(SDL_Renderer *renderer, float baseX, float baseY, float centerRotation, float centerX, float centerY, float altitude, float angleX);
-    virtual void update() {;}
+    virtual bool update() {return true;}
     void updateToTarget(Entity* lastTarget, Entity* target, float percentage);
 
     virtual void moveAbsolute(float toForward, float toSide, float absoluteAngle = 0);
@@ -29,6 +31,8 @@ class Entity {
 
     float getX() {return x;}
     float getY() {return y;}
+    float getWidth() {return width;}
+    float getHeight() {return height;}
     float getRotation() {return rotation;}
     void setRotation(float _rotation) {rotation = _rotation;}
 
@@ -43,20 +47,42 @@ class Entity {
 class Player: public Entity {
  public:
     Player(float _x, float _y, float _z, float _width, float _height, float _rotation, SDL_Texture* _texture, float _speed):
-        Entity(_x, _y, _z, _width, _height, _rotation, _texture), speed(_speed) {
+        Entity(_x, _y, _z, _width, _height, _rotation, _texture), speed(_speed), bullets(0) {
     }
 
     virtual void render(SDL_Renderer *renderer, float baseX, float baseY, float centerRotation, float centerX, float centerY, float altitude, float angleX);
-    //virtual void update();
+    //virtual int update();
 
     void moveRelative(float addAngle);
+    virtual void shoot(World* world, SDL_Texture* bullet_texture, SDL_Texture* trasser_texture, SDL_Texture* small_trasser_texture);
 
     float getSpeed() {return speed;}
 
     ~Player() {;}
  protected:
     float speed;
+    int bullets;
     std::vector<Equipment*> equipment;
+};
+
+class Bullet: public Entity {
+ public:
+    Bullet(float _x, float _y, float _z, float _width, float _height, float _rotation, SDL_Texture* _texture, float _speed, float _damage, Player* _owner):
+        Entity(_x, _y, _z, _width, _height, _rotation, _texture), speed(_speed), damage(_damage), owner(_owner) {
+    }
+
+    void moveRelative(float addAngle);
+
+    virtual void render(SDL_Renderer *renderer, float baseX, float baseY, float centerRotation, float centerX, float centerY, float altitude, float angleX);
+    virtual bool update();
+
+    ~Bullet() {;}
+
+ protected:
+    float speed, damage;
+    Player* owner;
+    const float acceleration = 0.1;
+    const float minSpeed = 5;
 };
 
 class Technic: public Entity {
@@ -65,7 +91,7 @@ class Technic: public Entity {
         Entity(_x, _y, _z, _width, _height, _rotation, _texture), speed(_speed), capacity(_capacity) {;}
 
     //virtual void render(SDL_Renderer *renderer, float baseX, float baseY, float centerRotation, float centerX, float centerY);
-    //virtual void update();
+    //virtual int update();
 
     virtual ~Technic() {;}
 
@@ -80,7 +106,7 @@ class Object: public Entity {
         Entity(_x, _y, _z, _width, _height, _rotation, _texture) {;}
 
     //virtual void render(SDL_Renderer *renderer, float baseX, float baseY, float centerRotation, float centerX, float centerY);
-    //virtual void update();
+    //virtual int update();
 
     virtual ~Object() {;}
 
@@ -94,7 +120,7 @@ class Tank: public Technic {
         Technic(_x, _y, _z, _width, _height, _rotation, _texture, _speed, 1) {;}
 
     //virtual void render(SDL_Renderer *renderer, float baseX, float baseY, float centerRotation, float centerX, float centerY);
-    //virtual void update();
+    //virtual int update();
 
  protected:
 
@@ -106,7 +132,7 @@ class Machine: public Technic {
         Technic(_x, _y, _z, _width, _height, _rotation, _texture, _speed, 3) {;}
 
     //virtual void render(SDL_Renderer *renderer, float baseX, float baseY, float centerRotation, float centerX, float centerY);
-    //virtual void update();
+    //virtual int update();
 
  protected:
 
@@ -118,7 +144,7 @@ class Copter: public Technic {
         Technic(_x, _y, _z, _width, _height, _rotation, _texture, _speed, 2) {;}
 
     //virtual void render(SDL_Renderer *renderer, float baseX, float baseY, float centerRotation, float centerX, float centerY);
-    //virtual void update();
+    //virtual int update();
 
  protected:
 
@@ -131,7 +157,7 @@ class Obstacle: public Object {
         Object(_x, _y, _z, _width, _height, _rotation, _texture) {;}
 
     ////virtual void render(SDL_Renderer *renderer, float baseX, float baseY, float centerRotation, float centerX, float centerY);
-    //virtual void update();
+    //virtual int update();
 
     virtual ~Obstacle() {;}
  protected:
@@ -144,7 +170,7 @@ class Tree: public Object {
         Object(_x, _y, _z, _width, _height, _rotation, _texture) {;}
 
     //virtual void render(SDL_Renderer *renderer, float baseX, float baseY, float centerRotation, float centerX, float centerY);
-    //virtual void update();
+    //virtual int update();
 
  protected:
 
@@ -156,7 +182,7 @@ class House: public Object {
         Object(_x, _y, _z, _width, _height, _rotation, _texture) {;}
 
     //virtual void render(SDL_Renderer *renderer, float baseX, float baseY, float centerRotation, float centerX, float centerY);
-    //virtual void update();
+    //virtual int update();
 
  protected:
 

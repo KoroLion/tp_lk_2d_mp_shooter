@@ -1,7 +1,7 @@
 CC="C:\CodeBlocks\MinGW\bin\g++.exe"
 
-windows: main.o Game.o Entities.o World.o Equipments.o Camera.o  mockUDPClient.o
-	$(CC) -o build/client.exe main.o Game.o Entities.o World.o Equipments.o Camera.o  mockUDPClient.o \
+windows: main.o Game.o Entities.o World.o Equipments.o Camera.o Animations.o  mockUDPClient.o
+	$(CC) -o build/client.exe main.o Game.o Entities.o World.o Equipments.o Camera.o Animations.o  mockUDPClient.o \
 	-L"lib/x86_64-w64-mingw32/lib" -lmingw32 -lSDL2main -lSDL2 -mwindows \
     -L"lib/gmock-gtest/lib" -lgtest -lgtest_main -lgmock -lgmock_main -pthread
 
@@ -17,10 +17,10 @@ Equipments.o: Equipments.cpp
 	$(CC) -c -o Equipments.o Equipments.cpp -I"lib/x86_64-w64-mingw32/include/SDL2"
 Camera.o: Camera.cpp
 	$(CC) -c -o Camera.o Camera.cpp -I"lib/x86_64-w64-mingw32/include/SDL2"
-#Colors.o: Colors.cpp
-#	$(CC) -c -o Colors.o Colors.cpp
 mockUDPClient.o: mockUDPClient.cpp
 	$(CC) -c -o mockUDPClient.o mockUDPClient.cpp -I"lib/gmock-gtest/include" -I"lib/x86_64-w64-mingw32/include/SDL2"
+Animations.o: Animations.cpp
+	$(CC) -c -o Animations.o Animations.cpp -I"lib/x86_64-w64-mingw32/include/SDL2"
 
 macos:
 	g++ -c -o main.o main.cpp "-I/Library/Frameworks/SDL2.framework/Headers"

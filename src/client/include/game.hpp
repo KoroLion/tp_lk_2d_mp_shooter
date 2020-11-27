@@ -29,7 +29,7 @@ class Game {
     SDL_Window *window;
     SDL_Renderer *renderer;
 
-    void handleEvent(SDL_Event);
+    void handleEvent(SDL_Event*);
     void keyboardEvents();
     void update();
     void render();

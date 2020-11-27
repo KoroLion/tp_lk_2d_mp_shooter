@@ -2,20 +2,20 @@
 Copyright 2020 LioKor Team (KoroLion, SergTyapkin, altanab)
 */
 
-#include <iostream>
 #include <math.h>
 
 #include "SDL.h"
 #include "include/Entities.hpp"
 #include "include/Colors.hpp"
-
+#include "include/Animations.hpp"
+#include "include/World.hpp"
 
 bool isIntersect (float x11,float y11, float x12,float y12, float x21,float y21, float x22,float y22) {
     float x1 = x12-x11;
     float y1 = y12-y11;
     float x2 = x21-x22;
     float y2 = y21-y22;
-    //считаем уравнения прямых проходящих через отрезки
+
     float a1 = -y1;
     float b1 = +x1;
     float d1 = -(a1*x11 + b1*y11);
@@ -24,14 +24,12 @@ bool isIntersect (float x11,float y11, float x12,float y12, float x21,float y21,
     float b2 = +x2;
     float d2 = -(a2*x21 + b2*y21);
 
-    //подставляем концы отрезков, для выяснения в каких полуплоскотях они
     float seg1_line2_start = a2*x11 + b2*y11 + d2;
     float seg1_line2_end = a2*x12 + b2*y12 + d2;
 
     float seg2_line1_start = a1*x21 + b1*y21 + d1;
     float seg2_line1_end = a1*x22 + b1*y22 + d1;
 
-    //если концы одного отрезка имеют один знак, значит он в одной полуплоскости и пересечения нет.
     if (seg1_line2_start * seg1_line2_end >= 0 || seg2_line1_start * seg2_line1_end >= 0)
         return false;
     return true;
@@ -87,7 +85,7 @@ void drawLine(SDL_Renderer* renderer, float x1, float y1, float x2, float y2, in
     }
 }*/
 void renderAsHorizontalTrapeze(SDL_Renderer *renderer, SDL_Texture* texture, float anchorX, float anchorY, float width, float height,
-                               float rotation, float leftRotation, float rightRotation, float patterns,
+                               float rotation, float leftRotation, float rightRotation, const float patterns,
                                Uint8 r_highlite, Uint8 g_highlite, Uint8 b_highlite, int highliteHeight, float highliteVal) {
     highliteVal = 1 - highliteVal;
     int texture_w, texture_h;
@@ -124,7 +122,7 @@ void renderAsHorizontalTrapeze(SDL_Renderer *renderer, SDL_Texture* texture, flo
 }
 
 void renderAsVerticalTrapeze(SDL_Renderer *renderer, SDL_Texture* texture, float anchorX, float anchorY, float height, float width,
-                             float rotation, float leftRotation, float rightRotation, float patterns,
+                             float rotation, float leftRotation, float rightRotation, const float patterns,
                              Uint8 r_highlite, Uint8 g_highlite, Uint8 b_highlite, int highliteHeight, float highliteVal) {
     highliteVal = 1 - highliteVal;
     int texture_w, texture_h;
@@ -232,8 +230,8 @@ void Entity::render(SDL_Renderer *renderer, float baseX, float baseY, float cent
 void Entity::updateToTarget(Entity* lastTarget, Entity* target, float percentage) {
     x = (target->x - lastTarget->x)*percentage + lastTarget->x;
     y = (target->y - lastTarget->y)*percentage + lastTarget->y;
+    z = (target->z - lastTarget->z)*percentage + lastTarget->z;
     rotation = (target->rotation - lastTarget->rotation)*percentage + lastTarget->rotation;
-
     width = (target->width - lastTarget->width)*percentage + lastTarget->width;
     height = (target->height - lastTarget->height)*percentage + lastTarget->height;
 }
@@ -267,6 +265,50 @@ void Player::render(SDL_Renderer *renderer, float baseX, float baseY, float cent
 }
 
 void Player::moveRelative(float addAngle) {
+    x += speed * cos((addAngle + rotation)/180*M_PI);
+    y += speed * sin((addAngle + rotation)/180*M_PI);
+}
+
+void Player::shoot(World* world, SDL_Texture* bullet_texture, SDL_Texture* trasser_texture, SDL_Texture* small_trasser_texture) {
+    bullets++;
+    Entity* ent;
+    world->addEntity(10+bullets*3+0, ent = new Bullet(x, y, z, 15, 10, rotation, bullet_texture, 12, 100, this));
+    world->addAnimation(new LightTrasser(ent, x, y, 12, rotation, trasser_texture));
+
+    world->addEntity(10+bullets*3+1, ent = new Bullet(x, y, z, 10, 5, rotation-10, bullet_texture, 8, 100, this));
+    //world->addAnimation(new LightTrasser(ent, x, y, 8, rotation-10, small_trasser_texture));
+    world->addEntity(10+bullets*3+2, ent = new Bullet(x, y, z, 10, 5, rotation+10, bullet_texture, 8, 100, this));
+    //world->addAnimation(new LightTrasser(ent, x, y, 8, rotation+10, small_trasser_texture));
+}
+
+void Bullet::render(SDL_Renderer *renderer, float baseX, float baseY, float centerRotation, float centerX, float centerY, float altitude, float angleX) {
+    if (texture == NULL)
+        return;
+    float radAngle = -centerRotation/180*M_PI;
+    float difX = x - centerX;
+    float difY = y - centerY;
+    float resX = difX*cos(radAngle) - difY*sin(radAngle);
+    float resY = difX*sin(radAngle) + difY*cos(radAngle);
+    centerX -= baseX;
+    centerY -= baseY;
+    resX += centerX;
+    resY += centerY;
+
+    centerRotation = rotation - centerRotation; // now it's absolute rotation
+
+    SDL_Rect render_rect {(int)(resX - width/2), (int)(resY - height/2), (int)(width), (int)(height)};
+    SDL_RenderCopyEx(renderer, texture, NULL, &render_rect, centerRotation, NULL, SDL_FLIP_NONE);
+}
+
+bool Bullet::update() {
+    moveRelative(0);
+    speed -= acceleration;
+    if (speed < minSpeed)
+        return false;
+    return true;
+}
+
+void Bullet::moveRelative(float addAngle) {
     x += speed * cos((addAngle + rotation)/180*M_PI);
     y += speed * sin((addAngle + rotation)/180*M_PI);
 }
