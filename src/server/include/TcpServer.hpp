@@ -12,11 +12,7 @@
 
 #include "Packet.hpp"
 
-//----------------------------------------------------------------------
-
 typedef std::deque<Packet> Packet_queue;
-
-//----------------------------------------------------------------------
 
 class Session {
  public:
@@ -25,8 +21,6 @@ class Session {
 };
 
 typedef std::shared_ptr<Session> PSession;
-
-//----------------------------------------------------------------------
 
 class Room {
  private:
@@ -37,12 +31,8 @@ class Room {
     void deliver(const Packet& msg);
 };
 
-//----------------------------------------------------------------------
-
-class PlayerSession
-  : public Session,
-    public std::enable_shared_from_this<PlayerSession>
-{
+class PlayerSession: public Session,
+                     public std::enable_shared_from_this<PlayerSession> {
 private:
     unsigned _uid;
     boost::asio::ip::tcp::socket _socket;
@@ -53,9 +43,7 @@ public:
     PlayerSession(unsigned uid, boost::asio::io_service& io_service, Room& room)
     : _uid(uid),
       _socket(io_service),
-      _room(room)
-    {
-    }
+      _room(room) {}
 
     unsigned getUid() const {
         return _uid;
@@ -73,8 +61,6 @@ public:
     void handle_read_body(const boost::system::error_code& error);
     void handle_write(const boost::system::error_code& error);
 };
-
-//----------------------------------------------------------------------
 
 class TcpServer {
  private:
