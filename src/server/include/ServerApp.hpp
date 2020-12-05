@@ -1,33 +1,74 @@
 #ifndef SRC_INCLUDE_SERVERAPP_HPP_
 #define SRC_INCLUDE_SERVERAPP_HPP_
 
+#include <iostream>
+
 #include <vector>
 #include <string>
 #include <thread>
 
-#include "GameServer.hpp"
+#include "utils.hpp"
+#include "World.hpp"
+#include "TcpServer.hpp"
 
 class ServerApp {
  private:
-    std::shared_ptr<World> w;
-    std::unique_ptr<GameServer> gs;
+    bool running = true;
 
-    std::thread gs_thread;
-    std::thread w_thread;
+    std::shared_ptr<World> world;
+    std::unique_ptr<TcpServer> net_server;
+
+    std::thread net_handle_thread;
+    std::thread net_notify_thread;
+    std::thread game_world_thread;
  public:
     ServerApp(std::string bind_addr, int port) {
-        w = std::make_shared<World>();
-        gs = std::make_unique<GameServer>(bind_addr, port, w);
+        world = std::make_shared<World>();
+        net_server = std::make_unique<TcpServer>(port);
     }
     ~ServerApp() {
     }
-    void gs_serve() {
-        gs->start();
+
+    void net_handle() {
+        net_server->start();
+    }
+
+    void net_notify() {
+        while (!net_server->is_running()) {}  // waiting for server to start
+        while (net_server->is_running()) {
+            // std::cout << "Notifying clients..." << std::endl;
+            net_server->send_all("WOLF");
+            sleep_ms(1000);
+        }
+    }
+
+    void game_world() {
+    }
+
+    void handle_cmd() {
+        std::string command;
+        while (this->running) {
+            std::cin >> command;
+            if (command == "stop") {
+                std::cout << "Stopping network..." << std::endl;
+                net_server->stop();
+
+                std::cout << "Stopping server..." << std::endl;
+                running = false;
+            }
+        }
     }
 
     int start() {
-        gs_thread = std::thread(&ServerApp::gs_serve, this);
-        gs_thread.join();
+        net_handle_thread = std::thread(&ServerApp::net_handle, this);
+        net_notify_thread = std::thread(&ServerApp::net_notify, this);
+        game_world_thread = std::thread(&ServerApp::game_world, this);
+
+        handle_cmd();
+
+        net_handle_thread.join();
+        net_notify_thread.join();
+        game_world_thread.join();
 
         return 0;
     }
