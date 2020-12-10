@@ -13,6 +13,7 @@ public:
            float _hp,
            float _width,
            float _height,
+           unsigned int _owner,
            float _speed,
            float _damage,
            float _acceleration,
@@ -24,11 +25,13 @@ public:
     Type getType() override ;
 
     float getDamage() override ;
+    unsigned int getOwner() override ;
 
 private:
     float speed;
     float damage;
     float acceleration;
     float minSpeed;
+    unsigned int owner;
 };
 #endif //TP_LK_2D_MP_SHOOTER_BULLET_H

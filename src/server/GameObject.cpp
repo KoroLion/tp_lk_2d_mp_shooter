@@ -118,3 +118,15 @@ Coordinates GameObject::minCoord() {
 Coordinates GameObject::maxCoord() {
     return Coordinates(this->coordinates.x + (width / 2), this->coordinates.y + (height / 2));
 }
+
+float GameObject::getX() {
+    return this->coordinates.x;
+}
+
+float GameObject::getY() {
+    return this->coordinates.y;
+}
+
+unsigned int GameObject::getOwner() {
+    return this->id;
+}

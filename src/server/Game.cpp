@@ -73,6 +73,7 @@ void Game::updateObject(unsigned int _id, Command _command, int args){
                     defaults->defaults_bullet.at("hp"),
                     defaults->defaults_bullet.at("width"),
                     defaults->defaults_bullet.at("height"),
+                    _id,
                     defaults->defaults_bullet.at("speed"),
                     defaults->defaults_bullet.at("damage"),
                     defaults->defaults_bullet.at("acceleration"),

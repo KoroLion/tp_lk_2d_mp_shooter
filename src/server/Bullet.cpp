@@ -9,10 +9,12 @@ Bullet::Bullet(unsigned int _id,
                float _hp,
                float _width,
                float _height,
+               unsigned int _owner,
                float _speed,
                float _damage,
                float _acceleration,
                float _minSpeed) : GameObject(_id, _coord, _type, _time, _direction, _angle, _hp, _width, _height) {
+    this->owner = _owner;
     this->damage = _damage;
     this->acceleration = _acceleration;
     this->minSpeed = _minSpeed;
@@ -44,8 +46,8 @@ bool Bullet::update(std::chrono::time_point<std::chrono::steady_clock> _time) {
         break;
     }
     Coordinates coord = this->getCoordinates();
-    coord.x += deltaCoord * std::cos(curAngle);
-    coord.y += deltaCoord * std::sin(curAngle);
+    coord.x += deltaCoord * std::sin(curAngle);
+    coord.y += deltaCoord * std::cos(curAngle);
     this->setCoordinates(coord);
     return true;
 }
@@ -60,4 +62,8 @@ void Bullet::reverseUpdate() {
 
 float Bullet::getDamage() {
     return this->damage;
+}
+
+unsigned int Bullet::getOwner() {
+    return this->owner;
 }

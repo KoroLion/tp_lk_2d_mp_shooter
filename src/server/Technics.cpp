@@ -40,8 +40,8 @@ bool Technics::update(std::chrono::time_point<std::chrono::steady_clock> _time) 
             break;
     }
     Coordinates coord = this->getCoordinates();
-    coord.x += deltaCoord * std::cos(curAngle);
-    coord.y += deltaCoord * std::sin(curAngle);
+    coord.x += deltaCoord * std::sin(curAngle);
+    coord.y += deltaCoord * std::cos(curAngle);
     this->setCoordinates(coord);
     return true;
 }

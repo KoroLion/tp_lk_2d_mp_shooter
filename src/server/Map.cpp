@@ -98,6 +98,8 @@ void Map::checkCollisions(){
 
 //resolve collision for two objects with ids: _id1 and _id2
 void Map::resolveCollision(std::shared_ptr<GameObject> a, std::shared_ptr<GameObject> b){
+    if (a->getOwner() == b->getId() || a->getId() == b->getOwner())
+        return;
     a->reverseUpdate();
     b->reverseUpdate();
     a->reduceHp(b->getDamage());

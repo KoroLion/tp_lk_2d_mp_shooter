@@ -51,6 +51,8 @@ public:
 
     Coordinates getCoordinates();
     void setCoordinates(Coordinates _coordinates);
+    float getX();
+    float getY();
 
     std::chrono::time_point<std::chrono::steady_clock> getTime();
     void setTime(std::chrono::time_point<std::chrono::steady_clock> _time);
@@ -74,6 +76,7 @@ public:
     virtual float getDamage();
     virtual void reload(unsigned int _bullets);
     virtual bool shoot();
+    virtual unsigned int getOwner();
 private:
     unsigned int id;
     Coordinates coordinates;
