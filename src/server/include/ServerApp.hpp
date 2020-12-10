@@ -15,7 +15,7 @@ class ServerApp {
  private:
     bool running = true;
 
-    std::shared_ptr<World> world;
+    std::unique_ptr<World> world;
     std::unique_ptr<TcpServer> net_server;
 
     std::thread net_handle_thread;
@@ -23,7 +23,7 @@ class ServerApp {
     std::thread game_world_thread;
  public:
     ServerApp(std::string bind_addr, int port) {
-        world = std::make_shared<World>();
+        world = std::make_unique<World>();
         net_server = std::make_unique<TcpServer>(port);
     }
     ~ServerApp() {
@@ -36,13 +36,15 @@ class ServerApp {
     void net_notify() {
         while (!net_server->is_running()) {}  // waiting for server to start
         while (net_server->is_running()) {
-            // std::cout << "Notifying clients..." << std::endl;
-            net_server->send_all("WOLF");
+            // std::string data = to_json(world->get_objects());
+            std::string data = "WOLF";
+            net_server->send_all(data);
             sleep_ms(1000);
         }
     }
 
     void game_world() {
+        // world->start();
     }
 
     void handle_cmd() {
@@ -52,6 +54,7 @@ class ServerApp {
             if (command == "stop") {
                 std::cout << "Stopping network..." << std::endl;
                 net_server->stop();
+                // world->stop();
 
                 std::cout << "Stopping server..." << std::endl;
                 running = false;

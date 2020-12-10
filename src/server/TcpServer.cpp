@@ -11,21 +11,20 @@
 #include "include/Packet.hpp"
 #include "include/TcpServer.hpp"
 
-void Room::join(PSession participant) {
-    _participants.insert(participant);
+void Room::join(PSession player) {
+    _players.insert(player);
 }
 
-void Room::leave(PSession participant) {
-    _participants.erase(participant);
-    std::cout << "Chat particapant left!" << std::endl;
+void Room::leave(PSession player) {
+    _players.erase(player);
 }
 
-void Room::deliver(const Packet& msg) {
+void Room::send_all(const Packet& packet) {
     std::for_each(
-        _participants.begin(),
-        _participants.end(),
-        [msg](auto p) {
-            p->deliver(msg);
+        _players.begin(),
+        _players.end(),
+        [packet](auto player) {
+            player->send(packet);
         }
     );
 }
@@ -55,11 +54,10 @@ void PlayerSession::write_next_msg(const Packet msg) {
 }
 
 void PlayerSession::start() {
-    _room.join(shared_from_this());  // adds current user to the room
     read_next_msg();
 }
 
-void PlayerSession::deliver(const Packet& msg) {
+void PlayerSession::send(const Packet& msg) {
     bool write_in_progress = !_write_msgs.empty();
     _write_msgs.push_back(msg);
     if (!write_in_progress) {
@@ -86,7 +84,7 @@ void PlayerSession::handle_read_header(const boost::system::error_code& error) {
 void PlayerSession::handle_read_body(const boost::system::error_code& error) {
     if (!error) {
         std::cout << "Received: " << _read_msg.get_as_string() << std::endl;
-        _room.deliver(_read_msg);
+        _room.send_all(_read_msg);
         read_next_msg();
     } else {
         _room.leave(shared_from_this());
@@ -140,6 +138,6 @@ void TcpServer::handle_accept(std::shared_ptr<PlayerSession> session, const boos
 }
 
 void TcpServer::send_all(std::string data) {
-    Packet msg(data);
-    _room.deliver(msg);
+    Packet packet(data);
+    _room.send_all(packet);
 }
