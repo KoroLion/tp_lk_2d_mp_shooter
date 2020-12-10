@@ -15,9 +15,16 @@ class GameObject {
     float x, y;
 
     GameObject(int x, int y): x(x), y(y) {}
+    virtual ~GameObject() {}
 
     virtual void render(SDL_Renderer *renderer) {}
     virtual void update() {}
+};
+
+class SmallRect: public GameObject {
+ public:
+    SmallRect(int x, int y): GameObject(x, y) {}
+    virtual void render(SDL_Renderer *renderer);
 };
 
 class MovingRect: public GameObject {

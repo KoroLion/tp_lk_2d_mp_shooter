@@ -5,13 +5,19 @@ Copyright 2020 LioKor Team (KoroLion, SergTyapkin, altanab, biotyree)
 #include "SDL.h"
 #include "include/game_objects.hpp"
 
+void SmallRect::render(SDL_Renderer *renderer) {
+    // Drawing green rect with black border
+    SDL_Rect r{(int)this->x, (int)this->y, 32, 32};
+
+    SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);  // rgba
+    SDL_RenderFillRect(renderer, &r);
+    SDL_SetRenderDrawColor(renderer, 32, 32, 32, 255);
+    SDL_RenderDrawRect(renderer, &r);
+}
+
 void MovingRect::render(SDL_Renderer *renderer) {
     // Drawing green rect with black border
-    SDL_Rect r;
-    r.x = this->x;
-    r.y = this->y;
-    r.w = this->width;
-    r.h = this->height;
+    SDL_Rect r{(int)this->x, (int)this->y, this->width, this->height};
 
     SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);  // rgba
     SDL_RenderFillRect(renderer, &r);
