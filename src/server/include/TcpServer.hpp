@@ -5,6 +5,7 @@
 #include <deque>
 #include <list>
 #include <set>
+#include <functional>
 
 #include <thread>
 
@@ -26,6 +27,7 @@ class Room {
  public:
     void join(PSession player);
     void leave(PSession player);
+    int get_players_amount();
     void send_all(const Packet& msg);
 };
 
@@ -63,14 +65,15 @@ public:
 class TcpServer {
  private:
     unsigned _free_uid = 1;
-    std::set<PSession> _players;
     boost::asio::io_service _io_service;
-    std::unique_ptr<boost::asio::ip::tcp::acceptor> _p_acceptor;
+    boost::asio::ip::tcp::acceptor _acceptor;
+    std::function<void(int, std::string)> read_callback;
     Room _room;
  public:
     TcpServer(int port);
 
-    void start() {
+    void start(std::function<void(int, std::string)> read_callback) {
+        this->read_callback = read_callback;
         _io_service.run();
     }
     void stop() {
@@ -78,6 +81,9 @@ class TcpServer {
     }
     bool is_running() {
         return !_io_service.stopped();
+    }
+    int get_players_amount() {
+        return _room.get_players_amount();
     }
     void start_accept();
     void handle_accept(std::shared_ptr<PlayerSession> session, const boost::system::error_code& error);

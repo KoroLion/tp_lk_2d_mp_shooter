@@ -49,19 +49,34 @@ class ServerApp {
     ~ServerApp() {
     }
 
+    void net_handle_callback(int uid, std::string data) {
+        std::cout << uid << ": " << data << std::endl;
+    }
+
     void net_handle() {
-        net_server->start();
+        net_server->start(std::bind(
+            &ServerApp::net_handle_callback,
+            this,
+            std::placeholders::_1,
+            std::placeholders::_2
+        ));
     }
 
     void net_notify() {
-        while (!net_server->is_running()) {}  // waiting for server to start
+        while (!net_server->is_running()) {
+            sleep_ms(50);
+        }  // waiting for server to start
+
         while (net_server->is_running()) {
-            const std::vector<GameObject>& game_objects = world->get_game_objects(1);
+            if (net_server->get_players_amount()) {
+                // todo: check for race condition!!!
+                const std::vector<GameObject>& game_objects = world->get_game_objects(1);
 
-            std::string data = game_objects_to_json(game_objects);
+                std::string data = game_objects_to_json(game_objects);
 
-            std::cout << data << std::endl;
-            net_server->send_all(data);
+                std::cout << data << std::endl;
+                net_server->send_all(data);
+            }
             sleep_ms(1000);
         }
     }
@@ -74,17 +89,26 @@ class ServerApp {
         std::string command;
         while (this->running) {
             std::cin >> command;
+            // todo: improve command parsing
             if (command == "stop") {
-                std::cout << "Stopping network..." << std::endl;
-                net_server->stop();
-                world->stop();
-
-                std::cout << "Stopping server..." << std::endl;
-                running = false;
+                std::cout << "Shutting down server..." << std::endl;
+                stop();
+            } else if (command == "online") {
+                std::cout << net_server->get_players_amount() << " players are online." << std::endl;
             } else {
                 std::cout << "Unknown command!" << std::endl;
             }
         }
+    }
+
+    void stop() {
+        std::cout << "Stopping network..." << std::endl;
+        net_server->stop();
+
+        std::cout << "Stopping world..." << std::endl;
+        world->stop();
+
+        running = false;
     }
 
     int start() {

@@ -19,6 +19,10 @@ void Room::leave(PSession player) {
     _players.erase(player);
 }
 
+int Room::get_players_amount() {
+    return _players.size();
+}
+
 void Room::send_all(const Packet& packet) {
     std::for_each(
         _players.begin(),
@@ -104,11 +108,9 @@ void PlayerSession::handle_write(const boost::system::error_code& error) {
 
 // ------
 
-TcpServer::TcpServer(int port) {
-    boost::asio::ip::tcp::endpoint endpoint(boost::asio::ip::tcp::v4(), port);
-    _p_acceptor = std::unique_ptr<boost::asio::ip::tcp::acceptor>(
-        new boost::asio::ip::tcp::acceptor(_io_service, endpoint)
-    );
+TcpServer::TcpServer(int port): _acceptor(
+        _io_service,
+        boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), port)) {
     start_accept();
 }
 
@@ -118,7 +120,7 @@ void TcpServer::start_accept() {
         new PlayerSession(_free_uid, _io_service, _room)
     );
     _free_uid++;
-    _p_acceptor->async_accept(
+    _acceptor.async_accept(
         new_session->socket(),
         std::bind(
             &TcpServer::handle_accept,
