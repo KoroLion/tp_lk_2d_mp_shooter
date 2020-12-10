@@ -4,22 +4,30 @@
 #include "GameObject.hpp"
 class Bullet : public GameObject{
 public:
-    Bullet(int, unsigned int, unsigned int);
+    Bullet(unsigned int _id,
+           Coordinates _coord,
+           Type _type,
+           std::chrono::time_point<std::chrono::steady_clock> _time,
+           MoveDirection _direction,
+           float _angle,
+           float _hp,
+           float _width,
+           float _height,
+           float _damage,
+           float _acceleration,
+           float _minSpeed);
     ~Bullet();
 
-    void update(unsigned int _time) override;
-    int getType() override ;
+    void update(std::chrono::time_point<std::chrono::steady_clock> _time) override;
+    void reverseUpdate() override;
+    Type getType() override ;
 
-    int getAngle();
-    unsigned int getSpeed();
-    unsigned int getDamage();
+    float getDamage() override ;
 
-    void setAngle(int);
-    void setSpeed(unsigned int);
-    void setDamage(unsigned int);
 private:
-    int angle;
-    unsigned int speed;
-    unsigned int damage;
+    float speed;
+    float damage;
+    float acceleration;
+    float minSpeed;
 };
 #endif //TP_LK_2D_MP_SHOOTER_BULLET_H

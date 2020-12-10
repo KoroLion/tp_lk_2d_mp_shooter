@@ -13,18 +13,23 @@ public:
     void startGame();
     void endGame();
 
+    bool isRunning();
+
     //called by GameServer for each event
     void addEvent(unsigned int _id, Command _command, int args);
 
     //called by GameServer and returns all objects, which object with id == _id can see
-    std::vector<GameObject *> getObjects(unsigned int _id);
+    std::vector<std::shared_ptr<GameObject>> getObjects(unsigned int _id);
 
-    void createPlayer();
-    void disconnectPlayer();
+    unsigned int createPlayer(float x, float y);
+    void disconnectPlayer(unsigned int _id);
 private:
-    void processEvents();
+    void handleEvents();
 
-    Game *game;
+    std::shared_ptr<Game> game;
     std::queue<Event> events;
+
+    std::thread eventsThread;
+    std::mutex mutex;
 };
 #endif //TP_LK_2D_MP_SHOOTER_SERVERWORLD_H

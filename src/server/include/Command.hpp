@@ -9,6 +9,7 @@ enum Command{
     COMMAND_RELOAD,
     COMMAND_SHOOT
 };
+
 #define TP_LK_2D_MP_SHOOTER_COMMAND_H
 
 #endif //TP_LK_2D_MP_SHOOTER_COMMAND_H

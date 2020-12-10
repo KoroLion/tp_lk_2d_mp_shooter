@@ -1,11 +1,10 @@
-#ifndef TP_LK_2D_MP_SHOOTER_PLAYER_H
-#define TP_LK_2D_MP_SHOOTER_PLAYER_H
+#ifndef TP_LK_2D_MP_SHOOTER_TECHNICS_H
+#define TP_LK_2D_MP_SHOOTER_TECHNICS_H
 
 #include "GameObject.hpp"
-
-class Player : public GameObject {
+class Technics : public GameObject{
 public:
-    Player(unsigned int _id,
+    Technics(unsigned int _id,
             Coordinates _coord,
             Type _type,
             std::chrono::time_point<std::chrono::steady_clock> _time,
@@ -15,13 +14,13 @@ public:
             float _width,
             float _height,
             float _speed,
-            unsigned int _bullets);
-    ~Player();
+            unsigned int _capacity);
+    ~Technics();
 
     void update(std::chrono::time_point<std::chrono::steady_clock> _time) override;
     Type getType() override ;
 private:
     float speed;
-    float bullets;
+    unsigned int capacity;
 };
-#endif //TP_LK_2D_MP_SHOOTER_PLAYER_H
+#endif //TP_LK_2D_MP_SHOOTER_TECHNICS_H

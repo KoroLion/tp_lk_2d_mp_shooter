@@ -4,23 +4,19 @@
 #include "GameObject.hpp"
 class Obstacle : public GameObject{
 public:
-    Obstacle();
-    Obstacle(unsigned int _width, unsigned int _height, int _angle);
+    Obstacle(unsigned int _id,
+             Coordinates coord,
+             Type _type,
+             std::chrono::time_point<std::chrono::steady_clock> _time,
+             MoveDirection _direction,
+             float _angle,
+             float _hp,
+             float _width,
+             float _height);
     ~Obstacle();
 
-    void update(unsigned int _time) override;
-    int getType() override ;
+    Type getType() override ;
 
-    unsigned int getWidth();
-    unsigned int getHeight();
-    int getAngle();
-
-    void setWidth(unsigned int);
-    void setHeight(unsigned int);
-    void setAngle(int);
-private:
-    unsigned int width;
-    unsigned int height;
-    int angle;
+    float getHp() override;
 };
 #endif //TP_LK_2D_MP_SHOOTER_OBSTACLE_H

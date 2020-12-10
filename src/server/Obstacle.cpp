@@ -1,40 +1,24 @@
 #include "Obstacle.hpp"
 
-Obstacle::Obstacle(){
 
-}
-Obstacle::Obstacle(unsigned int _width, unsigned int _height, int _angle){
-    this->width = _width;
-    this->height = _height;
-    this->angle = _angle;
-}
-Obstacle::~Obstacle(){
+Obstacle::Obstacle(unsigned int _id,
+                   Coordinates _coord,
+                   Type _type,
+                   std::chrono::time_point<std::chrono::steady_clock> _time,
+                   MoveDirection _direction,
+                   float _angle,
+                   float _hp,
+                   float _width,
+                   float _height
+                   ) : GameObject(_id, _coord, _type, _time, _direction, _angle, _hp, _width, _height) {}
 
-}
+Obstacle::~Obstacle() {}
 
-void Obstacle::update(unsigned int _time) override{
-
-}
-int Obstacle::getType() override {
-
-}
-
-unsigned int Obstacle::getWidth(){
-    return this->width;
-}
-unsigned int Obstacle::getHeight(){
-    return this->height;
-}
-int Obstacle::getAngle(){
-    return this->angle;
+Type Obstacle::getType(){
+    return OBSTACLE;
 }
 
-void Obstacle::setWidth(unsigned int _width){
-    this->width = _width;
-}
-void Obstacle::setHeight(unsigned int _height){
-    this->height = _height;
-}
-void Obstacle::setAngle(int _angle){
-    this->angle = _angle;
+float Obstacle::getHp(){
+    this->setHp(1);
+    return 1;
 }

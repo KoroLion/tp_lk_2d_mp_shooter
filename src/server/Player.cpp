@@ -1,55 +1,52 @@
 #include "Player.hpp"
 
-Player::Player(){
+#ifndef M_PI
+#define M_PI (3.14159265358979323846)
+#endif
 
-}
-
-Player::Player(int _radius, int _angle, unsigned int _speed, unsigned int _hp, unsigned int _damage){
-        this->radius = _radius;
-        this->angle = _angle;
-        this->speed = _speed;
-        this->hp = _hp;
-        this->damage = _damage;
-}
-
-Player::~Player(){
-
-}
-
-void Player::update(unsigned int _time) override{
-
-}
-int Player::getType() override {
-}
-
-int Player::getRadius(){
-    return this->radius;
-}
-int Player::getAngle(){
-    return this->angle;
-}
-unsigned int Player::getSpeed(){
-    return this->speed;
-}
-unsigned int Player::getHp(){
-    return this->hp;
-}
-unsigned int Player::getDamage(){
-    return this->damage;
-}
-
-void Player::setRadius(int _radius){
-    this->radius = _radius;
-}
-void Player::setAngle(int _angle){
-    this->angle = _angle;
-}
-void Player::setSpeed(unsigned int _speed){
+Player::Player(unsigned int _id,
+               Coordinates _coord,
+               Type _type,
+               std::chrono::time_point<std::chrono::steady_clock> _time,
+               MoveDirection _direction,
+               float _angle,
+               float _hp,
+               float _width,
+               float _height,
+               float _speed,
+               unsigned int _bullets) :
+               GameObject(_id, _coord, _type, _time, _direction, _angle, _hp, _width, _height) {
     this->speed = _speed;
+    this->bullets = _bullets;
 }
-void Player::setHp(unsigned int _hp){
-    this->hp = _hp;
+
+Player::~Player() {}
+
+void Player::update(std::chrono::time_point<std::chrono::steady_clock> _time){
+    std::chrono::duration<float> deltaTime = _time - this->getTime();
+    this->setTime(_time);
+    if (this->getDirection() == NO_MOVE)
+        return;
+    GameObject::update(_time);
+    float deltaCoord = deltaTime.count() * this->speed;
+    float curAngle = this->getAngle();
+    switch (this->getDirection()) {
+        case BACK :
+            curAngle += 180;
+            break;
+        case RIGHT :
+            curAngle += 90;
+            break;
+        case LEFT :
+            curAngle -= 90;
+            break;
+    }
+    Coordinates coord = this->getCoordinates();
+    coord.x += deltaCoord * std::sin(curAngle);
+    coord.y += deltaCoord * std::cos(curAngle);
+    this->setCoordinates(coord);
 }
-void Player::setDamage(unsigned int _damage){
-    this->damage = _damage;
+
+Type Player::getType() {
+    return PLAYER;
 }

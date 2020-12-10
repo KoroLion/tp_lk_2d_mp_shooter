@@ -4,36 +4,47 @@
 #include <map>
 #include <vector>
 #include "GameObject.hpp"
+#include "Player.hpp"
+#include "Bullet.hpp"
+#include "Obstacle.hpp"
+#include "Technics.hpp"
 #include "Command.hpp"
 
 class Map{
 public:
     Map();
-    Map(unsigned int _height, unsigned int _width, std::map<unsigned int, GameObject *> _objects);
+    Map(float _height, float _width);
     ~Map();
 
-    void addObjects(std::map<unsigned int, GameObject *>);
-    void updateObjects(unsigned int _time);
-    void updateObject(unsigned int _id, Command _command, unsigned int _arg);
-    void deleteObject(unsigned int _id);
+    void updateObjects(std::chrono::time_point<std::chrono::steady_clock> _time);
 
-    GameObject *getObject(unsigned int _id);
+    void setObjectDirection(unsigned int _id, MoveDirection direction, std::chrono::time_point<std::chrono::steady_clock> _time);
+    void stopObject(unsigned int _id, std::chrono::time_point<std::chrono::steady_clock> _time);
+    void turnObject(unsigned int _id, float angle, std::chrono::time_point<std::chrono::steady_clock> _time);
+    void reload(unsigned int _id, std::chrono::time_point<std::chrono::steady_clock> _time);
+
+    void shoot(unsigned int _id, std::shared_ptr<GameObject> _bullet);
+
+    unsigned int addObject(std::shared_ptr<GameObject> _object);
+
+    void removeObject(unsigned int _id);
+
+    std::shared_ptr<GameObject> getObject(unsigned int _id);
 
     //returns all objects, which object with id == _id can see
-    std::vector<GameObject *> getObjects(unsigned int _id);
+    std::vector<std::shared_ptr<GameObject>> getObjects(unsigned int _id);
 
     //checks collision for all obejcts
-    void checkCollisions(unsigned int _time);
+    void checkCollisions();
 
 private:
-    //checks collision for object with id == _id with other objects
-    void collision(unsigned int _id);
     //resolve collision for two objects with ids: _id1 and _id2
-    void resolveCollision(unsigned int _id1, unsigned int _id2);
+    void resolveCollision(std::shared_ptr<GameObject> a, std::shared_ptr<GameObject> b);
 
-    unsigned int height;
-    unsigned int width;
-    std::map<unsigned int, GameObject *> objects;
+    float height;
+    float width;
+    std::map<unsigned int, std::shared_ptr<GameObject>> objects;
+    unsigned int ids;
 };
 
 #endif //TP_LK_2D_MP_SHOOTER_MAP_H

@@ -1,47 +1,59 @@
 #include "Bullet.hpp"
 
-Bullet::Bullet() {
-    this->damage = 0;
-    this->speed = 0;
-    this->angle = 0;
-}
-Bullet(int _angle, unsigned int _speed, unsigned int _damage){
+Bullet::Bullet(unsigned int _id,
+               Coordinates _coord,
+               Type _type,
+               std::chrono::time_point<std::chrono::steady_clock> _time,
+               MoveDirection _direction,
+               float _angle,
+               float _hp,
+               float _width,
+               float _height,
+               float _damage,
+               float _acceleration,
+               float _minSpeed) : GameObject(_id, _coord, _type, _time, _direction, _angle, _hp, _width, _height) {
     this->damage = _damage;
-    this->speed = _speed;
-    this->angle = _angle;
+    this->acceleration = _acceleration;
+    this->minSpeed = _minSpeed;
+    this->speed = _minSpeed;
 }
 
-Bullet::~Bullet() {
+Bullet::~Bullet() {}
 
+void Bullet::update(std::chrono::time_point<std::chrono::steady_clock> _time) {
+    std::chrono::duration<float> deltaTime = _time - this->getTime();
+    this->setTime(_time);
+    if (this->getDirection() == NO_MOVE)
+        return;
+    GameObject::update(_time);
+    this->speed += this->acceleration * deltaTime.count();
+    float deltaCoord = deltaTime.count() * this->speed;
+    float curAngle = this->getAngle();
+    switch (this->getDirection()) {
+        case BACK :
+        curAngle += 180;
+        break;
+        case RIGHT :
+        curAngle += 90;
+        break;
+        case LEFT :
+        curAngle -= 90;
+        break;
+    }
+    Coordinates coord = this->getCoordinates();
+    coord.x += deltaCoord * std::cos(curAngle);
+    coord.y += deltaCoord * std::sin(curAngle);
+    this->setCoordinates(coord);
 }
 
-void Bullet::update(unsigned int _time) override{
-
+Type Bullet::getType() {
+    return BULLET;
 }
 
-int Bullet::getType() override{
-
+void Bullet::reverseUpdate() {
+    return;
 }
 
-int Bullet::getAngle(){
-    return this->angle;
-}
-
-unsigned int Bullet::getSpeed(){
-    return this->speed;
-}
-
-unsigned int Bullet::getDamage(){
+float Bullet::getDamage() {
     return this->damage;
-}
-
-void Bullet::setAngle(int _angle){
-    this->angle = _angle;
-}
-void Bullet::setSpeed(unsigned int _speed){
-    this->speed = _speed;
-}
-
-void Bullet::setDamage(unsigned int _damage){
-    this->damage = _damage;
 }
