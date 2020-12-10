@@ -111,7 +111,9 @@ void Game::updateObject(unsigned int _id, Command _command, int args){
 
 //returns all objects, which object with id == _id can see
 std::vector<std::shared_ptr<GameObject>> Game::getObjects(unsigned int _id){
-    return map->getObjects(_id);
+    mutex.lock();
+    auto objects = map->getObjects(_id);
+    mutex.unlock();
 }
 
 unsigned int Game::createPlayer(Coordinates coordinates) {
