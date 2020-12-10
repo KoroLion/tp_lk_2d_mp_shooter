@@ -35,7 +35,7 @@ bool Game::start() {
     }
     this->renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
-    this->game_objects.push_back(new MovingRect(10, 10, 50, 50, 0.5));
+    // this->game_objects.push_back(new MovingRect(10, 10, 50, 50, 0.5));
     this->game_objects.push_back(new SmallRect(5, 5));
 
     this->is_running = true;

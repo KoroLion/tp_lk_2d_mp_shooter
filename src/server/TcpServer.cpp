@@ -54,6 +54,7 @@ void PlayerSession::write_next_msg(const Packet msg) {
 }
 
 void PlayerSession::start() {
+    _room.join(shared_from_this());
     read_next_msg();
 }
 
@@ -84,7 +85,6 @@ void PlayerSession::handle_read_header(const boost::system::error_code& error) {
 void PlayerSession::handle_read_body(const boost::system::error_code& error) {
     if (!error) {
         std::cout << "Received: " << _read_msg.get_as_string() << std::endl;
-        _room.send_all(_read_msg);
         read_next_msg();
     } else {
         _room.leave(shared_from_this());

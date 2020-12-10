@@ -4,7 +4,7 @@ CFLAGS = -Wall -Werror -Wpedantic
 sdl_include = lib/i686-w64-mingw32/include/SDL2
 sdl_lib = lib/i686-w64-mingw32/lib
 
-build/game.exe: build/main.o build/game_objects.o build/game.o
+build/game.exe: build/main.o build/game_objects.o build/game.o build/Packet.o
 	$(CC) $(CFLAGS) -o $@ $^ -L$(sdl_lib) -lmingw32 -lSDL2main -lSDL2 -mwindows
 build/main.o: main.cpp | build
 	$(CC) $(CFLAGS) -I$(sdl_include) -c -o $@ $<
@@ -12,6 +12,11 @@ build/game_objects.o: game_objects.cpp include/game_objects.hpp
 	$(CC) $(CFLAGS) -I$(sdl_include) -c -o $@ $<
 build/game.o: game.cpp include/game.hpp
 	$(CC) $(CFLAGS) -I$(sdl_include) -c -o $@ $<
+build/Packet.o: Packet.cpp include/Packet.hpp
+	$(CC) $(CFLAGS) -I$(sdl_include) -c -o $@ $<
+
+build/dev.out: TcpClient.cpp build/Packet.o
+	$(CC) $^ -o $@ -I/home/korolion/boost/ -lpthread -lboost_system
 
 
 windows:
