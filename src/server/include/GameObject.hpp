@@ -72,6 +72,8 @@ public:
     void setHeight(float _height);
 
     virtual float getDamage();
+    virtual void reload(unsigned int _bullets);
+    virtual bool shoot();
 private:
     unsigned int id;
     Coordinates coordinates;

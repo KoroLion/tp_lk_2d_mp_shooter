@@ -51,3 +51,14 @@ bool Player::update(std::chrono::time_point<std::chrono::steady_clock> _time){
 Type Player::getType() {
     return PLAYER;
 }
+
+void Player::reload(unsigned int _bullets) {
+    this->bullets = _bullets;
+}
+
+bool Player::shoot() {
+    if (bullets == 0)
+        return false;
+    --bullets;
+    return true;
+}

@@ -31,12 +31,15 @@ void Map::turnObject(unsigned int _id, float angle, std::chrono::time_point<std:
     obj->setTime(_time);
 }
 
-void Map::reload(unsigned int _id, std::chrono::time_point<std::chrono::steady_clock> _time){
-
+void Map::reload(unsigned int _id, unsigned int _bullets, std::chrono::time_point<std::chrono::steady_clock> _time){
+    std::shared_ptr<GameObject> obj = this->objects.at(_id);
+    obj->reload(_bullets);
 }
 
 void Map::shoot(unsigned int _id, std::shared_ptr<GameObject> bullet) {
     std::shared_ptr<GameObject> obj = this->objects.at(_id);
+    if (!obj->shoot())
+        return;
     bullet->setId(this->ids);
     bullet->setCoordinates(obj->getCoordinates());
     bullet->setAngle(obj->getAngle());

@@ -15,6 +15,8 @@ Game::Game(){
     }
     while (!defaults->technics_default_coord.empty()) {
         this->createObstacle(defaults->technics_default_coord.front(), defaults->technics_default_angles.front());
+        defaults->technics_default_coord.pop();
+        defaults->technics_default_angles.pop();
     }
 }
 
@@ -57,7 +59,7 @@ void Game::updateObject(unsigned int _id, Command _command, int args){
             break;
         }
         case COMMAND_RELOAD: {
-            map->reload(_id, this->time);
+            map->reload(_id, defaults->defaults_player.at("bullets"), this->time);
             break;
         }
         case COMMAND_SHOOT: {
@@ -95,7 +97,6 @@ void Game::updateObject(unsigned int _id, Command _command, int args){
                     (unsigned int)defaults->defaults_player.at("bullets"));
             defaults->player_default_coord.pop();
             defaults->player_default_angles.pop();
-            mutex.lock();
             map->addObject(player);
             break;
         }

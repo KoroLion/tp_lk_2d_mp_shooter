@@ -105,6 +105,11 @@ float GameObject::getDamage() {
         return 0;
 }
 
+void GameObject::reload(unsigned int _bullets) {
+}
+bool GameObject::shoot() {
+    return false;
+}
 
 Coordinates GameObject::minCoord() {
     return Coordinates(this->coordinates.x - (width / 2), this->coordinates.y - (height / 2));
