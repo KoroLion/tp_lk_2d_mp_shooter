@@ -29,14 +29,14 @@ public:
             Type _type,
             std::chrono::time_point<std::chrono::steady_clock> _time,
             MoveDirection _direction,
-            int _angle,
+            float _angle,
             float _hp,
             float _width,
             float _height);
 
     virtual ~GameObject() = 0;
 
-    virtual void update(std::chrono::time_point<std::chrono::steady_clock> _time);
+    virtual bool update(std::chrono::time_point<std::chrono::steady_clock> _time);
 
     virtual void reverseUpdate();
 

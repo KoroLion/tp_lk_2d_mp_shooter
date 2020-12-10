@@ -20,11 +20,11 @@ Technics::Technics(unsigned int _id,
 
 Technics::~Technics(){}
 
-void Technics::update(std::chrono::time_point<std::chrono::steady_clock> _time) {
+bool Technics::update(std::chrono::time_point<std::chrono::steady_clock> _time) {
     std::chrono::duration<float> deltaTime = _time - this->getTime();
     this->setTime(_time);
     if (this->getDirection() == NO_MOVE)
-        return;
+        return true;
     GameObject::update(_time);
     float deltaCoord = deltaTime.count() * this->speed;
     float curAngle = this->getAngle();
@@ -43,6 +43,7 @@ void Technics::update(std::chrono::time_point<std::chrono::steady_clock> _time) 
     coord.x += deltaCoord * std::cos(curAngle);
     coord.y += deltaCoord * std::sin(curAngle);
     this->setCoordinates(coord);
+    return true;
 }
 
 Type Technics::getType() {

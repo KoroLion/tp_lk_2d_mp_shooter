@@ -12,7 +12,9 @@ Map::~Map(){}
 
 void Map::updateObjects(std::chrono::time_point<std::chrono::steady_clock> _time) {
     for (auto object : this->objects ) {
-        object.second->update(_time);
+        if (!object.second->update(_time)) {
+            this->objects.erase(object.first);
+        }
     }
     checkCollisions();
 }

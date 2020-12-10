@@ -5,7 +5,7 @@ GameObject::GameObject(unsigned int _id,
                        Type _type,
                        std::chrono::time_point<std::chrono::steady_clock> _time,
                        MoveDirection _direction,
-                       int _angle,
+                       float _angle,
                        float _hp,
                        float _width,
                        float _height) :
@@ -78,8 +78,9 @@ void GameObject::reduceHp(float _damage) {
         this->hp = 0;
 }
 
-void GameObject::update(std::chrono::time_point<std::chrono::steady_clock> _time) {
+bool GameObject::update(std::chrono::time_point<std::chrono::steady_clock> _time) {
     previousCoordinates = coordinates;
+    return true;
 }
 
 void GameObject::reverseUpdate() {

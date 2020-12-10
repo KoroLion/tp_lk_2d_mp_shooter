@@ -13,12 +13,13 @@ public:
            float _hp,
            float _width,
            float _height,
+           float _speed,
            float _damage,
            float _acceleration,
            float _minSpeed);
     ~Bullet();
 
-    void update(std::chrono::time_point<std::chrono::steady_clock> _time) override;
+    bool update(std::chrono::time_point<std::chrono::steady_clock> _time) override;
     void reverseUpdate() override;
     Type getType() override ;
 

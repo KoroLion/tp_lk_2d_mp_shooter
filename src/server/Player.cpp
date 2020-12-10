@@ -22,11 +22,11 @@ Player::Player(unsigned int _id,
 
 Player::~Player() {}
 
-void Player::update(std::chrono::time_point<std::chrono::steady_clock> _time){
+bool Player::update(std::chrono::time_point<std::chrono::steady_clock> _time){
     std::chrono::duration<float> deltaTime = _time - this->getTime();
     this->setTime(_time);
     if (this->getDirection() == NO_MOVE)
-        return;
+        return true;
     GameObject::update(_time);
     float deltaCoord = deltaTime.count() * this->speed;
     float curAngle = this->getAngle();
@@ -45,6 +45,7 @@ void Player::update(std::chrono::time_point<std::chrono::steady_clock> _time){
     coord.x += deltaCoord * std::sin(curAngle);
     coord.y += deltaCoord * std::cos(curAngle);
     this->setCoordinates(coord);
+    return true;
 }
 
 Type Player::getType() {

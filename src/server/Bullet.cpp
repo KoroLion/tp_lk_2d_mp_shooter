@@ -9,24 +9,27 @@ Bullet::Bullet(unsigned int _id,
                float _hp,
                float _width,
                float _height,
+               float _speed,
                float _damage,
                float _acceleration,
                float _minSpeed) : GameObject(_id, _coord, _type, _time, _direction, _angle, _hp, _width, _height) {
     this->damage = _damage;
     this->acceleration = _acceleration;
     this->minSpeed = _minSpeed;
-    this->speed = _minSpeed;
+    this->speed = _speed;
 }
 
 Bullet::~Bullet() {}
 
-void Bullet::update(std::chrono::time_point<std::chrono::steady_clock> _time) {
+bool Bullet::update(std::chrono::time_point<std::chrono::steady_clock> _time) {
     std::chrono::duration<float> deltaTime = _time - this->getTime();
     this->setTime(_time);
     if (this->getDirection() == NO_MOVE)
-        return;
+        return true;
     GameObject::update(_time);
-    this->speed += this->acceleration * deltaTime.count();
+    this->speed -= this->acceleration * deltaTime.count();
+    if (speed < minSpeed)
+        return false;
     float deltaCoord = deltaTime.count() * this->speed;
     float curAngle = this->getAngle();
     switch (this->getDirection()) {
@@ -44,6 +47,7 @@ void Bullet::update(std::chrono::time_point<std::chrono::steady_clock> _time) {
     coord.x += deltaCoord * std::cos(curAngle);
     coord.y += deltaCoord * std::sin(curAngle);
     this->setCoordinates(coord);
+    return true;
 }
 
 Type Bullet::getType() {

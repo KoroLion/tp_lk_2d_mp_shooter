@@ -44,14 +44,6 @@ std::vector<std::shared_ptr<GameObject>> ServerWorld::getObjects(unsigned int _i
 }
 
 
-unsigned int ServerWorld::createPlayer(float x, float y) {
-    return game->createPlayer(Coordinates(x, y));
-}
-
-void ServerWorld::disconnectPlayer(unsigned int _id) {
-    game->removePlayer(_id);
-}
-
 void ServerWorld::handleEvents() {
     while (game->isRunning()) {
         mutex.lock();

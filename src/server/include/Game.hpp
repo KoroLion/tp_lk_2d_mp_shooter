@@ -9,22 +9,17 @@
 #include <boost/lexical_cast.hpp>
 #include <thread>
 #include <mutex>
+#include <queue>
 
 class Game{
 public:
     Game();
     ~Game();
 
-    void updateObject(unsigned int _id, Command _command, int args);
+    void updateObject(unsigned int _id, Command _command, int args = 0);
 
     //returns all objects, which object with id == _id can see
     std::vector<std::shared_ptr<GameObject>> getObjects(unsigned int _id);
-
-    unsigned int createPlayer(Coordinates coord);
-    void createTechnics(Coordinates _coordinates, float _angle);
-    void createObstacle(Coordinates _coordinates, float _angle);
-
-    void removePlayer(unsigned int _id);
 
     bool isRunning();
 
@@ -33,16 +28,23 @@ public:
 private:
     void updateMap();
 
+    unsigned int createPlayer(Coordinates coord);
+    void createTechnics(Coordinates _coordinates, float _angle);
+    void createObstacle(Coordinates _coordinates, float _angle);
+    void removePlayer(unsigned int _id);
+
     //parse json with boost property tree
     void parseConfig();
 
     struct defaultValues {
         float map_width;
         float map_height;
-        std::vector<Coordinates> obstacles_default_coord;
-        std::vector<Coordinates> technics_default_coord;
-        std::vector<float> obstacles_default_angles;
-        std::vector<float> technics_default_angles;
+        std::queue<Coordinates> obstacles_default_coord;
+        std::queue<Coordinates> technics_default_coord;
+        std::queue<float> obstacles_default_angles;
+        std::queue<float> technics_default_angles;
+        std::queue<Coordinates> player_default_coord;
+        std::queue<float> player_default_angles;
 
         //hp, width, height, speed, bullets
         std::map<std::string, float> defaults_player;

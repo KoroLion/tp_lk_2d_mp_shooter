@@ -18,7 +18,7 @@ public:
             unsigned int _bullets);
     ~Player();
 
-    void update(std::chrono::time_point<std::chrono::steady_clock> _time) override;
+    bool update(std::chrono::time_point<std::chrono::steady_clock> _time) override;
     Type getType() override ;
 private:
     float speed;

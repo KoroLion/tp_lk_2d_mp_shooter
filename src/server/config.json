@@ -12,21 +12,31 @@
                 },
                 {
                         "x": 400,
-                        "y": 50
+                        "y": 5000
                 },
                 {
-                        "x": 60,
+                        "x": 6000,
                         "y": 800
                 }
         ],
         "technicsCoordinates": [
                 {
                         "x": 100,
-                        "y": 30
+                        "y": 3000
                 },
                 {
-                        "x": 50,
+                        "x": 5500,
                         "y": 700
+                }
+        ],
+        "playerCoordinates": [
+                {
+                        "x": 100,
+                        "y": 100
+                },
+                {
+                        "x": 3000,
+                        "y": 3000
                 }
         ],
         "obstacleAngles": [
@@ -39,31 +49,36 @@
                 0,
                 0
         ],
+        "playerAngles": [
+                0,
+                0
+        ],
         "player": {
-                "hp": 30,
-                "width": 2,
-                "height": 1,
-                "speed": 0.2,
+                "hp": 100,
+                "width": 40,
+                "height": 40,
+                "speed": 5,
                 "bullets": 40
         },
         "bullet": {
                 "hp": 0,
-                "width": 1,
-                "height": 1,
+                "width": 15,
+                "height": 10,
+                "speed" : 12,
                 "damage": 10,
                 "acceleration": 0.1,
-                "minSpeed": 0.5
+                "minSpeed": 5
         },
         "obstacle": {
                 "hp": 100,
-                "width": 10,
-                "height": 10
+                "width": 500,
+                "height": 500
         },
         "technics": {
                 "hp": 100,
-                "width": 2,
-                "height": 2,
-                "speed": 0.3,
+                "width": 200,
+                "height": 200,
+                "speed": 8,
                 "capacity" : 1
         }
 }

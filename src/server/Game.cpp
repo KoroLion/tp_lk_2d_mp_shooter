@@ -8,11 +8,13 @@ Game::Game(){
     this->parseConfig();
     time = std::chrono::steady_clock::now();
     map = std::make_shared<Map>(defaults->map_height, defaults->map_width);
-    for (int i = 0; i < defaults->obstacles_default_coord.size(); ++i) {
-        this->createObstacle(defaults->obstacles_default_coord[i], defaults->obstacles_default_angles[i]);
+    while (!defaults->obstacles_default_coord.empty()) {
+        this->createObstacle(defaults->obstacles_default_coord.front(), defaults->obstacles_default_angles.front());
+        defaults->obstacles_default_coord.pop();
+        defaults->obstacles_default_angles.pop();
     }
-    for (int i = 0; i < defaults->technics_default_coord.size(); ++i) {
-        this->createObstacle(defaults->technics_default_coord[i], defaults->technics_default_angles[i]);
+    while (!defaults->technics_default_coord.empty()) {
+        this->createObstacle(defaults->technics_default_coord.front(), defaults->technics_default_angles.front());
     }
 }
 
@@ -69,10 +71,36 @@ void Game::updateObject(unsigned int _id, Command _command, int args){
                     defaults->defaults_bullet.at("hp"),
                     defaults->defaults_bullet.at("width"),
                     defaults->defaults_bullet.at("height"),
+                    defaults->defaults_bullet.at("speed"),
                     defaults->defaults_bullet.at("damage"),
                     defaults->defaults_bullet.at("acceleration"),
                     defaults->defaults_bullet.at("minSpeed"));
             map->shoot(_id, bullet);
+            break;
+        }
+        case PLAYER_CONNECTED: {
+            if (defaults->player_default_coord.empty())
+                return;
+            std::shared_ptr<GameObject> player = std::make_shared<Player>(
+                    0,
+                    defaults->player_default_coord.front(),
+                    PLAYER,
+                    this->time,
+                    NO_MOVE,
+                    defaults->player_default_angles.front(),
+                    defaults->defaults_player.at("hp"),
+                    defaults->defaults_player.at("width"),
+                    defaults->defaults_player.at("height"),
+                    defaults->defaults_player.at("speed"),
+                    (unsigned int)defaults->defaults_player.at("bullets"));
+            defaults->player_default_coord.pop();
+            defaults->player_default_angles.pop();
+            mutex.lock();
+            map->addObject(player);
+            break;
+        }
+        case PLAYER_DISCONNECTED: {
+            map->removeObject(_id);
             break;
         }
     }
@@ -170,16 +198,22 @@ void Game::parseConfig() {
     defaults->map_width = root.get<float>("mapWidth", 10);
     defaults->map_height = root.get<float>("mapHeight", 10);
     BOOST_FOREACH (boost::property_tree::ptree::value_type &val, root.get_child("obstacleCoordinates")) {
-                    defaults->obstacles_default_coord.push_back(Coordinates(val.second.get<float>("x"), val.second.get<float>("y")));
+                    defaults->obstacles_default_coord.push(Coordinates(val.second.get<float>("x"), val.second.get<float>("y")));
                 }
     BOOST_FOREACH (boost::property_tree::ptree::value_type &val, root.get_child("technicsCoordinates")) {
-                    defaults->technics_default_coord.push_back(Coordinates(val.second.get<float>("x"), val.second.get<float>("y")));
+                    defaults->technics_default_coord.push(Coordinates(val.second.get<float>("x"), val.second.get<float>("y")));
+                }
+    BOOST_FOREACH (boost::property_tree::ptree::value_type &val, root.get_child("playerCoordinates")) {
+                    defaults->player_default_coord.push(Coordinates(val.second.get<float>("x"), val.second.get<float>("y")));
                 }
     BOOST_FOREACH (boost::property_tree::ptree::value_type &val, root.get_child("obstacleAngles")) {
-                    defaults->obstacles_default_angles.push_back(boost::lexical_cast<float>(val.second.data()));
+                    defaults->obstacles_default_angles.push(boost::lexical_cast<float>(val.second.data()));
                 }
     BOOST_FOREACH (boost::property_tree::ptree::value_type &val, root.get_child("technicsAngles")) {
-                    defaults->technics_default_angles.push_back(boost::lexical_cast<float>(val.second.data()));
+                    defaults->technics_default_angles.push(boost::lexical_cast<float>(val.second.data()));
+                }
+    BOOST_FOREACH (boost::property_tree::ptree::value_type &val, root.get_child("playerAngles")) {
+                    defaults->technics_default_angles.push(boost::lexical_cast<float>(val.second.data()));
                 }
     BOOST_FOREACH (boost::property_tree::ptree::value_type &val, root.get_child("player")) {
                     defaults->defaults_player[val.first] = boost::lexical_cast<float>(val.second.data());
