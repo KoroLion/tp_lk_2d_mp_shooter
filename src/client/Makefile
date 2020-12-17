@@ -14,9 +14,9 @@ build/game_objects.o: game_objects.cpp include/game_objects.hpp
 	$(CC) $(CFLAGS) -I$(sdl_include) -c -o $@ $<
 build/game.o: game.cpp include/game.hpp
 	$(CC) $(CFLAGS) -I$(sdl_include) -c -o $@ $<
-build/Packet.o: ../common/Packet.cpp ../common/include/Packet.hpp
-	$(CC) $(CFLAGS) -I$(sdl_include) -c -o $@ $<
 
+build/Packet.o: ../common/Packet.cpp ../common/include/Packet.hpp
+	$(CC) $(CFLAGS) -c -o $@ $<
 build/TcpClient.o: TcpClient.cpp include/TcpClient.hpp
 	$(CC) $(CFLAGS) -I$(boost_include) -I"../common" -c -o $@ $< -Wno-deprecated-declarations
 build/dev.exe: client_example.cpp build/TcpClient.o build/Packet.o

@@ -11,7 +11,7 @@
 #include "utils.hpp"
 #include "World.hpp"
 #include "TcpServer.hpp"
-#include "common.hpp"
+#include "include/common.hpp"
 
 std::string game_objects_to_json(const std::vector<GameObject>& game_objects) {
     std::stringstream ss;

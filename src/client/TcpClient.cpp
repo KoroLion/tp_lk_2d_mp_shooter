@@ -1,17 +1,19 @@
 #include "include/TcpClient.hpp"
+#include "include/common.hpp"
 
 void TcpClient::handle_connect(const boost::system::error_code& error) {
     if (!error) {
-        std::cout << "CONNECTED!" << std::endl;
+        _event_callback(CONNECTED, "");
+        connected = true;
         read_header();
     } else {
-        std::cout << "ERROR!" << std::endl;
+        throw std::exception();
     }
 }
 
 void TcpClient::read_header() {
     boost::asio::async_read(
-        socket_,
+        _socket,
         boost::asio::buffer(read_packet_.get_data(), Packet::header_length),
         std::bind(
             &TcpClient::handle_read_header,
@@ -23,7 +25,7 @@ void TcpClient::read_header() {
 
 void TcpClient::read_body() {
     boost::asio::async_read(
-        socket_,
+        _socket,
         boost::asio::buffer(read_packet_.get_body(), read_packet_.get_body_length()),
         std::bind(
             &TcpClient::handle_read_body,
@@ -43,7 +45,7 @@ void TcpClient::handle_read_header(const boost::system::error_code& error) {
 
 void TcpClient::handle_read_body(const boost::system::error_code& error) {
     if (!error) {
-        std::cout << read_packet_.get_as_string() << std::endl;
+        _event_callback(MESSAGE, read_packet_.get_as_string());
         read_header();
     } else {
         do_close();
@@ -51,7 +53,7 @@ void TcpClient::handle_read_body(const boost::system::error_code& error) {
 }
 
 void TcpClient::write_next() {
-    boost::asio::async_write(socket_,
+    boost::asio::async_write(_socket,
         boost::asio::buffer(write_packets_.front().get_data(), write_packets_.front().size()),
         std::bind(
             &TcpClient::handle_write,
@@ -81,16 +83,24 @@ void TcpClient::handle_write(const boost::system::error_code& error) {
 }
 
 void TcpClient::do_close() {
-    std::cout << "DISCONNECTED" << std::endl;
-    socket_.close();
+    if (is_connected()) {
+        _event_callback(DISCONNECTED, "");
+        connected = false;
+        _socket.close();
+    }
 }
 
-TcpClient::TcpClient(boost::asio::io_service *io_service, boost::asio::ip::tcp::resolver::iterator endpoint_iterator)
-    : io_service_(io_service),
-      socket_(*io_service) {
+TcpClient::TcpClient(const std::string &host, const std::string &port, net_client_event_callback event_callback):
+        host(host),
+        port(port),
+        _event_callback(event_callback),
+        _socket(_io_service) {
+    boost::asio::ip::tcp::resolver resolver(_io_service);
+    boost::asio::ip::tcp::resolver::query query(host.c_str(), port.c_str());
+    boost::asio::ip::tcp::resolver::iterator endpoint_iterator = resolver.resolve(query);
 
     boost::asio::async_connect(
-        socket_,
+        _socket,
         endpoint_iterator,
         std::bind(
             &TcpClient::handle_connect,
@@ -100,13 +110,21 @@ TcpClient::TcpClient(boost::asio::io_service *io_service, boost::asio::ip::tcp::
     );
 }
 
+void TcpClient::connect() {
+    _io_service.run();
+}
+
+bool TcpClient::is_connected() {
+    return !_io_service.stopped() && connected;
+}
+
 void TcpClient::send(const std::string &data) {
     Packet packet(data);
     packet.encode_header();
 
-    io_service_->post(std::bind(&TcpClient::do_write, this, packet));
+    _io_service.post(std::bind(&TcpClient::do_write, this, packet));
 }
 
 void TcpClient::close() {
-    io_service_->post(std::bind(&TcpClient::do_close, this));
+    _io_service.post(std::bind(&TcpClient::do_close, this));
 }

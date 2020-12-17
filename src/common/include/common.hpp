@@ -11,5 +11,6 @@ enum NetServerEventType {
 };
 
 typedef std::function<void(NetServerEventType, unsigned, std::string)> net_event_callback;
+typedef std::function<void(NetServerEventType, std::string)> net_client_event_callback;
 
 #endif

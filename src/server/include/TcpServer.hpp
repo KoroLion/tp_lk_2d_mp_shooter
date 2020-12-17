@@ -12,7 +12,7 @@
 #include <boost/asio.hpp>
 
 #include "include/Packet.hpp"
-#include "common.hpp"
+#include "include/common.hpp"
 
 class Session {
  public:
@@ -73,6 +73,7 @@ class TcpServer {
  private:
     unsigned _free_uid = 1;
     boost::asio::io_service _io_service;
+    boost::asio::ip::tcp::resolver::iterator _endpoint_iterator;
     boost::asio::ip::tcp::acceptor _acceptor;
     net_event_callback _event_callback;
     Room _room;
