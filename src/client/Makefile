@@ -19,10 +19,12 @@ build/Packet.o: ../common/Packet.cpp ../common/include/Packet.hpp
 	$(CC) $(CFLAGS) -c -o $@ $<
 build/TcpClient.o: TcpClient.cpp include/TcpClient.hpp
 	$(CC) $(CFLAGS) -I$(boost_include) -I"../common" -c -o $@ $< -Wno-deprecated-declarations
-build/dev.exe: client_example.cpp build/TcpClient.o build/Packet.o
+build/tcpclient.a: build/TcpClient.o build/Packet.o
+	ar rcs $@ $^
+build/dev.exe: client_example.cpp build/tcpclient.a
 	$(CC) $^ -o $@ -I$(boost_include) -I"../common" -lws2_32 -Wno-deprecated-declarations
 
-clean:
+clear:
 	rm build/*.o
 
 

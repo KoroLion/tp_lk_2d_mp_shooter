@@ -3,6 +3,8 @@
 
 #include "include/common.hpp"
 #include "include/TcpClient.hpp"
+#include "lib/json.hpp"
+using json = nlohmann::json;
 
 
 class Client {
@@ -65,7 +67,11 @@ class Client {
                     net_client.close();
                     break;
                 } else if (line == "last") {
-                    std::cout << last_message << std::endl;
+                    auto j = json::parse(last_message);
+                    for (auto itr = j.begin(); itr != j.end(); itr++) {
+                        auto obj = *itr;
+                        std::cout << obj["typeId"] << " (" << obj["x"] << ", " << obj["y"] << ")" << std::endl;
+                    }
                 } else {
                     net_client.send(line);
                 }
