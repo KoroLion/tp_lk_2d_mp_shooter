@@ -12,11 +12,13 @@
 #include <boost/asio.hpp>
 
 #include "Packet.hpp"
+#include "common.hpp"
 
 class Session {
  public:
     virtual ~Session() {}
     virtual void send(const Packet& msg) = 0;
+    virtual unsigned getUid() const = 0;
 };
 
 typedef std::shared_ptr<Session> PSession;
@@ -24,7 +26,10 @@ typedef std::shared_ptr<Session> PSession;
 class Room {
  private:
     std::set<PSession> _players;
+    net_event_callback &_event_callback;
  public:
+    Room(net_event_callback &event_callback): _event_callback(event_callback) {}
+
     void join(PSession player);
     void leave(PSession player);
     int get_players_amount();
@@ -37,13 +42,15 @@ private:
     unsigned _uid;
     boost::asio::ip::tcp::socket _socket;
     Room& _room;
+    net_event_callback &_event_callback;
     Packet _read_msg;
     std::deque<Packet> _write_msgs;
 public:
-    PlayerSession(unsigned uid, boost::asio::io_service& io_service, Room& room)
+    PlayerSession(unsigned uid, boost::asio::io_service& io_service, Room& room, net_event_callback &event_callback)
     : _uid(uid),
       _socket(io_service),
-      _room(room) {}
+      _room(room),
+      _event_callback(event_callback) {}
 
     unsigned getUid() const {
         return _uid;
@@ -67,13 +74,12 @@ class TcpServer {
     unsigned _free_uid = 1;
     boost::asio::io_service _io_service;
     boost::asio::ip::tcp::acceptor _acceptor;
-    std::function<void(int, std::string)> read_callback;
+    net_event_callback _event_callback;
     Room _room;
  public:
-    TcpServer(int port);
+    TcpServer(int port, net_event_callback event_callback);
 
-    void start(std::function<void(int, std::string)> read_callback) {
-        this->read_callback = read_callback;
+    void start() {
         _io_service.run();
     }
     void stop() {

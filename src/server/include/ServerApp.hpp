@@ -11,7 +11,7 @@
 #include "utils.hpp"
 #include "World.hpp"
 #include "TcpServer.hpp"
-
+#include "common.hpp"
 
 std::string game_objects_to_json(const std::vector<GameObject>& game_objects) {
     std::stringstream ss;
@@ -44,22 +44,32 @@ class ServerApp {
  public:
     ServerApp(std::string bind_addr, int port) {
         world = std::make_unique<World>();
-        net_server = std::make_unique<TcpServer>(port);
+        net_server = std::make_unique<TcpServer>(
+            port,
+            std::bind(
+                &ServerApp::net_event_callback,
+                this,
+                std::placeholders::_1,
+                std::placeholders::_2,
+                std::placeholders::_3
+            )
+        );
     }
     ~ServerApp() {
     }
 
-    void net_handle_callback(int uid, std::string data) {
-        std::cout << uid << ": " << data << std::endl;
+    void net_event_callback(NetServerEventType ev_type, unsigned uid, std::string data) {
+        if (ev_type == CONNECTED) {
+            std::cout << "Player " << uid << " connected!" << std::endl;
+        } else if (ev_type == MESSAGE) {
+            std::cout << uid << ": " << data << std::endl;
+        } else if (ev_type == DISCONNECTED) {
+            std::cout << "Player " << uid << " disconnected!" << std::endl;
+        }
     }
 
     void net_handle() {
-        net_server->start(std::bind(
-            &ServerApp::net_handle_callback,
-            this,
-            std::placeholders::_1,
-            std::placeholders::_2
-        ));
+        net_server->start();
     }
 
     void net_notify() {
