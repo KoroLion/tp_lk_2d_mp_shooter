@@ -1,6 +1,8 @@
 CC = g++
 CFLAGS = -Wall -Werror -Wpedantic
 
+
+boost_include = E:/Installs/boost_1_74_0/
 sdl_include = lib/i686-w64-mingw32/include/SDL2
 sdl_lib = lib/i686-w64-mingw32/lib
 
@@ -15,8 +17,10 @@ build/game.o: game.cpp include/game.hpp
 build/Packet.o: ../common/Packet.cpp ../common/include/Packet.hpp
 	$(CC) $(CFLAGS) -I$(sdl_include) -c -o $@ $<
 
-build/dev.out: TcpClient.cpp build/Packet.o
-	$(CC) $^ -o $@ -I/home/korolion/boost/ -I"../common" -lpthread -lboost_system
+build/TcpClient.o: TcpClient.cpp include/TcpClient.hpp
+	$(CC) $(CFLAGS) -I$(boost_include) -I"../common" -c -o $@ $< -Wno-deprecated-declarations
+build/dev.exe: client_example.cpp build/TcpClient.o build/Packet.o
+	$(CC) $^ -o $@ -I$(boost_include) -I"../common" -lws2_32 -Wno-deprecated-declarations
 
 clean:
 	rm build/*.o
