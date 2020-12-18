@@ -3,6 +3,7 @@
 
 #include "include/common.hpp"
 #include "include/TcpClient.hpp"
+
 #include "lib/json.hpp"
 using json = nlohmann::json;
 
@@ -70,7 +71,22 @@ class Client {
                     auto j = json::parse(last_message);
                     for (auto itr = j.begin(); itr != j.end(); itr++) {
                         auto obj = *itr;
-                        std::cout << obj["typeId"] << " (" << obj["x"] << ", " << obj["y"] << ")" << std::endl;
+
+                        unsigned type_id = obj["typeId"];
+                        switch (type_id) {
+                            case EntityType::PLAYER:
+                                std::cout << "Player at ";
+                                break;
+                            case EntityType::BOX_SMALL:
+                                std::cout << "Small box at ";
+                                break;
+                            case EntityType::BOX_BIG:
+                                std::cout << "Big box at ";
+                                break;
+                            default:
+                                std::cout << "Unknown object (" << type_id << ") ";
+                        }
+                        std::cout << "(" << obj["x"] << ", " << obj["y"] << ")" << std::endl;
                     }
                 } else {
                     net_client.send(line);
