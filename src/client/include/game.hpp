@@ -11,6 +11,9 @@ Copyright 2020 LioKor Team (KoroLion, SergTyapkin, altanab)
 #include "World.hpp"
 #include "Camera.hpp"
 
+#include "include/common.hpp"
+#include "TcpClient.hpp"
+
 
 class Game {
  public:
@@ -26,6 +29,8 @@ class Game {
     int width, height;
     unsigned int time;
 
+    TcpClient net_client;
+
     SDL_Window *window;
     SDL_Renderer *renderer;
 
@@ -33,6 +38,10 @@ class Game {
     void keyboardEvents();
     void update();
     void render();
+
+    void netEventCallback(NetServerEventType, std::string);
+    static DWORD WINAPI networkThreadLauncher(LPVOID);
+    DWORD networkThread();
 
     bool isRunning;
 

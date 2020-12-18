@@ -55,7 +55,13 @@ SDL_Texture* loadTexture(const char* imgName, SDL_Renderer* renderer, SDL_Surfac
     return tmp_texture;
 }
 
-Game::Game(const char* _title, int _width, int _height): title(_title), width(_width), height(_height) {
+Game::Game(const char* _title, int _width, int _height): title(_title), width(_width), height(_height),
+        net_client("localhost", "23000", std::bind(
+            netEventCallback,
+            this,
+            std::placeholders::_1,
+            std::placeholders::_2
+        )) {
     if (SDL_Init(SDL_INIT_VIDEO)) {
         std::cout << "Can't init: " << SDL_GetError() << std::endl;
         return;
@@ -71,7 +77,7 @@ Game::Game(const char* _title, int _width, int _height): title(_title), width(_w
         SDL_ShowCursor(SDL_DISABLE);
     }
 
-    if ((renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC)) == NULL) { // аппаратный рендеринг + верт. синхронизация
+    if ((renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC)) == NULL) {
         std::cout << "Can't create renderer: " << SDL_GetError() << std::endl;
         return;
     }
@@ -118,7 +124,39 @@ Game::~Game() {
     SDL_Quit();
 }
 
+DWORD WINAPI Game::networkThreadLauncher(LPVOID p) {
+    return ((Game*)p)->networkThread();
+}
+
+DWORD Game::networkThread() {
+    try {
+        net_client.connect();
+    } catch (std::exception e) {
+        std::cout << "WARNING: Failed to connect!" << std::endl;
+        return 1;
+    }
+
+    return 0;
+}
+
+void Game::netEventCallback(NetServerEventType evType, std::string data) {
+    if (evType == CONNECTED) {
+        std::cout << "INFO: Connected!" << std::endl;
+    } else if (evType == MESSAGE) {
+        std::cout << "RECEIVED: " << data << std::endl;
+    } else if (evType == DISCONNECTED) {
+        std::cout << "INFO: Disconnected!" << std::endl;
+    }
+}
+
 bool Game::start() {
+    DWORD tid = 0;
+    HANDLE ht = CreateThread(NULL, 0, networkThreadLauncher, this, 0, &tid);
+    if (ht == NULL) {
+        std::cout << "ERROR: Unable to start thread!" << std::endl;
+        throw std::exception();
+    }
+
     FILE* f; fprintf(f = fopen("log.txt", "a+"), "%s\n", "Game started"); fclose(f);
     isRunning = true;
     time = 0;
@@ -137,6 +175,11 @@ bool Game::start() {
         time += 1000/FPS;
         SDL_Delay(1000/FPS);
     }
+
+    net_client.close();
+    WaitForSingleObject(ht, INFINITE);
+    CloseHandle(ht);
+
     return 0;
 }
 
