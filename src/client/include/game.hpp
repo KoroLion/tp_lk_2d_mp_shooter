@@ -1,38 +1,46 @@
 /*
-Copyright 2020 LioKor Team (KoroLion, SergTyapkin, altanab, biotyree)
+Copyright 2020 LioKor Team (KoroLion, SergTyapkin, altanab)
 */
 
 #ifndef SRC_CLIENT_INCLUDE_GAME_HPP_
 #define SRC_CLIENT_INCLUDE_GAME_HPP_
 
-#include <math.h>
-#include <string>
 #include <vector>
 
 #include "SDL.h"
-#include "game_objects.hpp"
+#include "World.hpp"
+#include "Camera.hpp"
+
 
 class Game {
+ public:
+    Game(const char* title, int width, int height);
+
+    bool start();
+    void stop() { this->isRunning = false; }
+
+    ~Game();
+
  private:
+    const char* title;
+    int width, height;
+    unsigned int time;
+
     SDL_Window *window;
     SDL_Renderer *renderer;
 
-    void handle_event(SDL_Event);
+    void handleEvent(SDL_Event*);
+    void keyboardEvents();
     void update();
     void render();
 
-    bool is_running;
+    bool isRunning;
 
-    std::vector<GameObject*> game_objects;
- public:
-    std::string title;
-    int width, height;
+    Player* player;
+    World* world;
+    Camera* camera;
 
-    Game(std::string title, int width, int height);
-    ~Game();
-
-    bool start();
-    void stop() { this->is_running = false; }
+    std::vector<SDL_Texture*> textures;
 };
 
 #endif  // SRC_CLIENT_INCLUDE_GAME_HPP_
