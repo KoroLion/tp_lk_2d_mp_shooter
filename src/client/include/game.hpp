@@ -39,7 +39,7 @@ class Game {
     void update();
     void render();
 
-    void netEventCallback(NetServerEventType, std::string);
+    void netEventCallback(NetEventType::NetEventType, std::string);
     static DWORD WINAPI networkThreadLauncher(LPVOID);
     DWORD networkThread();
 
