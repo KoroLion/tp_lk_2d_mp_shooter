@@ -4,7 +4,7 @@ using namespace std::literals::chrono_literals;
 
 Game::Game(){
     defaults = std::make_unique<defaultValues>();
-    this->config_name = "/home/altana/tp_lk_2d_mp_shooter/src/server/config.json";
+    this->config_name = "./config.json";
     this->parseConfig();
     time = std::chrono::steady_clock::now();
     map = std::make_shared<Map>(defaults->map_height, defaults->map_width);

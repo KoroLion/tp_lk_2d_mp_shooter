@@ -3,17 +3,13 @@
 
 ServerWorld::ServerWorld() {
     game = std::make_shared<Game>();
-    std::cout << "Game created" << std::endl;
 }
 
 ServerWorld::~ServerWorld() {
-    std::cout << "Game destroyed" << std::endl;
 }
 
 void ServerWorld::startGame(){
     game->start();
-    std::cout << "Game started" << std::endl;
-
 
     this->eventsThread = std::thread(&ServerWorld::handleEvents, this);
 }
@@ -21,7 +17,6 @@ void ServerWorld::startGame(){
 void ServerWorld::endGame() {
     game->end();
     this->eventsThread.join();
-    std::cout << "Game ended" << std::endl;
     while (!events.empty()) {
         events.pop();
     }
