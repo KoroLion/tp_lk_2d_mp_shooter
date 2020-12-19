@@ -19,7 +19,7 @@ public:
     ~Player();
 
     bool update(std::chrono::time_point<std::chrono::steady_clock> _time) override;
-    Type getType() override ;
+    Type getType() const override ;
     void reload(unsigned int _bullets) override ;
     bool shoot() override ;
 private:

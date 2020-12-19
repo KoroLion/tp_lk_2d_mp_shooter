@@ -21,7 +21,7 @@ public:
     //returns all objects, which object with id == _id can see
     std::vector<std::shared_ptr<GameObject>> getObjects(unsigned int _id);
 
-    bool isRunning();
+    bool isRunning () const;
 
     void start();
     void end();
@@ -32,6 +32,8 @@ private:
     void createTechnics(Coordinates _coordinates, float _angle);
     void createObstacle(Coordinates _coordinates, float _angle);
     void removePlayer(unsigned int _id);
+
+    MoveDirection getDirection (Command _command, int args) const;
 
     //parse json with boost property tree
     void parseConfig();

@@ -15,7 +15,7 @@ public:
              float _height);
     ~Obstacle();
 
-    Type getType() override ;
+    Type getType() const override ;
 
     float getHp() override;
 };

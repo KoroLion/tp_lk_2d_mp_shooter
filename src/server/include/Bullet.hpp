@@ -22,10 +22,10 @@ public:
 
     bool update(std::chrono::time_point<std::chrono::steady_clock> _time) override;
     void reverseUpdate() override;
-    Type getType() override ;
+    Type getType() const override ;
 
-    float getDamage() override ;
-    unsigned int getOwner() override ;
+    float getDamage() const override ;
+    unsigned int getOwner() const override ;
 
 private:
     float speed;

@@ -46,7 +46,7 @@ bool Technics::update(std::chrono::time_point<std::chrono::steady_clock> _time) 
     return true;
 }
 
-Type Technics::getType() {
+Type Technics::getType() const{
     return TECHNICS;
 }
 

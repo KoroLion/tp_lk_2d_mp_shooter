@@ -14,7 +14,7 @@ Obstacle::Obstacle(unsigned int _id,
 
 Obstacle::~Obstacle() {}
 
-Type Obstacle::getType(){
+Type Obstacle::getType() const{
     return OBSTACLE;
 }
 

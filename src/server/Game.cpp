@@ -22,38 +22,28 @@ Game::Game(){
 
 Game::~Game(){}
 
-
-void Game::updateObject(unsigned int _id, Command _command, int args){
-    mutex.lock();
-    switch (_command) {
+MoveDirection Game::getDirection(Command _command, int args) const {
+    if (args == 0)
+        return NO_MOVE;
+    switch (_command){
+        case BUTTON_UP: {
+            return FORWARD;
+        }
         case BUTTON_LEFT: {
-            if (args == 1)
-                map->setObjectDirection(_id, LEFT, this->time);
-            else
-                map->setObjectDirection(_id, NO_MOVE, this->time);
-            break;
+            return LEFT;
         }
         case BUTTON_RIGHT: {
-            if (args == 1)
-                map->setObjectDirection(_id, RIGHT, this->time);
-            else
-                map->setObjectDirection(_id, NO_MOVE, this->time);
-            break;
-        }
-        case BUTTON_UP: {
-            if (args == 1)
-                map->setObjectDirection(_id, FORWARD, this->time);
-            else
-                map->setObjectDirection(_id, NO_MOVE, this->time);
-            break;
+            return RIGHT;
         }
         case BUTTON_DOWN: {
-            if (args == 1)
-                map->setObjectDirection(_id, BACK, this->time);
-            else
-                map->setObjectDirection(_id, NO_MOVE, this->time);
-            break;
+            return BACK;
         }
+    }
+}
+
+void Game::updateObject(unsigned int _id, Command _command, int args){
+    const std::lock_guard<std::mutex> lock(mutex);
+    switch (_command) {
         case MOUSE_ANGLE: {
             map->turnObject(_id, float(args), this->time);
             break;
@@ -105,15 +95,18 @@ void Game::updateObject(unsigned int _id, Command _command, int args){
             map->removeObject(_id);
             break;
         }
+        default: {
+            auto direction = getDirection(_command, args);
+            map->setObjectDirection(_id, direction, this->time);
+        }
     }
-    mutex.unlock();
 }
 
 //returns all objects, which object with id == _id can see
 std::vector<std::shared_ptr<GameObject>> Game::getObjects(unsigned int _id){
-    mutex.lock();
+    const std::lock_guard<std::mutex> lock(mutex);
     auto objects = map->getObjects(_id);
-    mutex.unlock();
+    return objects;
 }
 
 unsigned int Game::createPlayer(Coordinates coordinates) {
@@ -129,9 +122,8 @@ unsigned int Game::createPlayer(Coordinates coordinates) {
             defaults->defaults_player.at("height"),
             defaults->defaults_player.at("speed"),
             (unsigned int)defaults->defaults_player.at("bullets"));
-    mutex.lock();
+    const std::lock_guard<std::mutex> lock(mutex);
     auto player_id = map->addObject(player);
-    mutex.unlock();
     return player_id;
 }
 
@@ -148,9 +140,8 @@ void Game::createTechnics(Coordinates _coordinates, float _angle) {
             defaults->defaults_technics.at("height"),
             defaults->defaults_technics.at("speed"),
             defaults->defaults_technics.at("capacity"));
-    mutex.lock();
+    const std::lock_guard<std::mutex> lock(mutex);
     map->addObject(technics);
-    mutex.unlock();
 }
 
 void Game::createObstacle(Coordinates _coordinates, float _angle) {
@@ -164,15 +155,13 @@ void Game::createObstacle(Coordinates _coordinates, float _angle) {
             defaults->defaults_obstacle.at("hp"),
             defaults->defaults_obstacle.at("width"),
             defaults->defaults_obstacle.at("height"));
-    mutex.lock();
+    const std::lock_guard<std::mutex> lock(mutex);
     map->addObject(obstacle);
-    mutex.unlock();
 }
 
 void Game::removePlayer(unsigned int _id) {
-    mutex.lock();
+    const std::lock_guard<std::mutex> lock(mutex);
     map->removeObject(_id);
-    mutex.unlock();
 }
 
 void Game::start() {
@@ -187,11 +176,10 @@ void Game::end() {
 
 void Game::updateMap() {
     while (this->running) {
-        mutex.lock();
+        std::this_thread::sleep_for(10ms);
+        const std::lock_guard<std::mutex> lock(mutex);
         time = std::chrono::steady_clock::now();
         map->updateObjects(time);
-        mutex.unlock();
-        std::this_thread::sleep_for(10ms);
     }
 }
 
@@ -233,6 +221,6 @@ void Game::parseConfig() {
                 }
 }
 
-bool Game::isRunning() {
+bool Game::isRunning() const{
     return this->running;
 }

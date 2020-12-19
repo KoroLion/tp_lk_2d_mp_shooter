@@ -27,31 +27,33 @@ void ServerWorld::endGame() {
     }
 }
 
-bool ServerWorld::isRunning() {
+bool ServerWorld::isRunning() const{
     return game->isRunning();
 }
 
 //called by GameServer for each event
 void ServerWorld::addEvent(unsigned int _id, Command _command, int _args) {
-    mutex.lock();
+    const std::lock_guard<std::mutex> lock(mutex);
     events.emplace(Event(_id, _command, _args));
-    mutex.unlock();
 }
 
 //called by GameServer and returns all objects, which object with id == _id can see
 std::vector<std::shared_ptr<GameObject>> ServerWorld::getObjects(unsigned int _id) {
-    return game->getObjects(_id);
+    auto obj = game->getObjects(_id);
+    return obj;
 }
 
 
 void ServerWorld::handleEvents() {
     while (game->isRunning()) {
+        Event event;
         mutex.lock();
         if (!events.empty()) {
-            Event event = events.front();
-            game->updateObject(event.id, event.command, event.args);
+            event = events.front();
             events.pop();
         }
         mutex.unlock();
+        if (!event.isEmpty)
+            game->updateObject(event.id, event.command, event.args);
     }
 }
