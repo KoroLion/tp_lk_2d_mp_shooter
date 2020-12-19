@@ -1,11 +1,12 @@
 language: cpp
-install: pip3 install cpplint
+install: pip3 install cpplint && mkdir -p src/common/lib && wget -O src/common/lib/json.hpp https://github.com/nlohmann/json/releases/download/v3.9.1/json.hpp
 script: cd src/server && make build/server.out
 cache: packages
 
 addons:
   apt:
     packages:
+      - wget
       - libboost-all-dev
       - cppcheck
       - python3-pip
