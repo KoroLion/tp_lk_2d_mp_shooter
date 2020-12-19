@@ -1,6 +1,6 @@
 CC = g++
-CFLAGS = -Wall -Werror -Wpedantic
-CFLAGS_LITE = -Wall
+CFLAGS = -Wall -Werror -Wpedantic -std=c++14
+CFLAGS_LITE = -Wall -std=c++14
 
 build/server.out: build/main.o build/TcpServer.o build/Packet.o build/ServerWorld.a | build
 	$(CC) $(CFLAGS) -o $@ $^ -lpthread -lboost_system
