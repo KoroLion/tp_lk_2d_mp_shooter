@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/KoroLion/tp_lk_2d_mp_shooter.svg?branch=master)](https://travis-ci.org/KoroLion/tp_lk_2d_mp_shooter)
+[![Build Status](https://travis-ci.org/KoroLion/tp_lk_2d_mp_shooter.svg?branch=dev)](https://travis-ci.org/KoroLion/tp_lk_2d_mp_shooter)
 
 # Multiplayer 2D Shooter
 

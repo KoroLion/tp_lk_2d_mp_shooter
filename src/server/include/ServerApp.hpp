@@ -9,18 +9,22 @@
 #include <thread>
 
 #include "utils.hpp"
-#include "World.hpp"
 #include "TcpServer.hpp"
 #include "include/common.hpp"
 
-std::string game_objects_to_json(const std::vector<GameObject>& game_objects) {
+#include "GameObject.hpp"
+#include "ServerWorld.hpp"
+
+std::string game_objects_to_json(const std::vector<std::shared_ptr<GameObject>> game_objects) {
     std::stringstream ss;
     ss << "[";
     for (auto itr = game_objects.begin(); itr != game_objects.end(); itr++) {
+        std::shared_ptr<GameObject> gameObj = *itr;
         ss << "{";
-        ss << "\"typeId\": " << itr->get_type_id() << ", ";
-        ss << "\"x\": " << itr->get_x() << ", ";
-        ss << "\"y\": " << itr->get_y();
+        ss << "\"objId\": " << gameObj->getId() << ", ";
+        ss << "\"tid\": " << gameObj->getType() << ", ";
+        ss << "\"x\": " << gameObj->getX() << ", ";
+        ss << "\"y\": " << gameObj->getY();
         ss << "}";
         if (itr != (game_objects.end() - 1)) {
             ss << ", ";
@@ -35,7 +39,7 @@ class ServerApp {
  private:
     bool running = true;
 
-    std::unique_ptr<World> world;
+    std::unique_ptr<ServerWorld> world;
     std::unique_ptr<TcpServer> net_server;
 
     std::thread net_handle_thread;
@@ -43,7 +47,7 @@ class ServerApp {
     std::thread game_world_thread;
  public:
     ServerApp(std::string bind_addr, int port) {
-        world = std::make_unique<World>();
+        world = std::make_unique<ServerWorld>();
         net_server = std::make_unique<TcpServer>(
             port,
             std::bind(
@@ -80,7 +84,7 @@ class ServerApp {
         while (net_server->is_running()) {
             if (net_server->get_players_amount()) {
                 // todo: check for race condition!!!
-                const std::vector<GameObject>& game_objects = world->get_game_objects(1);
+                const std::vector<std::shared_ptr<GameObject>> game_objects = world->getObjects(1);
 
                 std::string data = game_objects_to_json(game_objects);
 
@@ -92,7 +96,7 @@ class ServerApp {
     }
 
     void game_world() {
-        world->start();
+        world->startGame();
     }
 
     void handle_cmd() {
@@ -116,7 +120,7 @@ class ServerApp {
         net_server->stop();
 
         std::cout << "Stopping world..." << std::endl;
-        world->stop();
+        world->endGame();
 
         running = false;
     }
