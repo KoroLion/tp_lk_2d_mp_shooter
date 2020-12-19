@@ -13,22 +13,24 @@
 #include "TcpServer.hpp"
 #include "include/common.hpp"
 
-std::string game_objects_to_json(const std::vector<GameObject>& game_objects) {
-    std::stringstream ss;
-    ss << "[";
-    for (auto itr = game_objects.begin(); itr != game_objects.end(); itr++) {
-        ss << "{";
-        ss << "\"typeId\": " << itr->get_type_id() << ", ";
-        ss << "\"x\": " << itr->get_x() << ", ";
-        ss << "\"y\": " << itr->get_y();
-        ss << "}";
-        if (itr != (game_objects.end() - 1)) {
-            ss << ", ";
-        }
-    }
-    ss << "]";
+#include "include/lib/nlohmann/json.hpp"
+using json = nlohmann::json;
 
-    return ss.str();
+std::string game_objects_to_json(const std::vector<GameObject>& game_objects) {
+    json j, json_objects, json_obj;
+
+    j["cmd"] = "objs";
+
+    for (auto itr = game_objects.begin(); itr != game_objects.end(); itr++) {
+        json_obj["tid"] = itr->get_type_id();
+        json_obj["x"] = itr->get_x();
+        json_obj["y"] = itr->get_y();
+        json_objects.push_back(json_obj);
+    }
+
+    j["arg"] = json_objects;
+
+    return j.dump();
 }
 
 class ServerApp {
