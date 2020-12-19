@@ -58,12 +58,12 @@ class ServerApp {
     ~ServerApp() {
     }
 
-    void net_event_callback(NetServerEventType ev_type, unsigned uid, std::string data) {
-        if (ev_type == CONNECTED) {
+    void net_event_callback(NetEventType::NetEventType ev_type, unsigned uid, std::string data) {
+        if (ev_type == NetEventType::CONNECTED) {
             std::cout << "Player " << uid << " connected!" << std::endl;
-        } else if (ev_type == MESSAGE) {
+        } else if (ev_type == NetEventType::RECEIVED) {
             std::cout << uid << ": " << data << std::endl;
-        } else if (ev_type == DISCONNECTED) {
+        } else if (ev_type == NetEventType::DISCONNECTED) {
             std::cout << "Player " << uid << " disconnected!" << std::endl;
         }
     }

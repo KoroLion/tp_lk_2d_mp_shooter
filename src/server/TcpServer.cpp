@@ -16,7 +16,7 @@ void Room::join(PSession player) {
 }
 
 void Room::leave(PSession player) {
-    _event_callback(DISCONNECTED, player->getUid(), "");
+    _event_callback(NetEventType::DISCONNECTED, player->getUid(), "");
     _players.erase(player);
 }
 
@@ -89,7 +89,7 @@ void PlayerSession::handle_read_header(const boost::system::error_code& error) {
 
 void PlayerSession::handle_read_body(const boost::system::error_code& error) {
     if (!error) {
-        _event_callback(MESSAGE, _uid, _read_msg.get_as_string());
+        _event_callback(NetEventType::RECEIVED, _uid, _read_msg.get_as_string());
         read_next_msg();
     } else {
         _room.leave(shared_from_this());
@@ -109,7 +109,7 @@ void PlayerSession::handle_write(const boost::system::error_code& error) {
 
 // ------
 
-TcpServer::TcpServer(int port, net_event_callback event_callback):
+TcpServer::TcpServer(int port, net_server_event_callback event_callback):
         _acceptor(
             _io_service,
             boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), port)
@@ -137,7 +137,7 @@ void TcpServer::start_accept() {
 }
 
 void TcpServer::handle_accept(std::shared_ptr<PlayerSession> session, const boost::system::error_code& error) {
-    _event_callback(CONNECTED, session->getUid(), "");
+    _event_callback(NetEventType::CONNECTED, session->getUid(), "");
     if (!error) {
         session->start();
     }

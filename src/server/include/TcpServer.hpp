@@ -5,7 +5,6 @@
 #include <deque>
 #include <list>
 #include <set>
-#include <functional>
 
 #include <thread>
 
@@ -13,6 +12,8 @@
 
 #include "include/Packet.hpp"
 #include "include/common.hpp"
+
+typedef std::function<void(NetEventType::NetEventType, unsigned, std::string)> net_server_event_callback;
 
 class Session {
  public:
@@ -26,9 +27,9 @@ typedef std::shared_ptr<Session> PSession;
 class Room {
  private:
     std::set<PSession> _players;
-    net_event_callback &_event_callback;
+    net_server_event_callback &_event_callback;
  public:
-    Room(net_event_callback &event_callback): _event_callback(event_callback) {}
+    Room(net_server_event_callback &event_callback): _event_callback(event_callback) {}
 
     void join(PSession player);
     void leave(PSession player);
@@ -42,11 +43,11 @@ private:
     unsigned _uid;
     boost::asio::ip::tcp::socket _socket;
     Room& _room;
-    net_event_callback &_event_callback;
+    net_server_event_callback &_event_callback;
     Packet _read_msg;
     std::deque<Packet> _write_msgs;
 public:
-    PlayerSession(unsigned uid, boost::asio::io_service& io_service, Room& room, net_event_callback &event_callback)
+    PlayerSession(unsigned uid, boost::asio::io_service& io_service, Room& room, net_server_event_callback &event_callback)
     : _uid(uid),
       _socket(io_service),
       _room(room),
@@ -75,10 +76,10 @@ class TcpServer {
     boost::asio::io_service _io_service;
     boost::asio::ip::tcp::resolver::iterator _endpoint_iterator;
     boost::asio::ip::tcp::acceptor _acceptor;
-    net_event_callback _event_callback;
+    net_server_event_callback _event_callback;
     Room _room;
  public:
-    TcpServer(int port, net_event_callback event_callback);
+    TcpServer(int port, net_server_event_callback event_callback);
 
     void start() {
         _io_service.run();

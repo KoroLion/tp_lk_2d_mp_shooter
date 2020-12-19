@@ -31,12 +31,12 @@ class Client {
         ((Client*)p)->net_handler();
     }
 
-    void net_event_callback(NetServerEventType ev_type, std::string data) {
-        if (ev_type == CONNECTED) {
+    void net_event_callback(NetEventType::NetEventType ev_type, std::string data) {
+        if (ev_type == NetEventType::CONNECTED) {
             std::cout << "CONNECTED" << std::endl;
-        } else if (ev_type == MESSAGE) {
+        } else if (ev_type == NetEventType::RECEIVED) {
             last_message = data;
-        } else if (ev_type == DISCONNECTED) {
+        } else if (ev_type == NetEventType::DISCONNECTED) {
             std::cout << "DISCONNECTED" << std::endl;
         }
     }

@@ -13,6 +13,7 @@ Copyright 2020 LioKor Team (KoroLion, SergTyapkin, altanab, biotyree)
 #include "include/common.hpp"
 #include "include/Packet.hpp"
 
+typedef std::function<void(NetEventType::NetEventType, std::string)> net_client_event_callback;
 typedef std::deque<Packet> Packet_queue;
 
 class TcpClient {
