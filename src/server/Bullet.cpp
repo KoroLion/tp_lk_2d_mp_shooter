@@ -52,7 +52,7 @@ bool Bullet::update(std::chrono::time_point<std::chrono::steady_clock> _time) {
     return true;
 }
 
-Type Bullet::getType() {
+Type Bullet::getType() const {
     return BULLET;
 }
 
@@ -60,10 +60,10 @@ void Bullet::reverseUpdate() {
     return;
 }
 
-float Bullet::getDamage() {
+float Bullet::getDamage() const {
     return this->damage;
 }
 
-unsigned int Bullet::getOwner() {
+unsigned int Bullet::getOwner() const{
     return this->owner;
 }

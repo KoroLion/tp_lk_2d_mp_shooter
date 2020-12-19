@@ -28,15 +28,16 @@ public:
 
     void removeObject(unsigned int _id);
 
-    std::shared_ptr<GameObject> getObject(unsigned int _id);
+    std::shared_ptr<GameObject> getObject(unsigned int _id) const;
 
     //returns all objects, which object with id == _id can see
     std::vector<std::shared_ptr<GameObject>> getObjects(unsigned int _id);
 
+
+private:
     //checks collision for all obejcts
     void checkCollisions();
 
-private:
     //resolve collision for two objects with ids: _id1 and _id2
     void resolveCollision(std::shared_ptr<GameObject> a, std::shared_ptr<GameObject> b);
 

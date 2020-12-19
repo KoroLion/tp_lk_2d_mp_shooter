@@ -59,7 +59,7 @@ void Map::removeObject(unsigned int _id) {
     this->objects.erase(_id);
 }
 
-std::shared_ptr<GameObject> Map::getObject(unsigned int _id) {
+std::shared_ptr<GameObject> Map::getObject(unsigned int _id) const{
     return this->objects.at(_id);
 }
 
@@ -76,9 +76,9 @@ std::vector<std::shared_ptr<GameObject>> Map::getObjects(unsigned int _id) {
 void Map::checkCollisions(){
     Coordinates a_max, b_max, a_min, b_min;
     for (auto a = this->objects.begin(); a != this->objects.end(); ++a) {
-        if (a->second->minCoord().x < 0 || a->second->minCoord().y < 0)
+        if (a->second->minCoord() < Coordinates(0,0))
             a->second->reverseUpdate();
-        if (a->second->maxCoord().x > this->width || a->second->maxCoord().y > this->height)
+        if (a->second->maxCoord() > Coordinates(this->width, this->height))
             a->second->reverseUpdate();
         for (auto b = a; b != this->objects.end(); ++b) {
             if(a == b)

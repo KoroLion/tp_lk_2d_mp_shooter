@@ -41,42 +41,42 @@ public:
     virtual void reverseUpdate();
 
 
-    virtual Type getType() = 0;
+    virtual Type getType() const = 0;
 
-    Coordinates minCoord();
-    Coordinates maxCoord();
+    Coordinates minCoord() const;
+    Coordinates maxCoord() const;
 
-    unsigned int getId();
+    unsigned int getId() const;
     void setId(unsigned int _id);
 
-    Coordinates getCoordinates();
+    Coordinates getCoordinates() const;
     void setCoordinates(Coordinates _coordinates);
-    float getX();
-    float getY();
+    float getX() const;
+    float getY() const;
 
-    std::chrono::time_point<std::chrono::steady_clock> getTime();
+    std::chrono::time_point<std::chrono::steady_clock> getTime() const ;
     void setTime(std::chrono::time_point<std::chrono::steady_clock> _time);
 
     virtual float getHp();
     void setHp(float _hp);
     void reduceHp(float _damage);
 
-    MoveDirection getDirection();
+    MoveDirection getDirection() const;
     void setDirection(MoveDirection _direction);
 
-    float getAngle();
+    float getAngle() const;
     void setAngle(float _angle);
 
-    float getWidth();
-    float getHeight();
+    float getWidth() const;
+    float getHeight() const;
 
     void setWidth(float _width);
     void setHeight(float _height);
 
-    virtual float getDamage();
+    virtual float getDamage() const;
     virtual void reload(unsigned int _bullets);
     virtual bool shoot();
-    virtual unsigned int getOwner();
+    virtual unsigned int getOwner() const;
 private:
     unsigned int id;
     Coordinates coordinates;

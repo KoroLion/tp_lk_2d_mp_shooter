@@ -48,7 +48,7 @@ bool Player::update(std::chrono::time_point<std::chrono::steady_clock> _time){
     return true;
 }
 
-Type Player::getType() {
+Type Player::getType() const {
     return PLAYER;
 }
 

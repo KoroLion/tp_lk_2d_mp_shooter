@@ -18,7 +18,7 @@ public:
     ~Technics();
 
     bool update(std::chrono::time_point<std::chrono::steady_clock> _time) override;
-    Type getType() override ;
+    Type getType() const override ;
 private:
     float speed;
     unsigned int capacity;

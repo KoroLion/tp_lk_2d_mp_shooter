@@ -13,7 +13,7 @@ public:
     void startGame();
     void endGame();
 
-    bool isRunning();
+    bool isRunning() const;
 
     //called by GameServer for each event
     void addEvent(unsigned int _id, Command _command, int args);

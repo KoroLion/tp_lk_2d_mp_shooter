@@ -22,7 +22,7 @@ GameObject::GameObject(unsigned int _id,
 
 GameObject::~GameObject() {}
 
-unsigned int GameObject::getId(){
+unsigned int GameObject::getId() const{
     return this->id;
 }
 
@@ -30,7 +30,7 @@ void GameObject::setId(unsigned int _id){
     this->id = _id;
 }
 
-Coordinates GameObject::getCoordinates(){
+Coordinates GameObject::getCoordinates() const{
     return this->coordinates;
 }
 
@@ -38,7 +38,7 @@ void GameObject::setCoordinates(Coordinates _coordinates){
     this->coordinates = _coordinates;
 }
 
-std::chrono::time_point<std::chrono::steady_clock> GameObject::getTime(){
+std::chrono::time_point<std::chrono::steady_clock> GameObject::getTime() const{
     return this->timeModified;
 }
 
@@ -46,7 +46,7 @@ void GameObject::setTime(std::chrono::time_point<std::chrono::steady_clock> _tim
     this->timeModified = _time;
 }
 
-MoveDirection GameObject::getDirection(){
+MoveDirection GameObject::getDirection() const{
     return this->direction;
 }
 
@@ -55,7 +55,7 @@ void GameObject::setDirection(MoveDirection _direction){
 }
 
 
-float GameObject::getAngle(){
+float GameObject::getAngle() const{
     return this->angle;
 }
 
@@ -87,10 +87,10 @@ void GameObject::reverseUpdate() {
     coordinates = previousCoordinates;
 }
 
-float GameObject::getWidth(){
+float GameObject::getWidth() const{
     return this->width;
 }
-float GameObject::getHeight(){
+float GameObject::getHeight() const{
     return this->height;
 }
 
@@ -101,7 +101,7 @@ void GameObject::setHeight(float _height){
     this->height = _height;
 }
 
-float GameObject::getDamage() {
+float GameObject::getDamage() const{
         return 0;
 }
 
@@ -111,22 +111,22 @@ bool GameObject::shoot() {
     return false;
 }
 
-Coordinates GameObject::minCoord() {
+Coordinates GameObject::minCoord() const {
     return Coordinates(this->coordinates.x - (width / 2), this->coordinates.y - (height / 2));
 }
 
-Coordinates GameObject::maxCoord() {
+Coordinates GameObject::maxCoord() const {
     return Coordinates(this->coordinates.x + (width / 2), this->coordinates.y + (height / 2));
 }
 
-float GameObject::getX() {
+float GameObject::getX() const{
     return this->coordinates.x;
 }
 
-float GameObject::getY() {
+float GameObject::getY() const{
     return this->coordinates.y;
 }
 
-unsigned int GameObject::getOwner() {
+unsigned int GameObject::getOwner() const{
     return this->id;
 }
