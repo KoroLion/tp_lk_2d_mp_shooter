@@ -89,7 +89,7 @@ bool LightTrasser::update() {
     //SDL_Log("%f %f", xEnd, yEnd);
     if (distance(xEnd, yEnd, (parts.end()-1)->first, (parts.end()-1)->second) >= (partWidth)) {
         partTimes.push_back(timeToFade);
-        parts.push_back(std::pair<float, float>((parts.end()-1)->first + partWidth*cos(rotation/180*M_PI), (parts.end()-1)->second + partWidth*sin(rotation/180*M_PI)));
+        parts.push_back(std::pair<float, float>((parts.end()-1)->first + partWidth*cos(radRot), (parts.end()-1)->second + partWidth*sin(radRot)));
     }
     return true;
 }

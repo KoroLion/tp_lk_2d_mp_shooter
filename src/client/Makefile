@@ -1,6 +1,6 @@
 CC = g++.exe
-CFLAGS_LITE = -Wall -Werror -Wpedantic
-CFLAGS =
+CFLAGS_LITE =
+CFLAGS =  -Wall -Werror -Wpedantic
 sdl_include = lib/x86_64-w64-mingw32/include/SDL2
 sdl_lib = lib/x86_64-w64-mingw32/lib
 boost_root = D:/Programs/boost_1_75_0
@@ -39,7 +39,7 @@ test:
 	cppcheck *.cpp include/*.hpp
 
 clear:
-	rm build/*.o
-	rm build/*.exe
-	rm build/*.out
-	rm build/*.a
+	-rm ./build/*.o
+	-rm ./build/*.exe
+	-rm ./build/*.out
+	-rm ./build/*.a
