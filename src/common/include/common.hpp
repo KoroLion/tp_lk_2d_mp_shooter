@@ -13,11 +13,13 @@ Client->Server
 { "cmd": MOVE_UP, "arg": true/false }
 **/
 
-enum NetServerEventType {
-    CONNECTED,
-    MESSAGE,
-    DISCONNECTED
-};
+namespace NetServerEventType {
+    enum NetServerEventType {
+        CONNECTED,
+        MESSAGE,
+        DISCONNECTED
+    };
+}
 
 namespace ClientCommands {
     enum ClientCommands {
@@ -44,14 +46,14 @@ namespace EntityType {
 
 namespace ActionType {
     enum ActionType {
-        NEW_SELF_ID, // own objId
+        NEW_SELF_ID, // objId = Player's objId
+        NEW_OBJECT, // what/who
         SHOOT, // who
-        DESTROYED // what
+        DESTROYED // what/who
     };
 }
 
+typedef std::function<void(NetServerEventType::NetServerEventType, unsigned, std::string)> net_event_callback;
+typedef std::function<void(NetServerEventType::NetServerEventType, std::string)> net_client_event_callback;
 
-typedef std::function<void(NetServerEventType, unsigned, std::string)> net_event_callback;
-typedef std::function<void(NetServerEventType, std::string)> net_client_event_callback;
-
-#endif
+#endif // SRC_COMMON_HPP_

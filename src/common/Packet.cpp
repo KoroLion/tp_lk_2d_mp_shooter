@@ -1,33 +1,34 @@
+/*
+Copyright 2020 LioKor Team (KoroLion, SergTyapkin, altanab)
+*/
+
 #include <cstring>  // for memcpy
 
 #include <sstream>
 #include <string>
-/*
-Copyright 2020 LioKor Team (KoroLion, SergTyapkin, altanab, biotyree)
-*/
 #include <iostream>
 #include <iomanip>
 
 #include "include/Packet.hpp"
 
 Packet::Packet(std::string data) {
-    body_length_ = data.length();
-    std::memcpy(data_ + header_length, data.data(), body_length_);
+    _body_length = data.length();
+    std::memcpy(_data + header_length, data.data(), _body_length);
     encode_header();
 }
 
 void Packet::set_body_length(size_t new_length) {
-    body_length_ = new_length;
-    if (body_length_ > max_body_length) {
-        body_length_ = max_body_length;
+    _body_length = new_length;
+    if (_body_length > max_body_length) {
+        _body_length = max_body_length;
     }
 }
 
 bool Packet::decode_header() {
-    std::string s(data_, header_length);
-    body_length_ = std::atoi(s.c_str());
-    if (body_length_ > max_body_length) {
-        body_length_ = 0;
+    std::string s(_data, header_length);
+    _body_length = std::stoi(s);
+    if (_body_length > max_body_length) {
+        _body_length = 0;
         return false;
     }
     return true;
@@ -35,6 +36,6 @@ bool Packet::decode_header() {
 
 void Packet::encode_header() {
     std::stringstream buffer;
-    buffer << std::setw(4) << static_cast<int>(body_length_);
-    std::memcpy(data_, buffer.str().data(), header_length);
+    buffer << std::setw(4) << static_cast<int>(_body_length);
+    std::memcpy(_data, buffer.str().data(), header_length);
 }

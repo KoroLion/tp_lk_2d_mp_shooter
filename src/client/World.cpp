@@ -103,6 +103,9 @@ void World::update(unsigned int time) {
     }
 }
 
-bool World::isInEntities(int key) {
-    return entities.find(key) != entities.end();
+Entity* World::getEntity(int key) {
+    auto itr = entities.find(key);
+    if (itr == entities.end())
+        return NULL;
+    return itr->second;
 }

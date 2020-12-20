@@ -23,7 +23,7 @@ class World {
     void addEntity(int id, Entity* entity);
     void addAnimation(Animation* animation);
     void setTarget(std::map<int, Entity*> _target, unsigned int _time);
-    bool isInEntities(int key);
+    Entity* getEntity(int key);
 
     ~World();
 

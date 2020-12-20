@@ -6,7 +6,7 @@ Copyright 2020 LioKor Team (KoroLion, SergTyapkin, altanab, biotyree)
 
 void TcpClient::handle_connect(const boost::system::error_code& error) {
     if (!error) {
-        _event_callback(CONNECTED, "");
+        _event_callback(NetServerEventType::CONNECTED, "");
         connected = true;
         read_header();
     } else {
@@ -48,7 +48,7 @@ void TcpClient::handle_read_header(const boost::system::error_code& error) {
 
 void TcpClient::handle_read_body(const boost::system::error_code& error) {
     if (!error) {
-        _event_callback(MESSAGE, read_packet_.get_as_string());
+        _event_callback(NetServerEventType::MESSAGE, read_packet_.get_as_string());
         read_header();
     } else {
         do_close();
@@ -87,7 +87,7 @@ void TcpClient::handle_write(const boost::system::error_code& error) {
 
 void TcpClient::do_close() {
     if (is_connected()) {
-        _event_callback(DISCONNECTED, "");
+        _event_callback(NetServerEventType::DISCONNECTED, "");
         connected = false;
         _socket.close();
     }

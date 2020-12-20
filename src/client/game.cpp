@@ -23,7 +23,7 @@ Copyright 2020 LioKor Team (KoroLion, SergTyapkin, altanab)
 
 #define FPS 60
 
-#define SEEK_ROTATION false
+#define SEEK_ROTATION true
 #define USE_MOUSE_FOR_ROTATE true
 #define MOUSE_SENSIVITY 0.1
 
@@ -34,6 +34,13 @@ Copyright 2020 LioKor Team (KoroLion, SergTyapkin, altanab)
 #define BULLET_TEXTURE_ID           4
 #define LIGHT_TRASSER_TEXTURE_ID    5
 #define STRAIGHT_TRASSER_TEXTURE_ID 6
+
+enum keycodes{
+    KEYCODE_W,
+    KEYCODE_A,
+    KEYCODE_S,
+    KEYCODE_D
+};
 
 SDL_Texture* loadTexture(const char* imgName, SDL_Renderer* renderer, SDL_Surface* win_surf, Uint8 r = -1, Uint8 g = -1, Uint8 b = -1) {
     SDL_Surface* tmp_surf = SDL_LoadBMP(imgName);
@@ -59,6 +66,7 @@ SDL_Texture* loadTexture(const char* imgName, SDL_Renderer* renderer, SDL_Surfac
 }
 
 Game::Game(const char* _title, int _width, int _height): title(_title), width(_width), height(_height),
+        playerId(-1), player(NULL),
         net_client("localhost", "23000", std::bind(
             netEventCallback,
             this,
@@ -95,6 +103,10 @@ Game::Game(const char* _title, int _width, int _height): title(_title), width(_w
     SDL_SetTextureAlphaMod(textures[BG_VIGNETTE_TEXTURE_ID], 0xCC);
     //SDL_SetTextureBlendMode(textures[BG_VIGNETTE_TEXTURE_ID], SDL_BLENDMODE_BLEND);
     SDL_SetTextureColorMod(textures[BG_TEXTURE_ID], CYAN_RGB);
+
+    for (int i = 0; i < KEYS_COUNT; i++) {
+        keys[i] = false;
+    }
 
     world = new World(WINDOW_WIDTH, WINDOW_HEIGHT, textures[BG_TEXTURE_ID], textures[BG_VIGNETTE_TEXTURE_ID]);
 
@@ -148,15 +160,15 @@ DWORD Game::networkThread() {
     return 0;
 }
 
-void Game::netEventCallback(NetServerEventType evType, std::string data) {
-    if (evType == CONNECTED) {
+void Game::netEventCallback(NetServerEventType::NetServerEventType evType, std::string data) {
+    if (evType == NetServerEventType::CONNECTED) {
         SDL_Log("%s\n", "INFO: Connected!");
-    } else if (evType == MESSAGE) {
+    } else if (evType == NetServerEventType::MESSAGE) {
         SDL_Log("%s%s\n", "RECEIVED: ", data.c_str());
-        recieveJson(data);
-    } else if (evType == DISCONNECTED) {
+    } else if (evType == NetServerEventType::DISCONNECTED) {
         SDL_Log("%s\n", "INFO: Disconnected!");
     }
+    recieveJson(data);
 }
 
 bool Game::start() {
@@ -199,28 +211,46 @@ void Game::render() {
 void Game::update() {
     world->update(time);
     camera->update();
+
+    Entity* tmp;
+    if ((tmp = world->getEntity(playerId)) != NULL)
+        player = (Player*)tmp;
+}
+
+void Game::setPlayerId(int id) {
+    playerId = id;
 }
 
 void Game::handleEvent(SDL_Event* event) {
-    bool quit_event = event->type == SDL_QUIT || event->key.keysym.sym == SDLK_ESCAPE ||
-        (event->type == SDL_WINDOWEVENT && event->window.event == SDL_WINDOWEVENT_CLOSE);
-
-    if (quit_event)
+    if (event->type == SDL_QUIT || event->key.keysym.sym == SDLK_ESCAPE ||
+        (event->type == SDL_WINDOWEVENT && event->window.event == SDL_WINDOWEVENT_CLOSE))
         stop();
+
+    if (!player)
+        return;
+
     switch (event->type) {
     case SDL_KEYDOWN:
         switch (event->key.keysym.sym) {
         case SDLK_w:
-            sendJson(ClientCommands::MOVE_UP, true);
+            if (!keys[KEYCODE_W])
+                sendJson(ClientCommands::MOVE_UP, true);
+            keys[KEYCODE_W] = true;
             break;
         case SDLK_a:
-            sendJson(ClientCommands::MOVE_LEFT, true);
+            if (!keys[KEYCODE_A])
+                sendJson(ClientCommands::MOVE_LEFT, true);
+            keys[KEYCODE_A] = true;
             break;
         case SDLK_s:
-            sendJson(ClientCommands::MOVE_DOWN, true);
+            if (!keys[KEYCODE_S])
+                sendJson(ClientCommands::MOVE_DOWN, true);
+            keys[KEYCODE_S] = true;
             break;
         case SDLK_d:
-            sendJson(ClientCommands::MOVE_RIGHT, true);
+            if (!keys[KEYCODE_D])
+                sendJson(ClientCommands::MOVE_RIGHT, true);
+            keys[KEYCODE_D] = true;
             break;
         }
         break;
@@ -228,15 +258,19 @@ void Game::handleEvent(SDL_Event* event) {
         switch (event->key.keysym.sym) {
         case SDLK_w:
             sendJson(ClientCommands::MOVE_UP, false);
+            keys[KEYCODE_W] = false;
             break;
         case SDLK_a:
             sendJson(ClientCommands::MOVE_LEFT, false);
+            keys[KEYCODE_A] = false;
             break;
         case SDLK_s:
             sendJson(ClientCommands::MOVE_DOWN, false);
+            keys[KEYCODE_S] = false;
             break;
         case SDLK_d:
             sendJson(ClientCommands::MOVE_RIGHT, false);
+            keys[KEYCODE_D] = false;
             break;
         }
         break;
@@ -268,32 +302,34 @@ void Game::handleEvent(SDL_Event* event) {
 }
 
 void Game::keyboardEvents() {
-    const Uint8 *keys = SDL_GetKeyboardState(0);
+    if (!player)
+        return;
+
     if (SEEK_ROTATION || !USE_MOUSE_FOR_ROTATE) {
-        if (keys[SDL_SCANCODE_W])
+        if (keys[KEYCODE_W])
             player->moveRelative(0);
-        if (keys[SDL_SCANCODE_A]) {
+        if (keys[KEYCODE_A]) {
             if (USE_MOUSE_FOR_ROTATE)
                 player->moveRelative(-90);
             else
                 player->rotateRelative(-10);
         }
-        if (keys[SDL_SCANCODE_S])
+        if (keys[KEYCODE_S])
             player->moveRelative(180);
-        if (keys[SDL_SCANCODE_D]) {
+        if (keys[KEYCODE_D]) {
             if (USE_MOUSE_FOR_ROTATE)
                 player->moveRelative(90);
             else
                 player->rotateRelative(10);
         }
     } else {
-        if (keys[SDL_SCANCODE_W])
+        if (keys[KEYCODE_W])
             player->moveAbsolute(0, -player->getSpeed());
-        if (keys[SDL_SCANCODE_A])
+        if (keys[KEYCODE_A])
             player->moveAbsolute(-player->getSpeed(), 0);
-        if (keys[SDL_SCANCODE_S])
+        if (keys[KEYCODE_S])
             player->moveAbsolute(0, player->getSpeed());
-        if (keys[SDL_SCANCODE_D])
+        if (keys[KEYCODE_D])
             player->moveAbsolute(player->getSpeed(), 0);
     }
 }
@@ -307,7 +343,7 @@ void Game::recieveJson(std::string message) {
         for (auto ent: j["arg"]) {
             SDL_Log("Cmnd: Id: %s, Type: %s, Coords: (%s %s), Grad: %s, Hp: %s\n", ((std::string)j["objid"]).c_str(), ((std::string)j["tid"]).c_str(),
                     ((std::string)j["x"]).c_str(), ((std::string)j["y"]).c_str(), ((std::string)j["rot"]).c_str(), ((std::string)j["hp"]).c_str());
-            bool finded = world->isInEntities(ent["objid"]);
+            bool finded = (world->getEntity(ent["objid"]) != NULL);
             switch ((int)ent["tid"]) {
             case EntityType::PLAYER:
                 newTarget.insert(std::pair<const int, Entity*>(ent["objid"], new Player(ent["x"], ent["y"], 1, 50,50, ent["rot"], NULL, 5)));
@@ -339,13 +375,18 @@ void Game::recieveJson(std::string message) {
         }
         world->setTarget(newTarget, j["time"]);
     } else if (j["cmd"] == "act") {
-        ;
+        switch ((int)j["arg"]["tid"]) {
+        case ActionType::NEW_SELF_ID:
+            setPlayerId(j["arg"]["objid"]);
+            break;
+        }
     }
 }
 
-void Game::sendJson(ClientCommands::ClientCommands command, bool action) {
+void Game::sendJson(ClientCommands::ClientCommands command, int action) {
     nlohmann::json j;
     j["cmd"] = command;
     j["arg"] = action;
     net_client.send(j.dump());
+    SDL_Log("SEND: %s", j.dump().c_str());
 }
