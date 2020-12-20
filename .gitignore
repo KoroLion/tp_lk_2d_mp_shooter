@@ -1,5 +1,8 @@
-.DS_Store
+cmake-build-debug
+.idea
+main.cpp.DS_Store
 
+build
 lib/
 build/
 server/

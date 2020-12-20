@@ -13,6 +13,9 @@ Copyright 2020 LioKor Team (KoroLion, SergTyapkin, altanab)
 #include "include/common.hpp"
 #include "TcpClient.hpp"
 
+#include "include/common.hpp"
+#include "TcpClient.hpp"
+
 
 class Game {
  public:

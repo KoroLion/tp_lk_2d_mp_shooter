@@ -166,8 +166,9 @@ bool Game::start() {
         SDL_Log("%s\n", "ERROR: Unable to start thread!");
         throw std::exception();
     }
-
+    
     SDL_Log("%s\n", "Game started");
+    
     isRunning = true;
     time = 0;
     while (isRunning) {
@@ -189,6 +190,11 @@ bool Game::start() {
         time += 1000/FPS;
         SDL_Delay(1000/FPS);
     }
+
+    net_client.close();
+    WaitForSingleObject(ht, INFINITE);
+    CloseHandle(ht);
+
     return 0;
 }
 

@@ -1,9 +1,6 @@
 #ifndef SRC_COMMON_HPP_
 #define SRC_COMMON_HPP_
 
-#include <string>
-#include <functional>
-
 /** JSON messages standert:
 Server->Client:
 {"cmd": "objs", "time": .., "arg": [{objid, tid, x, y, rot, hp}, ...]}
@@ -13,11 +10,13 @@ Client->Server
 { "cmd": MOVE_UP, "arg": true/false }
 **/
 
-enum NetServerEventType {
-    CONNECTED,
-    MESSAGE,
-    DISCONNECTED
-};
+namespace NetEventType {
+    enum NetEventType {
+        CONNECTED,
+        RECEIVED,
+        DISCONNECTED
+    };
+}
 
 namespace ClientCommands {
     enum ClientCommands {
@@ -44,14 +43,11 @@ namespace EntityType {
 
 namespace ActionType {
     enum ActionType {
-        NEW_SELF_ID, // own objId
+        PLAYER_CONNECTED, // objId = Player's objId
+        SELF_CONNECTED, // objId = own
         SHOOT, // who
-        DESTROYED // what
+        DESTROYED // what/who
     };
 }
-
-
-typedef std::function<void(NetServerEventType, unsigned, std::string)> net_event_callback;
-typedef std::function<void(NetServerEventType, std::string)> net_client_event_callback;
 
 #endif
