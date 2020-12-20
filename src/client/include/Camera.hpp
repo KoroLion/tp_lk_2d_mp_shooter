@@ -23,9 +23,9 @@ class Camera {
     void setTarget(Entity* _target = NULL) {target = _target;}
 
  private:
-    float x, y, z, angle, rotation, width, height;
-    Entity* target;
+    float x, y, z, angle, width, height, rotation;
     World* world;
+    Entity* target;
     bool seek_rotation;
 };
 

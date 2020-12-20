@@ -1,3 +1,6 @@
+/*
+Copyright 2020 LioKor Team (KoroLion, SergTyapkin, altanab, biotyree)
+*/
 #include <iostream>
 #include <string>
 
@@ -5,7 +8,7 @@
 
 
 int main(int argc, char **argv) {
-    Game game("Client.exe vsegda prav!", 1000, 500);
+    Game game("LioKor shooter", 1000, 500);
     if (game.start()) {
         std::cout << "ERROR: Unable to start the game!" << std::endl;
     }

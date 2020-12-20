@@ -47,11 +47,11 @@ class Entity {
 class Player: public Entity {
  public:
     Player(float _x, float _y, float _z, float _width, float _height, float _rotation, SDL_Texture* _texture, float _speed):
-        Entity(_x, _y, _z, _width, _height, _rotation, _texture), speed(_speed), bullets(0) {
+        Entity(_x, _y, _z, _width, _height, _rotation, _texture), speed(_speed), bulletsOnMap(0) {
     }
 
     virtual void render(SDL_Renderer *renderer, float baseX, float baseY, float centerRotation, float centerX, float centerY, float altitude, float angleX);
-    //virtual int update();
+    //virtual bool update();
 
     void moveRelative(float addAngle);
     virtual void shoot(World* world, SDL_Texture* bullet_texture, SDL_Texture* trasser_texture, SDL_Texture* small_trasser_texture);
@@ -61,14 +61,14 @@ class Player: public Entity {
     ~Player() {;}
  protected:
     float speed;
-    int bullets;
+    int bulletsOnMap;
     std::vector<Equipment*> equipment;
 };
 
 class Bullet: public Entity {
  public:
-    Bullet(float _x, float _y, float _z, float _width, float _height, float _rotation, SDL_Texture* _texture, float _speed, float _damage, Player* _owner):
-        Entity(_x, _y, _z, _width, _height, _rotation, _texture), speed(_speed), damage(_damage), owner(_owner) {
+    Bullet(float _x, float _y, float _z, float _width, float _height, float _rotation, SDL_Texture* _texture, float _speed):
+        Entity(_x, _y, _z, _width, _height, _rotation, _texture), speed(_speed) {
     }
 
     void moveRelative(float addAngle);
@@ -76,11 +76,10 @@ class Bullet: public Entity {
     virtual void render(SDL_Renderer *renderer, float baseX, float baseY, float centerRotation, float centerX, float centerY, float altitude, float angleX);
     virtual bool update();
 
-    ~Bullet() {;}
+    virtual ~Bullet() {;}
 
  protected:
-    float speed, damage;
-    Player* owner;
+    float speed;
     const float acceleration = 0.1;
     const float minSpeed = 5;
 };

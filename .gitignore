@@ -2,6 +2,8 @@
 
 lib/
 build/
+common/
+server/
 
 *.exe
 *.dll
@@ -9,4 +11,5 @@ build/
 *.out
 *.txt
 *.save
+*.save-failed
 *.rar

@@ -25,10 +25,8 @@ void World::addAnimation(Animation* animation) {
     animations.push_back(animation);
 }
 
-void World::setTarget(std::map<int, Entity*>* _target, unsigned int _time) {
-    if (lastTarget != NULL)
-        delete lastTarget;
-    lastTarget = target;
+void World::setTarget(std::map<int, Entity*> _target, unsigned int _time) {
+    lastTarget = target; //entities;
     target = _target;
     timeLastTarget = timeTarget;
     timeTarget = _time;
@@ -82,21 +80,29 @@ void World::render(SDL_Renderer *renderer, float baseX, float baseY, float cente
 
 void World::update(unsigned int time) {
     for (auto itr = animations.begin(); itr != animations.end(); itr++) {
-        if (!(*itr)->update())
-            animations.erase(itr);
+        if (!(*itr)->update()) {
+            animations.erase(itr--);
+        }
     }
 
-    auto targetEnd = (*target).end();
-    auto lastTargetEnd = (*lastTarget).end();
+    auto targetEnd = target.end();
+    auto lastTargetEnd = lastTarget.end();
     float percentage = ((float)(time-timeLastTarget))/((float)(timeTarget-timeLastTarget));
     for (auto itr = entities.begin(); itr != entities.end(); itr++) {
-        auto targetItr = (*target).find(itr->first);
-        auto lastTargetItr = (*lastTarget).find(itr->first);
+        auto targetItr = target.find(itr->first);
+        auto lastTargetItr = lastTarget.find(itr->first);
         if (targetItr != targetEnd && lastTargetItr != lastTargetEnd)
             itr->second->updateToTarget(lastTargetItr->second, targetItr->second, percentage);
         else
-            if (!itr->second->update())
-                entities.erase(itr);
+            if (!itr->second->update()) {
+                for (auto ani = animations.begin(); ani != animations.end(); ani++)
+                    if (itr->second == (*ani)->getTarget())
+                        (*ani)->setTarget(NULL);
+                entities.erase(itr--);
+            }
     }
 }
 
+bool World::isInEntities(int key) {
+    return entities.find(key) != entities.end();
+}

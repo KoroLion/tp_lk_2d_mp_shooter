@@ -10,6 +10,8 @@ Copyright 2020 LioKor Team (KoroLion, SergTyapkin, altanab)
 #include "SDL.h"
 #include "World.hpp"
 #include "Camera.hpp"
+#include "include/common.hpp"
+#include "TcpClient.hpp"
 
 
 class Game {
@@ -22,17 +24,26 @@ class Game {
     ~Game();
 
  private:
-    const char* title;
-    int width, height;
-    unsigned int time;
-
-    SDL_Window *window;
-    SDL_Renderer *renderer;
-
     void handleEvent(SDL_Event*);
     void keyboardEvents();
     void update();
     void render();
+
+    void netEventCallback(NetServerEventType, std::string);
+    static DWORD WINAPI networkThreadLauncher(LPVOID);
+    DWORD networkThread();
+
+    void recieveJson(std::string message);
+    void sendJson(ClientCommands::ClientCommands command, bool action);
+
+    const char* title;
+    int width, height;
+    unsigned int time;
+
+    TcpClient net_client;
+
+    SDL_Window *window;
+    SDL_Renderer *renderer;
 
     bool isRunning;
 

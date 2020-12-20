@@ -15,24 +15,28 @@ class Animation;
 
 class Animation {
 public:
-    Animation(float _x, float _y, SDL_Texture* _texture):
-        x(_x), y(_y), texture(_texture), timer(0) {;}
+    Animation(Entity* _target, float _x, float _y, SDL_Texture* _texture):
+        target(_target), x(_x), y(_y), texture(_texture), timer(0) {;}
 
     virtual void render(SDL_Renderer* renderer, float baseX, float baseY, float centerRotation, float centerX, float centerY, float angle) {;}
     virtual bool update() {return true;}
 
+    Entity* getTarget() {return target;}
+
+    void setTarget(Entity* newTarget) {target = newTarget;}
+
     ~Animation() {;}
 
 protected:
+    Entity* target;
     float x, y;
-    time_t timer;
     SDL_Texture* texture;
+    time_t timer;
 };
 
 class LightTrasser: public Animation {
 public:
-    LightTrasser(Entity* _target, float _x, float _y, int _height, float _rotation, SDL_Texture* _texture):
-        Animation(_x, _y, _texture), target(_target), xEnd(_x), yEnd(_y), height(_height), rotation(_rotation) {;}
+    LightTrasser(Entity* _target, float _x, float _y, int _height, float _rotation, SDL_Texture* _texture);
 
     virtual void render(SDL_Renderer* renderer, float baseX, float baseY, float centerRotation, float centerX, float centerY, float angle);
     virtual bool update();
@@ -40,10 +44,14 @@ public:
     ~LightTrasser() {;}
 
 protected:
-    const int timeToFade = 20;
-    float xEnd, yEnd, rotation;
-    int height;
-    Entity* target;
+    const int timeToFade = 100;
+    const float patterns = 2;
+    float xEnd, yEnd;
+    int width;
+    float rotation;
+    std::vector<int> partTimes;
+    std::vector<std::pair<float, float>> parts;
+    float partWidth;
 };
 
 #endif // SRC_CLIENT_INCLUDE_ANIMATIONS_HPP_
