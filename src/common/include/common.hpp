@@ -1,6 +1,15 @@
 #ifndef SRC_COMMON_HPP_
 #define SRC_COMMON_HPP_
 
+/** JSON messages standert:
+Server->Client:
+{"cmd": "objs", "time": .., "arg": [{objid, tid, x, y, rot, hp}, ...]}
+{"cmd": "act",  "time": .., "arg": {objid, tid, arg}}
+
+Client->Server
+{ "cmd": MOVE_UP, "arg": true/false }
+**/
+
 namespace NetEventType {
     enum NetEventType {
         CONNECTED,
@@ -34,11 +43,11 @@ namespace EntityType {
 
 namespace ActionType {
     enum ActionType {
-        PLAYER_CONNECTED, // objId = Player's objId
-        SELF_CONNECTED, // objId = own
+        NEW_SELF_ID, // objId = Player's objId
+        NEW_OBJECT, // what/who
         SHOOT, // who
         DESTROYED // what/who
     };
 }
 
-#endif
+#endif  // SRC_COMMON_HPP

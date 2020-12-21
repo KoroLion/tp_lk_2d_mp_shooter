@@ -33,8 +33,8 @@ class Armor: public Equipment {
     virtual ~Armor();
 
  protected:
-    float hp;
     const float percent;
+    float hp;
 };
 
 class Weapon: public Equipment {

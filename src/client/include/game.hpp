@@ -10,10 +10,10 @@ Copyright 2020 LioKor Team (KoroLion, SergTyapkin, altanab)
 #include "SDL.h"
 #include "World.hpp"
 #include "Camera.hpp"
-
 #include "include/common.hpp"
 #include "TcpClient.hpp"
 
+#define KEYS_COUNT 4
 
 class Game {
  public:
@@ -25,15 +25,6 @@ class Game {
     ~Game();
 
  private:
-    const char* title;
-    int width, height;
-    unsigned int time;
-
-    TcpClient net_client;
-
-    SDL_Window *window;
-    SDL_Renderer *renderer;
-
     void handleEvent(SDL_Event*);
     void keyboardEvents();
     void update();
@@ -43,13 +34,30 @@ class Game {
     static DWORD WINAPI networkThreadLauncher(LPVOID);
     DWORD networkThread();
 
+    void setPlayerId(int id);
+
+    void recieveJson(std::string message);
+    void sendJson(ClientCommands::ClientCommands command, int action);
+
+    const char* title;
+    int width, height;
+    time_t time;
+
+
+    SDL_Window *window;
+    SDL_Renderer *renderer;
+
     bool isRunning;
 
+    int playerId;
     Player* player;
     World* world;
     Camera* camera;
 
+    bool keys[KEYS_COUNT];
+
+    TcpClient net_client;
     std::vector<SDL_Texture*> textures;
 };
 
-#endif  // SRC_CLIENT_INCLUDE_GAME_HPP_
+#endif // SRC_CLIENT_INCLUDE_GAME_HPP_

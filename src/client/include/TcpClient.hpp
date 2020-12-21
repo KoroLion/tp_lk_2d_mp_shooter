@@ -48,4 +48,4 @@ class TcpClient {
     void close();
 };
 
-#endif
+#endif  // SRC_CLIENT_TCPCLIENT_HPP_

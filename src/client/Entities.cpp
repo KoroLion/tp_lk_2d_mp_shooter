@@ -189,6 +189,8 @@ void Entity::render(SDL_Renderer *renderer, float baseX, float baseY, float cent
     float yRightDown = resY + ( width/2*sinRot + height/2*cosRot);
 
     //float angleY = angleX * (width/height);
+    if (z == altitude)
+        return;
     float k_3D = 1/(altitude-z)*altitude;
     float trapezeHeight = distance(xLeftUp-centerX,yLeftUp-centerY, (xLeftUp-centerX)*k_3D,(yLeftUp-centerY)*k_3D);
     float accuracy = trapezeHeight/1;
@@ -270,14 +272,14 @@ void Player::moveRelative(float addAngle) {
 }
 
 void Player::shoot(World* world, SDL_Texture* bullet_texture, SDL_Texture* trasser_texture, SDL_Texture* small_trasser_texture) {
-    bullets++;
-    Entity* ent;
-    world->addEntity(10+bullets*3+0, ent = new Bullet(x, y, z, 15, 10, rotation, bullet_texture, 12, 100, this));
-    world->addAnimation(new LightTrasser(ent, x, y, 12, rotation, trasser_texture));
+    bulletsOnMap++;
+    Entity* e;
+    world->addEntity(10+bulletsOnMap*3+0, e = new Bullet(x, y, z, 15, 10, rotation, bullet_texture, 12));
+    world->addAnimation(new LightTrasser(e, x, y, 12, rotation, trasser_texture));
 
-    world->addEntity(10+bullets*3+1, ent = new Bullet(x, y, z, 10, 5, rotation-10, bullet_texture, 8, 100, this));
+    world->addEntity(10+bulletsOnMap*3+1, e = new Bullet(x, y, z, 10, 5, rotation-10, bullet_texture, 8));
     //world->addAnimation(new LightTrasser(ent, x, y, 8, rotation-10, small_trasser_texture));
-    world->addEntity(10+bullets*3+2, ent = new Bullet(x, y, z, 10, 5, rotation+10, bullet_texture, 8, 100, this));
+    world->addEntity(10+bulletsOnMap*3+2, e = new Bullet(x, y, z, 10, 5, rotation+10, bullet_texture, 8));
     //world->addAnimation(new LightTrasser(ent, x, y, 8, rotation+10, small_trasser_texture));
 }
 

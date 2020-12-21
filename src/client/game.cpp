@@ -4,7 +4,6 @@ Copyright 2020 LioKor Team (KoroLion, SergTyapkin, altanab)
 #include <iostream>
 #include <math.h>
 #include <vector>
-#include <windows.h>
 
 #include "SDL.h"
 #include "include/Game.hpp"
@@ -12,6 +11,10 @@ Copyright 2020 LioKor Team (KoroLion, SergTyapkin, altanab)
 #include "include/Camera.hpp"
 #include "include/Colors.hpp"
 #include "include/Entities.hpp"
+#include "include/common.hpp"
+#include "include/TcpClient.hpp"
+#include "lib/json.hpp"
+//using json = nlohmann::json;
 
 #define WINDOW_X_INIT 300
 #define WINDOW_Y_INIT 300
@@ -20,7 +23,7 @@ Copyright 2020 LioKor Team (KoroLion, SergTyapkin, altanab)
 
 #define FPS 60
 
-#define SEEK_ROTATION false
+#define SEEK_ROTATION true
 #define USE_MOUSE_FOR_ROTATE true
 #define MOUSE_SENSIVITY 0.1
 
@@ -32,10 +35,17 @@ Copyright 2020 LioKor Team (KoroLion, SergTyapkin, altanab)
 #define LIGHT_TRASSER_TEXTURE_ID    5
 #define STRAIGHT_TRASSER_TEXTURE_ID 6
 
+enum keycodes{
+    KEYCODE_W,
+    KEYCODE_A,
+    KEYCODE_S,
+    KEYCODE_D
+};
+
 SDL_Texture* loadTexture(const char* imgName, SDL_Renderer* renderer, SDL_Surface* win_surf, Uint8 r = -1, Uint8 g = -1, Uint8 b = -1) {
     SDL_Surface* tmp_surf = SDL_LoadBMP(imgName);
     if (tmp_surf == NULL) {
-        std::cout << "Can't load surface: " << SDL_GetError() << std::endl;
+        SDL_Log("%s%s\n", "Can't load surface: ", SDL_GetError());
         return NULL;
     }
     if (r != -1)
@@ -43,19 +53,20 @@ SDL_Texture* loadTexture(const char* imgName, SDL_Renderer* renderer, SDL_Surfac
     /*
     tmp_surf = SDL_ConvertSurface(tmp_surf, win_surf->format, 0);
     if (tmp_surf == NULL) {
-        std::cout << "Can't convert to new format: " << SDL_GetError() << std::endl;
+        SDL_Log("%s%s\n", "Can't convert to new format: ", SDL_GetError());
         return NULL;
     }
     */
     SDL_Texture* tmp_texture = SDL_CreateTextureFromSurface(renderer, tmp_surf);
     if (tmp_texture == NULL) {
-        std::cout << "Can't conver surf to texture: " << SDL_GetError() << std::endl;
+        SDL_Log("%s%s\n", "Can't conver surf to texture: ", SDL_GetError());
         return NULL;
     }
     return tmp_texture;
 }
 
 Game::Game(const char* _title, int _width, int _height): title(_title), width(_width), height(_height),
+        playerId(-1), player(NULL),
         net_client("localhost", "23000", std::bind(
             netEventCallback,
             this,
@@ -63,12 +74,12 @@ Game::Game(const char* _title, int _width, int _height): title(_title), width(_w
             std::placeholders::_2
         )) {
     if (SDL_Init(SDL_INIT_VIDEO)) {
-        std::cout << "Can't init: " << SDL_GetError() << std::endl;
+        SDL_Log("%s%s\n", "Can't init: ", SDL_GetError());
         return;
     }
 
     if ((window = SDL_CreateWindow(title, WINDOW_X_INIT, WINDOW_Y_INIT, width, height, SDL_WINDOW_OPENGL | SDL_WINDOW_INPUT_GRABBED)) == NULL) {
-        std::cout << "Can't create window: " << SDL_GetError() << std::endl;
+        SDL_Log("%s%s\n", "Can't create window: ", SDL_GetError());
         return;
     }
 
@@ -78,7 +89,7 @@ Game::Game(const char* _title, int _width, int _height): title(_title), width(_w
     }
 
     if ((renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC)) == NULL) {
-        std::cout << "Can't create renderer: " << SDL_GetError() << std::endl;
+        SDL_Log("%s%s\n", "Can't create renderer: ", SDL_GetError());
         return;
     }
 
@@ -93,30 +104,40 @@ Game::Game(const char* _title, int _width, int _height): title(_title), width(_w
     //SDL_SetTextureBlendMode(textures[BG_VIGNETTE_TEXTURE_ID], SDL_BLENDMODE_BLEND);
     SDL_SetTextureColorMod(textures[BG_TEXTURE_ID], CYAN_RGB);
 
+    for (int i = 0; i < KEYS_COUNT; i++) {
+        keys[i] = false;
+    }
+
     world = new World(WINDOW_WIDTH, WINDOW_HEIGHT, textures[BG_TEXTURE_ID], textures[BG_VIGNETTE_TEXTURE_ID]);
 
     player = new Player(200,200,2, 40,40, 0, textures[PLAYER_TEXTURE_ID], 5);
     world->addEntity(0, player);
 
-    world->addEntity(1, new Obstacle(0,0,0, 0,0, 0, textures[BOX_TEXTURE_ID]));
-    world->addEntity(2, new Obstacle(0,0,0, 0,0, 0, textures[BOX_TEXTURE_ID]));
-    world->addEntity(3, new Obstacle(0,0,0, 0,0, 0, textures[BOX_TEXTURE_ID]));
+    for (int i = 1; i < 1+5; i++) {
+        world->addEntity(i, new Obstacle(0,0,0, 0,0, 0, textures[BOX_TEXTURE_ID]));
+    }
 
-    std::map<int, Entity*>* targetEntities = new std::map<int, Entity*>;
-    targetEntities->insert(std::pair<const int, Entity*>(1, new Obstacle(50,120,1, 50,50, 30, NULL)));
-    targetEntities->insert(std::pair<const int, Entity*>(2, new Obstacle(60,30,1, 60,60, -20, NULL)));
-    targetEntities->insert(std::pair<const int, Entity*>(3, new Obstacle(300,250,2, 100,200, 0, NULL)));
+    std::map<int, Entity*> targetEntities;
+    targetEntities.insert(std::pair<const int, Entity*>(1, new Obstacle(50,120,1, 50,50, 30, NULL)));
+    targetEntities.insert(std::pair<const int, Entity*>(2, new Obstacle(60,30,1, 60,60, -20, NULL)));
+    targetEntities.insert(std::pair<const int, Entity*>(3, new Obstacle(300,250,2, 100,200, 0, NULL)));
+    targetEntities.insert(std::pair<const int, Entity*>(4, new Obstacle(250,20,3, 100,200, 90, NULL)));
+    targetEntities.insert(std::pair<const int, Entity*>(5, new Obstacle(20,400,5, 80,100, 20, NULL)));
 
     world->setTarget(targetEntities, 0);
 
-    targetEntities = new std::map<int, Entity*>;
-    targetEntities->insert(std::pair<const int, Entity*>(1, new Obstacle(50,120,1, 50,50, 30, NULL)));
-    targetEntities->insert(std::pair<const int, Entity*>(2, new Obstacle(60,30,1, 60,60, 200, NULL)));
-    targetEntities->insert(std::pair<const int, Entity*>(3, new Obstacle(300,250,2, 100,200, 0, NULL)));
+    targetEntities.clear();
+    targetEntities.insert(std::pair<const int, Entity*>(1, new Obstacle(50,120,1, 50,50, 30, NULL)));
+    targetEntities.insert(std::pair<const int, Entity*>(2, new Obstacle(60,30,1, 60,60, 200, NULL)));
+    targetEntities.insert(std::pair<const int, Entity*>(3, new Obstacle(300,250,2, 100,200, 0, NULL)));
+    targetEntities.insert(std::pair<const int, Entity*>(4, new Obstacle(250,20,3, 100,200, 90, NULL)));
+    targetEntities.insert(std::pair<const int, Entity*>(5, new Obstacle(150,200,5, 80,100, 20, NULL)));
 
-    world->setTarget(targetEntities, 10000);
+    world->setTarget(targetEntities, 10*1000);
 
     camera = new Camera(width/2, height/2, 10, 60, WINDOW_WIDTH, WINDOW_HEIGHT, 0, world, player, SEEK_ROTATION);
+
+    //world->addAnimation(new LightTrasser(player, player->getX(), player->getY(), player->getWidth()/2, player->getRotation(), textures[LIGHT_TRASSER_TEXTURE_ID]));
 }
 
 Game::~Game() {
@@ -131,7 +152,7 @@ DWORD WINAPI Game::networkThreadLauncher(LPVOID p) {
 DWORD Game::networkThread() {
     try {
         net_client.connect();
-    } catch (std::exception e) {
+    } catch (const std::exception &e) {
         std::cout << "WARNING: Failed to connect!" << std::endl;
         return 1;
     }
@@ -153,11 +174,11 @@ bool Game::start() {
     DWORD tid = 0;
     HANDLE ht = CreateThread(NULL, 0, networkThreadLauncher, this, 0, &tid);
     if (ht == NULL) {
-        std::cout << "ERROR: Unable to start thread!" << std::endl;
+        SDL_Log("%s\n", "ERROR: Unable to start thread!");
         throw std::exception();
     }
 
-    FILE* f; fprintf(f = fopen("log.txt", "a+"), "%s\n", "Game started"); fclose(f);
+    SDL_Log("%s\n", "Game started");
     isRunning = true;
     time = 0;
     while (isRunning) {
@@ -171,6 +192,10 @@ bool Game::start() {
         update();
         render();
         SDL_RenderPresent(renderer);
+
+        if (((time / 1000) != ((time + 1000/FPS) / 1000)) && (player != NULL)) {
+            sendJson(ClientCommands::ROTATE, player->getRotation());
+        }
 
         time += 1000/FPS;
         SDL_Delay(1000/FPS);
@@ -190,37 +215,69 @@ void Game::render() {
 void Game::update() {
     world->update(time);
     camera->update();
+
+    Entity* tmp;
+    if ((tmp = world->getEntity(playerId)) != NULL)
+        player = (Player*)tmp;
+}
+
+void Game::setPlayerId(int id) {
+    playerId = id;
 }
 
 void Game::handleEvent(SDL_Event* event) {
-    bool quit_event = event->type == SDL_QUIT || event->key.keysym.sym == SDLK_ESCAPE ||
-        (event->type == SDL_WINDOWEVENT && event->window.event == SDL_WINDOWEVENT_CLOSE);
-
-    if (quit_event)
+    if (event->type == SDL_QUIT || event->key.keysym.sym == SDLK_ESCAPE ||
+        (event->type == SDL_WINDOWEVENT && event->window.event == SDL_WINDOWEVENT_CLOSE))
         stop();
+
+    if (!player)
+        return;
+
     switch (event->type) {
-    /*case SDL_KEYDOWN:
-        switch (event.key.keysym.sym) {
+    case SDL_KEYDOWN:
+        switch (event->key.keysym.sym) {
         case SDLK_w:
-            player->moveRelative(0);
+            if (!keys[KEYCODE_W])
+                sendJson(ClientCommands::MOVE_UP, true);
+            keys[KEYCODE_W] = true;
             break;
         case SDLK_a:
-            if (USE_MOUSE_FOR_ROTATE)
-                player->moveRelative(-90);
-            else
-                player->rotateRelative(-10);
+            if (!keys[KEYCODE_A])
+                sendJson(ClientCommands::MOVE_LEFT, true);
+            keys[KEYCODE_A] = true;
             break;
         case SDLK_s:
-            player->moveRelative(180);
+            if (!keys[KEYCODE_S])
+                sendJson(ClientCommands::MOVE_DOWN, true);
+            keys[KEYCODE_S] = true;
             break;
         case SDLK_d:
-            if (USE_MOUSE_FOR_ROTATE)
-                player->moveRelative(90);
-            else
-                player->rotateRelative(10);
+            if (!keys[KEYCODE_D])
+                sendJson(ClientCommands::MOVE_RIGHT, true);
+            keys[KEYCODE_D] = true;
             break;
         }
-        break;*/
+        break;
+    case SDL_KEYUP:
+        switch (event->key.keysym.sym) {
+        case SDLK_w:
+            sendJson(ClientCommands::MOVE_UP, false);
+            keys[KEYCODE_W] = false;
+            break;
+        case SDLK_a:
+            sendJson(ClientCommands::MOVE_LEFT, false);
+            keys[KEYCODE_A] = false;
+            break;
+        case SDLK_s:
+            sendJson(ClientCommands::MOVE_DOWN, false);
+            keys[KEYCODE_S] = false;
+            break;
+        case SDLK_d:
+            sendJson(ClientCommands::MOVE_RIGHT, false);
+            keys[KEYCODE_D] = false;
+            break;
+        }
+        break;
     case SDL_MOUSEMOTION:
         if (USE_MOUSE_FOR_ROTATE == false)
             return;
@@ -241,6 +298,7 @@ void Game::handleEvent(SDL_Event* event) {
         switch (event->button.button) {
         case SDL_BUTTON_LEFT:
             player->shoot(world, textures[BULLET_TEXTURE_ID], textures[LIGHT_TRASSER_TEXTURE_ID], textures[STRAIGHT_TRASSER_TEXTURE_ID]);
+            sendJson(ClientCommands::SHOOT, true);
             break;
         }
         break;
@@ -248,30 +306,91 @@ void Game::handleEvent(SDL_Event* event) {
 }
 
 void Game::keyboardEvents() {
-    const Uint8 *keys = SDL_GetKeyboardState(0);
+    if (!player)
+        return;
+
     if (SEEK_ROTATION || !USE_MOUSE_FOR_ROTATE) {
-        if (keys[SDL_SCANCODE_W])
+        if (keys[KEYCODE_W])
             player->moveRelative(0);
-        if (keys[SDL_SCANCODE_A])
+        if (keys[KEYCODE_A]) {
             if (USE_MOUSE_FOR_ROTATE)
                 player->moveRelative(-90);
             else
                 player->rotateRelative(-10);
-        if (keys[SDL_SCANCODE_S])
+        }
+        if (keys[KEYCODE_S])
             player->moveRelative(180);
-        if (keys[SDL_SCANCODE_D])
+        if (keys[KEYCODE_D]) {
             if (USE_MOUSE_FOR_ROTATE)
                 player->moveRelative(90);
             else
                 player->rotateRelative(10);
+        }
     } else {
-        if (keys[SDL_SCANCODE_W])
+        if (keys[KEYCODE_W])
             player->moveAbsolute(0, -player->getSpeed());
-        if (keys[SDL_SCANCODE_A])
+        if (keys[KEYCODE_A])
             player->moveAbsolute(-player->getSpeed(), 0);
-        if (keys[SDL_SCANCODE_S])
+        if (keys[KEYCODE_S])
             player->moveAbsolute(0, player->getSpeed());
-        if (keys[SDL_SCANCODE_D])
+        if (keys[KEYCODE_D])
             player->moveAbsolute(player->getSpeed(), 0);
     }
+}
+
+void Game::recieveJson(std::string message) {
+    auto j = nlohmann::json::parse(message);
+    SDL_Log("Cmnd: %s", ((std::string)j["cmd"]).c_str());
+
+    if (j["cmd"] == "objs") {
+        std::map<int, Entity*> newTarget;
+        for (auto ent: j["arg"]) {
+            SDL_Log("Cmnd: Id: %s, Type: %s, Coords: (%s %s), Grad: %s, Hp: %s\n", ((std::string)j["objid"]).c_str(), ((std::string)j["tid"]).c_str(),
+                    ((std::string)j["x"]).c_str(), ((std::string)j["y"]).c_str(), ((std::string)j["rot"]).c_str(), ((std::string)j["hp"]).c_str());
+            bool finded = (world->getEntity(ent["objid"]) != NULL);
+            switch ((int)ent["tid"]) {
+            case EntityType::PLAYER:
+                newTarget.insert(std::pair<const int, Entity*>(ent["objid"], new Player(ent["x"], ent["y"], 1, 50,50, ent["rot"], NULL, 5)));
+                if (!finded) {
+                    world->addEntity(ent["objid"], new Player(0,0,0,0,0,0, textures[PLAYER_TEXTURE_ID], 5));
+                }
+                break;
+            case EntityType::BULLET:
+                newTarget.insert(std::pair<const int, Entity*>(ent["objid"], new Bullet(ent["x"], ent["y"], 1, 10, 5, ent["rot"], NULL, 12)));
+                if (!finded) {
+                    Entity* bul;
+                    world->addEntity(ent["objid"], bul = new Bullet(0,0,0,0,0,0, textures[BULLET_TEXTURE_ID], 12));
+                    world->addAnimation(new LightTrasser(bul, ent["x"], ent["y"], 12, ent["rot"], textures[LIGHT_TRASSER_TEXTURE_ID]));
+                }
+                break;
+            case EntityType::BOX_SMALL:
+                newTarget.insert(std::pair<const int, Entity*>(ent["objid"], new Obstacle(ent["x"], ent["y"], 1,  50, 50, ent["rot"], NULL)));
+                if (!finded) {
+                    world->addEntity(ent["objid"], new Obstacle(0,0,0,0,0,0, textures[BOX_TEXTURE_ID]));
+                }
+                break;
+            case EntityType::BOX_BIG:
+                newTarget.insert(std::pair<const int, Entity*>(ent["objid"], new Obstacle(ent["x"], ent["y"], 2, 100,100, ent["rot"], NULL)));
+                if (!finded) {
+                    world->addEntity(ent["objid"], new Obstacle(0,0,0,0,0,0, textures[BOX_TEXTURE_ID]));
+                }
+                break;
+            }
+        }
+        world->setTarget(newTarget, j["time"]);
+    } else if (j["cmd"] == "act") {
+        switch ((int)j["arg"]["tid"]) {
+        case ActionType::NEW_SELF_ID:
+            setPlayerId(j["arg"]["objid"]);
+            break;
+        }
+    }
+}
+
+void Game::sendJson(ClientCommands::ClientCommands command, int action) {
+    nlohmann::json j;
+    j["cmd"] = command;
+    j["arg"] = action;
+    net_client.send(j.dump());
+    SDL_Log("SEND: %s", j.dump().c_str());
 }

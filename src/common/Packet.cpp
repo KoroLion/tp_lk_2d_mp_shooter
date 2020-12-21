@@ -1,3 +1,7 @@
+/*
+Copyright 2020 LioKor Team (KoroLion, SergTyapkin, altanab)
+*/
+
 #include <cstring>  // for memcpy
 
 #include <sstream>

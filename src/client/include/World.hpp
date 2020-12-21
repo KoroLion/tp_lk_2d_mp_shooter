@@ -22,14 +22,15 @@ class World {
     void update(unsigned int time);
     void addEntity(int id, Entity* entity);
     void addAnimation(Animation* animation);
-    void setTarget(std::map<int, Entity*>* _target, unsigned int _time);
+    void setTarget(std::map<int, Entity*> _target, unsigned int _time);
+    Entity* getEntity(int key);
 
     ~World();
 
  private:
     std::vector<Animation*> animations;
     std::map<int, Entity*> entities;
-    std::map<int, Entity*> *target = NULL, *lastTarget = NULL;
+    std::map<int, Entity*> target, lastTarget;
     unsigned int timeTarget, timeLastTarget;
     unsigned int width, height;
 
