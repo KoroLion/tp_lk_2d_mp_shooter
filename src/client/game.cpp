@@ -181,6 +181,19 @@ bool Game::start() {
     SDL_Log("%s\n", "Game started");
     isRunning = true;
     time = 0;
+
+    // waiting for connection
+    int wait_amount = 0;
+    const int MAX_WAIT_AMOUNT = 3;
+    while (!net_client.is_connected()) {
+        if (wait_amount > MAX_WAIT_AMOUNT) {
+            SDL_Log("%s\n", "ERROR: Unable to connect to server!");
+            throw std::exception();
+        }
+        wait_amount++;
+        SDL_Delay(500);
+    }
+
     while (isRunning) {
         SDL_Event event;
         while (SDL_PollEvent(&event))
