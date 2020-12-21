@@ -1,10 +1,13 @@
+/*
+Copyright 2020 github.com/KoroLion, github.com/SergTyapkin, github.com/altanab
+*/
 #include <iostream>
 #include <string>
 
 #include "include/ServerApp.hpp"
 
-const std::string VERSION = "0.1.0";
-const std::string DEFAULT_BIND_ADDR = "0.0.0.0";
+const char VERSION[] = "0.2.0";
+const char DEFAULT_BIND_ADDR[] = "0.0.0.0";
 const int DEFAULT_PORT = 23000;
 
 int main(int argc, char **argv) {

@@ -1,10 +1,15 @@
-#ifndef SRC_TCPSERVER_HPP_
-#define SRC_TCPSERVER_HPP_
+/*
+Copyright 2020 github.com/KoroLion, github.com/SergTyapkin, github.com/altanab
+*/
+#ifndef SRC_SERVER_INCLUDE_TCPSERVER_HPP_
+#define SRC_SERVER_INCLUDE_TCPSERVER_HPP_
 
 #include <algorithm>
 #include <deque>
 #include <list>
 #include <set>
+#include <memory>
+#include <string>
 
 #include <thread>
 
@@ -39,14 +44,14 @@ class Room {
 
 class PlayerSession: public Session,
                      public std::enable_shared_from_this<PlayerSession> {
-private:
+ private:
     unsigned _uid;
     boost::asio::ip::tcp::socket _socket;
     Room& _room;
     net_server_event_callback &_event_callback;
     Packet _read_msg;
     std::deque<Packet> _write_msgs;
-public:
+ public:
     PlayerSession(unsigned uid, boost::asio::io_service& io_service, Room& room, net_server_event_callback &event_callback)
     : _uid(uid),
       _socket(io_service),
@@ -78,6 +83,7 @@ class TcpServer {
     boost::asio::ip::tcp::acceptor _acceptor;
     net_server_event_callback _event_callback;
     Room _room;
+
  public:
     TcpServer(int port, net_server_event_callback event_callback);
 
@@ -98,4 +104,4 @@ class TcpServer {
     void send_all(std::string data);
 };
 
-#endif
+#endif  // SRC_SERVER_INCLUDE_TCPSERVER_HPP_

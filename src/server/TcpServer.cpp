@@ -1,3 +1,6 @@
+/*
+Copyright 2020 github.com/KoroLion, github.com/SergTyapkin, github.com/altanab
+*/
 #include <algorithm>
 #include <deque>
 #include <iostream>
