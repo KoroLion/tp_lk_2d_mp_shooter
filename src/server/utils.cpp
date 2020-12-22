@@ -1,3 +1,6 @@
+/*
+Copyright 2020 github.com/KoroLion, github.com/SergTyapkin, github.com/altanab
+*/
 #ifdef _WIN32
     #include <windows.h>
 #else
@@ -5,9 +8,9 @@
 #endif  // _WIN32
 
 void sleep_ms(int ms) {
-   #ifdef _WIN32
-       Sleep(ms);
-   #else
-       usleep(ms * 1000);
-   #endif  // _WIN32
+    #ifdef _WIN32
+        Sleep(ms);
+    #else
+        usleep(ms * 1000);
+    #endif  // _WIN32
 }
