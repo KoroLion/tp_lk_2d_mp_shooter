@@ -23,15 +23,16 @@ public:
 
     bool isRunning () const;
 
+    unsigned int createPlayer();
+    void removePlayer(unsigned int _id);
+
     void start();
     void end();
 private:
     void updateMap();
 
-    unsigned int createPlayer(Coordinates coord);
     void createTechnics(Coordinates _coordinates, float _angle);
     void createObstacle(Coordinates _coordinates, float _angle);
-    void removePlayer(unsigned int _id);
 
     MoveDirection getDirection (Command _command, int args) const;
 
