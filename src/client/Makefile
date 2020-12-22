@@ -1,9 +1,9 @@
 CC = g++.exe
 CFLAGS_LITE =
 CFLAGS =  -Wall -Werror -Wpedantic
-sdl_include = lib/i686-w64-mingw32/include/SDL2
-sdl_lib = lib/i686-w64-mingw32/lib
-boost_root = E:/Installs/boost_1_74_0
+sdl_include = lib/x86_64-w64-mingw32/include/SDL2
+sdl_lib = lib/x86_64-w64-mingw32/lib
+boost_root = D:/Programs/boost_1_75_0
 
 run: build/client.exe
 	./$<

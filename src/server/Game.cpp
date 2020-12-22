@@ -71,30 +71,6 @@ void Game::updateObject(unsigned int _id, Command _command, int args){
             map->shoot(_id, bullet);
             break;
         }
-        case PLAYER_CONNECTED: {
-            if (defaults->player_default_coord.empty())
-                return;
-            std::shared_ptr<GameObject> player = std::make_shared<Player>(
-                    0,
-                    defaults->player_default_coord.front(),
-                    PLAYER,
-                    this->time,
-                    NO_MOVE,
-                    defaults->player_default_angles.front(),
-                    defaults->defaults_player.at("hp"),
-                    defaults->defaults_player.at("width"),
-                    defaults->defaults_player.at("height"),
-                    defaults->defaults_player.at("speed"),
-                    (unsigned int)defaults->defaults_player.at("bullets"));
-            defaults->player_default_coord.pop();
-            defaults->player_default_angles.pop();
-            map->addObject(player);
-            break;
-        }
-        case PLAYER_DISCONNECTED: {
-            map->removeObject(_id);
-            break;
-        }
         default: {
             auto direction = getDirection(_command, args);
             map->setObjectDirection(_id, direction, this->time);
@@ -109,22 +85,31 @@ std::vector<std::shared_ptr<GameObject>> Game::getObjects(unsigned int _id){
     return objects;
 }
 
-unsigned int Game::createPlayer(Coordinates coordinates) {
+unsigned int Game::createPlayer() {
+    if (defaults->player_default_coord.empty())
+        return 0;
     std::shared_ptr<GameObject> player = std::make_shared<Player>(
-            0,
-            coordinates,
-            PLAYER,
-            this->time,
-            NO_MOVE,
-            0,
-            defaults->defaults_player.at("hp"),
-            defaults->defaults_player.at("width"),
-            defaults->defaults_player.at("height"),
-            defaults->defaults_player.at("speed"),
-            (unsigned int)defaults->defaults_player.at("bullets"));
+                0,
+                defaults->player_default_coord.front(),
+                PLAYER,
+                this->time,
+                NO_MOVE,
+                defaults->player_default_angles.front(),
+                defaults->defaults_player.at("hp"),
+                defaults->defaults_player.at("width"),
+                defaults->defaults_player.at("height"),
+                defaults->defaults_player.at("speed"),
+                (unsigned int)defaults->defaults_player.at("bullets"));
+    defaults->player_default_coord.pop();
+    defaults->player_default_angles.pop();
     const std::lock_guard<std::mutex> lock(mutex);
     auto player_id = map->addObject(player);
     return player_id;
+}
+
+void Game::removePlayer(unsigned int _id) {
+    const std::lock_guard<std::mutex> lock(mutex);
+    map->removeObject(_id);
 }
 
 void Game::createTechnics(Coordinates _coordinates, float _angle) {
@@ -159,10 +144,6 @@ void Game::createObstacle(Coordinates _coordinates, float _angle) {
     map->addObject(obstacle);
 }
 
-void Game::removePlayer(unsigned int _id) {
-    const std::lock_guard<std::mutex> lock(mutex);
-    map->removeObject(_id);
-}
 
 void Game::start() {
     this->running = true;

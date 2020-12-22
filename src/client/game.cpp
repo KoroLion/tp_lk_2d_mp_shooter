@@ -65,9 +65,9 @@ SDL_Texture* loadTexture(const char* imgName, SDL_Renderer* renderer, SDL_Surfac
     return tmp_texture;
 }
 
-Game::Game(const char* _title, int _width, int _height): title(_title), width(_width), height(_height),
+Game::Game(const char* _title, int _width, int _height, const std::string &IP, const std::string &port): title(_title), width(_width), height(_height),
         playerId(-1), player(NULL),
-        net_client("localhost", "23000", std::bind(
+        net_client(IP, port, std::bind(
             netEventCallback,
             this,
             std::placeholders::_1,
@@ -110,7 +110,7 @@ Game::Game(const char* _title, int _width, int _height): title(_title), width(_w
 
     world = new World(WINDOW_WIDTH, WINDOW_HEIGHT, textures[BG_TEXTURE_ID], textures[BG_VIGNETTE_TEXTURE_ID]);
 
-    player = new Player(200,200,2, 40,40, 0, textures[PLAYER_TEXTURE_ID], 5);
+    /*player = new Player(200,200,2, 40,40, 0, textures[PLAYER_TEXTURE_ID], 5);
     world->addEntity(0, player);
 
     for (int i = 1; i < 1+5; i++) {
@@ -135,6 +135,7 @@ Game::Game(const char* _title, int _width, int _height): title(_title), width(_w
 
     world->setTarget(targetEntities, 10*1000);
 
+    */
     camera = new Camera(width/2, height/2, 10, 60, WINDOW_WIDTH, WINDOW_HEIGHT, 0, world, player, SEEK_ROTATION);
 
     //world->addAnimation(new LightTrasser(player, player->getX(), player->getY(), player->getWidth()/2, player->getRotation(), textures[LIGHT_TRASSER_TEXTURE_ID]));
@@ -153,7 +154,7 @@ DWORD Game::networkThread() {
     try {
         net_client.connect();
     } catch (const std::exception &e) {
-        std::cout << "WARNING: Failed to connect!" << std::endl;
+        SDL_Log("%s\n", "WARNING: Failed to connect!");
         return 1;
     }
 
@@ -162,11 +163,12 @@ DWORD Game::networkThread() {
 
 void Game::netEventCallback(NetEventType::NetEventType evType, std::string data) {
     if (evType == NetEventType::CONNECTED) {
-        std::cout << "INFO: Connected!" << std::endl;
+        SDL_Log("%s\n", "INFO: Connected!");
     } else if (evType == NetEventType::RECEIVED) {
-        std::cout << "RECEIVED: " << data << std::endl;
+        SDL_Log("%s%s\n", "RECEIVED: ", "*json file*"); //data.c_str());
+        recieveJson(data);
     } else if (evType == NetEventType::DISCONNECTED) {
-        std::cout << "INFO: Disconnected!" << std::endl;
+        SDL_Log("%s\n", "INFO: Disconnected!");
     }
 }
 
@@ -226,12 +228,14 @@ void Game::render() {
 }
 
 void Game::update() {
-    world->update(time);
+    world->update(time, player);
     camera->update();
 
     Entity* tmp;
-    if ((tmp = world->getEntity(playerId)) != NULL)
+    if ((tmp = world->getEntity(playerId)) != NULL) {
         player = (Player*)tmp;
+        camera->setTarget(player);
+    }
 }
 
 void Game::setPlayerId(int id) {
@@ -311,6 +315,7 @@ void Game::handleEvent(SDL_Event* event) {
         switch (event->button.button) {
         case SDL_BUTTON_LEFT:
             player->shoot(world, textures[BULLET_TEXTURE_ID], textures[LIGHT_TRASSER_TEXTURE_ID], textures[STRAIGHT_TRASSER_TEXTURE_ID]);
+            sendJson(ClientCommands::ROTATE, player->getRotation());
             sendJson(ClientCommands::SHOOT, true);
             break;
         }
@@ -353,48 +358,51 @@ void Game::keyboardEvents() {
 
 void Game::recieveJson(std::string message) {
     auto j = nlohmann::json::parse(message);
-    SDL_Log("Cmnd: %s", ((std::string)j["cmd"]).c_str());
-
-    if (j["cmd"] == "objs") {
+    std::string cmnd;
+    j.at("cmd").get_to(cmnd);
+    SDL_Log("Parse: Cmnd: %s", cmnd.c_str());
+    if (cmnd == "objs") {
         std::map<int, Entity*> newTarget;
         for (auto ent: j["arg"]) {
-            SDL_Log("Cmnd: Id: %s, Type: %s, Coords: (%s %s), Grad: %s, Hp: %s\n", ((std::string)j["objid"]).c_str(), ((std::string)j["tid"]).c_str(),
-                    ((std::string)j["x"]).c_str(), ((std::string)j["y"]).c_str(), ((std::string)j["rot"]).c_str(), ((std::string)j["hp"]).c_str());
-            bool finded = (world->getEntity(ent["objid"]) != NULL);
+            SDL_Log("Id: %d, Type: %d, Coords: (%d %d), Grad: %d, Hp: %d\n",
+                    (int)ent["objid"], (int)ent["tid"], (int)ent["x"], (int)ent["y"], (int)ent["rot"], (int)ent["hp"]);
+            bool found = (world->getEntity(ent["objid"]) != NULL);
             switch ((int)ent["tid"]) {
             case EntityType::PLAYER:
                 newTarget.insert(std::pair<const int, Entity*>(ent["objid"], new Player(ent["x"], ent["y"], 1, 50,50, ent["rot"], NULL, 5)));
-                if (!finded) {
-                    world->addEntity(ent["objid"], new Player(0,0,0,0,0,0, textures[PLAYER_TEXTURE_ID], 5));
+                if (!found) {
+                    world->addEntity(ent["objid"], new Player(ent["x"], ent["y"], 1, 50, 50, ent["rot"], textures[PLAYER_TEXTURE_ID], 5));
                 }
                 break;
             case EntityType::BULLET:
                 newTarget.insert(std::pair<const int, Entity*>(ent["objid"], new Bullet(ent["x"], ent["y"], 1, 10, 5, ent["rot"], NULL, 12)));
-                if (!finded) {
+                if (!found) {
                     Entity* bul;
-                    world->addEntity(ent["objid"], bul = new Bullet(0,0,0,0,0,0, textures[BULLET_TEXTURE_ID], 12));
+                    world->addEntity(ent["objid"], bul = new Bullet(ent["x"], ent["y"], 1, 10, 5, ent["rot"], textures[BULLET_TEXTURE_ID], 12));
                     world->addAnimation(new LightTrasser(bul, ent["x"], ent["y"], 12, ent["rot"], textures[LIGHT_TRASSER_TEXTURE_ID]));
                 }
                 break;
             case EntityType::BOX_SMALL:
                 newTarget.insert(std::pair<const int, Entity*>(ent["objid"], new Obstacle(ent["x"], ent["y"], 1,  50, 50, ent["rot"], NULL)));
-                if (!finded) {
-                    world->addEntity(ent["objid"], new Obstacle(0,0,0,0,0,0, textures[BOX_TEXTURE_ID]));
+                if (!found) {
+                    world->addEntity(ent["objid"], new Obstacle(ent["x"], ent["y"], 1,  50, 50, ent["rot"], textures[BOX_TEXTURE_ID]));
                 }
                 break;
             case EntityType::BOX_BIG:
                 newTarget.insert(std::pair<const int, Entity*>(ent["objid"], new Obstacle(ent["x"], ent["y"], 2, 100,100, ent["rot"], NULL)));
-                if (!finded) {
-                    world->addEntity(ent["objid"], new Obstacle(0,0,0,0,0,0, textures[BOX_TEXTURE_ID]));
+                if (!found) {
+                    world->addEntity(ent["objid"], new Obstacle(ent["x"], ent["y"], 2, 100,100, ent["rot"], textures[BOX_TEXTURE_ID]));
                 }
                 break;
             }
         }
         world->setTarget(newTarget, j["time"]);
-    } else if (j["cmd"] == "act") {
+        SDL_Log("Time: %d", (int)j["time"]);
+    } else if (cmnd == "act") {
         switch ((int)j["arg"]["tid"]) {
         case ActionType::NEW_SELF_ID:
             setPlayerId(j["arg"]["objid"]);
+            SDL_Log("New player ID: %d", (int)j["arg"]["objid"]);
             break;
         }
     }
