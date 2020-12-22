@@ -21,6 +21,8 @@ public:
     //called by GameServer and returns all objects, which object with id == _id can see
     std::vector<std::shared_ptr<GameObject>> getObjects(unsigned int _id);
 
+    unsigned int connectPlayer();
+    void disconnectPlayer(unsigned int _id);
 private:
     void handleEvents();
 

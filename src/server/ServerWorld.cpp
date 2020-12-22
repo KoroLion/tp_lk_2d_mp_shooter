@@ -38,6 +38,13 @@ std::vector<std::shared_ptr<GameObject>> ServerWorld::getObjects(unsigned int _i
     return obj;
 }
 
+unsigned int ServerWorld::connectPlayer() {
+    return game->createPlayer();
+}
+
+void ServerWorld::disconnectPlayer(unsigned int _id) {
+    game->removePlayer(_id);
+}
 
 void ServerWorld::handleEvents() {
     while (game->isRunning()) {
