@@ -86,6 +86,15 @@ void ServerApp::net_event_callback(NetEventType::NetEventType ev_type, unsigned 
             case ClientCommands::MOVE_RIGHT:
                 world->addEvent(objid, BUTTON_RIGHT, j["arg"]);
                 break;
+            case ClientCommands::ROTATE:
+                world->addEvent(objid, MOUSE_ANGLE, j["arg"]);
+                break;
+            case ClientCommands::SHOOT:
+                world->addEvent(objid, COMMAND_SHOOT, j["arg"]);
+                break;
+            case ClientCommands::RELOAD:
+                world->addEvent(objid, COMMAND_RELOAD, j["arg"]);
+                break;
             default:
                 break;
         }
