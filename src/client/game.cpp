@@ -153,7 +153,7 @@ DWORD Game::networkThread() {
     try {
         net_client.connect();
     } catch (const std::exception &e) {
-        std::cout << "WARNING: Failed to connect!" << std::endl;
+        SDL_Log("%s\n", "WARNING: Failed to connect!");
         return 1;
     }
 
