@@ -23,7 +23,7 @@ std::string ServerApp::_game_objects_to_json(const std::vector<std::shared_ptr<G
     json j, json_objects, json_obj;
 
     j["cmd"] = "objs";
-    j["time"] = 0;
+    j["time"] = _cur_time;
 
     for (auto obj: game_objects) {
         json_obj["objid"] = obj->getId();
@@ -63,7 +63,7 @@ void ServerApp::net_event_callback(NetEventType::NetEventType ev_type, unsigned 
         json_arg["objid"] = objid;
         json_arg["tid"] = ActionType::NEW_SELF_ID;
         j["cmd"] = "act";
-        j["time"] = 0;
+        j["time"] = _cur_time;
         j["arg"] = json_arg;
         net_server->send(uid, j.dump());
 
@@ -127,7 +127,8 @@ void ServerApp::net_notify() {
             std::cout << data << std::endl;
             net_server->send_all(data);
         }
-        sleep_ms(1000);
+        _cur_time += 500;
+        sleep_ms(500);
     }
 }
 

@@ -19,6 +19,7 @@ class ServerApp {
  private:
     bool running = true;
     std::map<unsigned, unsigned> uid_to_objid;
+    time_t _cur_time = 0;
 
     std::unique_ptr<ServerWorld> world;
     std::unique_ptr<TcpServer> net_server;
