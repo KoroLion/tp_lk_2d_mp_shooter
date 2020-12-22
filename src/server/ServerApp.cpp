@@ -69,10 +69,31 @@ void ServerApp::net_event_callback(NetEventType::NetEventType ev_type, unsigned 
 
         uid_to_objid.insert(std::make_pair(uid, objid));
     } else if (ev_type == NetEventType::RECEIVED) {
-        std::cout << "Received from " << uid << ": " << data << std::endl;
+        unsigned objid = uid_to_objid[uid];
+        std::cout << "Received from " << uid << " (" << objid << ")" << ": " << data << std::endl;
+
+        auto j = json::parse(data);
+        switch ((ClientCommands::ClientCommands)j["cmd"]) {
+            case ClientCommands::MOVE_UP:
+                world->addEvent(objid, BUTTON_UP, j["arg"]);
+                break;
+            case ClientCommands::MOVE_DOWN:
+                world->addEvent(objid, BUTTON_DOWN, j["arg"]);
+                break;
+            case ClientCommands::MOVE_LEFT:
+                world->addEvent(objid, BUTTON_LEFT, j["arg"]);
+                break;
+            case ClientCommands::MOVE_RIGHT:
+                world->addEvent(objid, BUTTON_RIGHT, j["arg"]);
+                break;
+            default:
+                break;
+        }
+
     } else if (ev_type == NetEventType::DISCONNECTED) {
         unsigned objid = uid_to_objid[uid];
         std::cout << "Player " << uid << " (" << objid << ")" << " disconnected!" << std::endl;
+
         world->disconnectPlayer(objid);
         uid_to_objid.erase(uid);
     }
