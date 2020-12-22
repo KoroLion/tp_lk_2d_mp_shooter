@@ -8,7 +8,6 @@ Copyright 2020 github.com/KoroLion, github.com/SergTyapkin, github.com/altanab
 #include <sstream>
 #include <thread>
 
-#include "include/MockWorld.hpp"
 #include "include/TcpServer.hpp"
 #include "include/utils.hpp"
 #include "include/common.hpp"
@@ -18,17 +17,17 @@ using json = nlohmann::json;
 
 #include "include/ServerApp.hpp"
 
-std::string ServerApp::_game_objects_to_json(const std::vector<GameObject>& game_objects) {
+std::string ServerApp::_game_objects_to_json(const std::vector<std::shared_ptr<GameObject>>& game_objects) {
     json j, json_objects, json_obj;
 
     j["cmd"] = "objs";
     j["time"] = 0;
 
-    for (auto itr = game_objects.begin(); itr != game_objects.end(); itr++) {
-        json_obj["objid"] = itr - game_objects.begin();
-        json_obj["tid"] = itr->get_type_id();
-        json_obj["x"] = itr->get_x();
-        json_obj["y"] = itr->get_y();
+    for (auto obj: game_objects) {
+        json_obj["objid"] = obj->getId();
+        json_obj["tid"] = obj->getType();
+        json_obj["x"] = obj->getX();
+        json_obj["y"] = obj->getY();
         json_obj["rot"] = 0;
         json_obj["hp"] = 100;
         json_objects.push_back(json_obj);
@@ -40,7 +39,7 @@ std::string ServerApp::_game_objects_to_json(const std::vector<GameObject>& game
 }
 
 ServerApp::ServerApp(std::string bind_addr, int port) {
-    world = std::make_unique<World>();
+    world = std::make_unique<ServerWorld>();
     net_server = std::make_unique<TcpServer>(
         port,
         std::bind(
@@ -59,7 +58,7 @@ void ServerApp::net_event_callback(NetEventType::NetEventType ev_type, unsigned 
 
         json j, json_arg;
         json_arg["objid"] = uid;
-        json_arg["tid"] = ActionType::SELF_CONNECTED;
+        json_arg["tid"] = ActionType::NEW_SELF_ID;
         j["cmd"] = "act";
         j["time"] = 0;
         j["arg"] = json_arg;
@@ -83,7 +82,7 @@ void ServerApp::net_notify() {
     while (net_server->is_running()) {
         if (net_server->get_players_amount()) {
             // todo: check for race condition!!!
-            const std::vector<GameObject>& game_objects = world->get_game_objects(1);
+            std::vector<std::shared_ptr<GameObject>> game_objects = world->getObjects(1);
 
             std::string data = _game_objects_to_json(game_objects);
 
@@ -95,7 +94,7 @@ void ServerApp::net_notify() {
 }
 
 void ServerApp::game_world() {
-    world->start();
+    world->startGame();
 }
 
 void ServerApp::handle_cmd() {
@@ -119,7 +118,7 @@ void ServerApp::stop() {
     net_server->stop();
 
     std::cout << "Stopping world..." << std::endl;
-    world->stop();
+    world->endGame();
 
     running = false;
 }
