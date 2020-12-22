@@ -11,6 +11,8 @@ using json = nlohmann::json;
 class Client {
  private:
     TcpClient net_client;
+
+    std::string first_message;
     std::string last_message;
 
     DWORD net_handler() {
@@ -35,6 +37,9 @@ class Client {
         if (ev_type == NetEventType::CONNECTED) {
             std::cout << "CONNECTED" << std::endl;
         } else if (ev_type == NetEventType::RECEIVED) {
+            if (first_message.length() == 0) {
+                first_message = data;
+            }
             last_message = data;
         } else if (ev_type == NetEventType::DISCONNECTED) {
             std::cout << "DISCONNECTED" << std::endl;
@@ -68,26 +73,9 @@ class Client {
                     net_client.close();
                     break;
                 } else if (line == "last") {
-                    auto j = json::parse(last_message);
-                    for (auto itr = j.begin(); itr != j.end(); itr++) {
-                        auto obj = *itr;
-
-                        unsigned type_id = obj["typeId"];
-                        switch (type_id) {
-                            case EntityType::PLAYER:
-                                std::cout << "Player at ";
-                                break;
-                            case EntityType::BOX_SMALL:
-                                std::cout << "Small box at ";
-                                break;
-                            case EntityType::BOX_BIG:
-                                std::cout << "Big box at ";
-                                break;
-                            default:
-                                std::cout << "Unknown object (" << type_id << ") ";
-                        }
-                        std::cout << "(" << obj["x"] << ", " << obj["y"] << ")" << std::endl;
-                    }
+                    std::cout << last_message << std::endl;
+                } else if (line == "first") {
+                    std::cout << first_message << std::endl;
                 } else {
                     net_client.send(line);
                 }
