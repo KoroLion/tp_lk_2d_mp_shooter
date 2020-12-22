@@ -19,7 +19,7 @@ void Room::join(PSession player) {
 }
 
 void Room::leave(PSession player) {
-    _event_callback(NetEventType::DISCONNECTED, player->getUid(), "");
+    _event_callback(NetEventType::DISCONNECTED, player->get_uid(), "");
     _players.erase(player);
 }
 
@@ -36,6 +36,16 @@ void Room::send_all(const Packet& packet) {
         }
     );
 }
+
+void Room::send(unsigned uid, const Packet& packet) {
+    for (auto player: _players) {
+        if (player->get_uid() == uid) {
+            player->send(packet);
+            break;
+        }
+    }
+}
+
 
 void PlayerSession::read_next_msg() {
     boost::asio::async_read(
@@ -110,7 +120,6 @@ void PlayerSession::handle_write(const boost::system::error_code& error) {
     }
 }
 
-// ------
 
 TcpServer::TcpServer(int port, net_server_event_callback event_callback):
         _acceptor(
@@ -129,7 +138,7 @@ void TcpServer::start_accept() {
     );
     _free_uid++;
     _acceptor.async_accept(
-        new_session->socket(),
+        new_session->get_socket(),
         std::bind(
             &TcpServer::handle_accept,
             this,
@@ -140,14 +149,19 @@ void TcpServer::start_accept() {
 }
 
 void TcpServer::handle_accept(std::shared_ptr<PlayerSession> session, const boost::system::error_code& error) {
-    _event_callback(NetEventType::CONNECTED, session->getUid(), "");
     if (!error) {
         session->start();
     }
+    _event_callback(NetEventType::CONNECTED, session->get_uid(), "");
     start_accept();
 }
 
 void TcpServer::send_all(std::string data) {
     Packet packet(data);
     _room.send_all(packet);
+}
+
+void TcpServer::send(unsigned uid, std::string data) {
+    Packet packet(data);
+    _room.send(uid, packet);
 }

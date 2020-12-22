@@ -24,7 +24,7 @@ class Session {
  public:
     virtual ~Session() {}
     virtual void send(const Packet& msg) = 0;
-    virtual unsigned getUid() const = 0;
+    virtual unsigned get_uid() const = 0;
 };
 
 typedef std::shared_ptr<Session> PSession;
@@ -39,7 +39,8 @@ class Room {
     void join(PSession player);
     void leave(PSession player);
     int get_players_amount();
-    void send_all(const Packet& msg);
+    void send_all(const Packet&);
+    void send(unsigned uid, const Packet&);
 };
 
 class PlayerSession: public Session,
@@ -51,6 +52,13 @@ class PlayerSession: public Session,
     net_server_event_callback &_event_callback;
     Packet _read_msg;
     std::deque<Packet> _write_msgs;
+
+    void read_next_msg();
+    void write_next_msg(const Packet msg);
+
+    void handle_read_header(const boost::system::error_code& error);
+    void handle_read_body(const boost::system::error_code& error);
+    void handle_write(const boost::system::error_code& error);
  public:
     PlayerSession(unsigned uid, boost::asio::io_service& io_service, Room& room, net_server_event_callback &event_callback)
     : _uid(uid),
@@ -58,21 +66,11 @@ class PlayerSession: public Session,
       _room(room),
       _event_callback(event_callback) {}
 
-    unsigned getUid() const {
-        return _uid;
-    }
-    boost::asio::ip::tcp::socket& socket() {
-        return _socket;
-    }
+    boost::asio::ip::tcp::socket& get_socket() { return _socket; }
+    unsigned get_uid() const { return _uid; }
 
     void start();
-    void read_next_msg();
-    void write_next_msg(const Packet msg);
     void send(const Packet& msg);
-
-    void handle_read_header(const boost::system::error_code& error);
-    void handle_read_body(const boost::system::error_code& error);
-    void handle_write(const boost::system::error_code& error);
 };
 
 class TcpServer {
@@ -83,6 +81,9 @@ class TcpServer {
     boost::asio::ip::tcp::acceptor _acceptor;
     net_server_event_callback _event_callback;
     Room _room;
+
+    void start_accept();
+    void handle_accept(std::shared_ptr<PlayerSession> session, const boost::system::error_code& error);
 
  public:
     TcpServer(int port, net_server_event_callback event_callback);
@@ -99,9 +100,8 @@ class TcpServer {
     int get_players_amount() {
         return _room.get_players_amount();
     }
-    void start_accept();
-    void handle_accept(std::shared_ptr<PlayerSession> session, const boost::system::error_code& error);
     void send_all(std::string data);
+    void send(unsigned uid, std::string data);
 };
 
 #endif  // SRC_SERVER_INCLUDE_TCPSERVER_HPP_

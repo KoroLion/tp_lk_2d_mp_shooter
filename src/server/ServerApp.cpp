@@ -22,11 +22,15 @@ std::string ServerApp::_game_objects_to_json(const std::vector<GameObject>& game
     json j, json_objects, json_obj;
 
     j["cmd"] = "objs";
+    j["time"] = 0;
 
     for (auto itr = game_objects.begin(); itr != game_objects.end(); itr++) {
+        json_obj["objid"] = itr - game_objects.begin();
         json_obj["tid"] = itr->get_type_id();
         json_obj["x"] = itr->get_x();
         json_obj["y"] = itr->get_y();
+        json_obj["rot"] = 0;
+        json_obj["hp"] = 100;
         json_objects.push_back(json_obj);
     }
 
@@ -52,8 +56,16 @@ ServerApp::ServerApp(std::string bind_addr, int port) {
 void ServerApp::net_event_callback(NetEventType::NetEventType ev_type, unsigned uid, std::string data) {
     if (ev_type == NetEventType::CONNECTED) {
         std::cout << "Player " << uid << " connected!" << std::endl;
+
+        json j, json_arg;
+        json_arg["objid"] = uid;
+        json_arg["tid"] = ActionType::SELF_CONNECTED;
+        j["cmd"] = "act";
+        j["time"] = 0;
+        j["arg"] = json_arg;
+        net_server->send(uid, j.dump());
     } else if (ev_type == NetEventType::RECEIVED) {
-        std::cout << uid << ": " << data << std::endl;
+        std::cout << "Received from " << uid << ": " << data << std::endl;
     } else if (ev_type == NetEventType::DISCONNECTED) {
         std::cout << "Player " << uid << " disconnected!" << std::endl;
     }
