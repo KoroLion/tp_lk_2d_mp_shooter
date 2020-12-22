@@ -161,12 +161,13 @@ DWORD Game::networkThread() {
 }
 
 void Game::netEventCallback(NetEventType::NetEventType evType, std::string data) {
-    if (evType == NetEventType::CONNECTED) {
-        std::cout << "INFO: Connected!" << std::endl;
-    } else if (evType == NetEventType::RECEIVED) {
-        std::cout << "RECEIVED: " << data << std::endl;
-    } else if (evType == NetEventType::DISCONNECTED) {
-        std::cout << "INFO: Disconnected!" << std::endl;
+    if (evType == NetServerEventType::CONNECTED) {
+    SDL_Log("%s\n", "INFO: Connected!");
+    } else if (evType == NetServerEventType::MESSAGE) {
+        SDL_Log("%s%s\n", "RECEIVED: ", data.c_str());
+        recieveJson(data);
+    } else if (evType == NetServerEventType::DISCONNECTED) {
+        SDL_Log("%s\n", "INFO: Disconnected!");
     }
 }
 
