@@ -41,6 +41,7 @@ class ServerApp {
     void stop();
     int start();
     time_t time;
+
 };
 
 #endif  // SRC_SERVER_INCLUDE_SERVERAPP_HPP_

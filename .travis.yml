@@ -1,6 +1,6 @@
 language: cpp
 install: pip3 install cpplint && mkdir -p src/common/include/lib/nlohmann && wget -O src/common/include/lib/nlohmann/json.hpp https://github.com/nlohmann/json/releases/download/v3.9.1/json.hpp
-script: cd src/server && make build/server.out
+script: cd src/server && make cppcheck && make build/server.out
 cache: packages
 
 addons:
