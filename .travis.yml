@@ -1,0 +1,10 @@
+language: cpp
+install: pip3 install cpplint
+script: cd src/client && make test
+cache: packages
+
+addons:
+  apt:
+    packages:
+      - cppcheck
+      - python3-pip

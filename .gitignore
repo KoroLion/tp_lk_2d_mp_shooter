@@ -1,0 +1,14 @@
+.DS_Store
+
+lib/
+build/
+server/
+
+*.exe
+*.dll
+*.o
+*.out
+*.txt
+*.save
+*.save-failed
+*.rar
