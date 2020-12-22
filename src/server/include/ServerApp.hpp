@@ -18,6 +18,7 @@ Copyright 2020 github.com/KoroLion, github.com/SergTyapkin, github.com/altanab
 class ServerApp {
  private:
     bool running = true;
+    std::map<unsigned, unsigned> uid_to_objid;
 
     std::unique_ptr<ServerWorld> world;
     std::unique_ptr<TcpServer> net_server;

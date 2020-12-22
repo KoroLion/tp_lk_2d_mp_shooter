@@ -7,6 +7,8 @@ Copyright 2020 github.com/KoroLion, github.com/SergTyapkin, github.com/altanab
 #include <string>
 #include <sstream>
 #include <thread>
+#include <utility>
+#include <map>
 
 #include "include/TcpServer.hpp"
 #include "include/utils.hpp"
@@ -54,19 +56,25 @@ ServerApp::ServerApp(std::string bind_addr, int port) {
 
 void ServerApp::net_event_callback(NetEventType::NetEventType ev_type, unsigned uid, std::string data) {
     if (ev_type == NetEventType::CONNECTED) {
-        std::cout << "Player " << uid << " connected!" << std::endl;
+        unsigned objid = world->connectPlayer();
+        std::cout << "Player " << uid << " (" << objid << ")" << " connected!" << std::endl;
 
         json j, json_arg;
-        json_arg["objid"] = uid;
+        json_arg["objid"] = objid;
         json_arg["tid"] = ActionType::NEW_SELF_ID;
         j["cmd"] = "act";
         j["time"] = 0;
         j["arg"] = json_arg;
         net_server->send(uid, j.dump());
+
+        uid_to_objid.insert(std::make_pair(uid, objid));
     } else if (ev_type == NetEventType::RECEIVED) {
         std::cout << "Received from " << uid << ": " << data << std::endl;
     } else if (ev_type == NetEventType::DISCONNECTED) {
-        std::cout << "Player " << uid << " disconnected!" << std::endl;
+        unsigned objid = uid_to_objid[uid];
+        std::cout << "Player " << uid << " (" << objid << ")" << " disconnected!" << std::endl;
+        world->disconnectPlayer(objid);
+        uid_to_objid.erase(uid);
     }
 }
 
