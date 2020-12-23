@@ -5,6 +5,9 @@
 
 struct Event{
     Event() {
+        id = 0;
+        command = BUTTON_UP;
+        args = 0;
         isEmpty = true;
     }
     Event(unsigned int _id, Command _command, int _args) : id(_id), command(_command), args(_args), isEmpty(false) {}

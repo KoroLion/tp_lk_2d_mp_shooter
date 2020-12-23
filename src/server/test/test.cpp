@@ -4,25 +4,18 @@
 #include "ServerWorld.hpp"
 using namespace std::literals::chrono_literals;
 
-TEST(BasicTest, TryTest) {
+TEST(BasicTest, ConnectDisconnectPlayer) {
     ServerWorld sw;
     sw.startGame();
+    auto objects = sw.getObjects(0);
+    int num_objects = objects.size();
     auto player = sw.connectPlayer();
-    sw.addEvent(player, BUTTON_UP, 1);
-    std::this_thread::sleep_for(5000ms);
-    auto obj = sw.getObjects(player);
-    for (auto o : obj) {
-        std::cout << o->getId() << ": " << o->getCoordinates().x << " " << o->getCoordinates().y << std::endl;
-    }
-    std::this_thread::sleep_for(5000ms);
-    auto player2 = sw.connectPlayer();
-    sw.addEvent(player2, COMMAND_SHOOT, 1);
-    sw.addEvent(player, BUTTON_UP, 0);
-    std::this_thread::sleep_for(5000ms);
-    auto obj2 = sw.getObjects(player);
-    for (auto o : obj2) {
-        std::cout << o->getId() << ": " << o->getCoordinates().x << " " << o->getCoordinates().y << std::endl;
-    }
+    objects = sw.getObjects(player);
+    int num_objects_with_player = objects.size();
+    EXPECT_EQ(num_objects + 1, num_objects_with_player);
     sw.disconnectPlayer(player);
+    objects = sw.getObjects(0);
+    int num_objects_without_player = objects.size();
+    EXPECT_EQ(num_objects, num_objects_without_player);
     sw.endGame();
 }

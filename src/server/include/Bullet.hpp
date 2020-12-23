@@ -8,7 +8,6 @@ public:
            Coordinates _coord,
            Type _type,
            std::chrono::time_point<std::chrono::steady_clock> _time,
-           MoveDirection _direction,
            float _angle,
            float _hp,
            float _width,
@@ -22,7 +21,10 @@ public:
 
     bool update(std::chrono::time_point<std::chrono::steady_clock> _time) override;
     void reverseUpdate() override;
+
     Type getType() const override ;
+
+    float getHp() override ;
 
     float getDamage() const override ;
     unsigned int getOwner() const override ;
