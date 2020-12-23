@@ -41,7 +41,7 @@
                 "bullets": 40
         },
         "bullet": {
-                "hp": 0,
+                "hp": 10,
                 "width": 10,
                 "height": 10,
                 "speed" : 200,

@@ -34,8 +34,6 @@ private:
     void createTechnics(Coordinates _coordinates, float _angle);
     void createObstacle(Coordinates _coordinates, float _angle);
 
-    MoveDirection getDirection (Command _command, int args) const;
-
     //parse json with boost property tree
     void parseConfig();
 

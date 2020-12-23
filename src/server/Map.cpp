@@ -13,16 +13,14 @@ Map::~Map(){}
 void Map::updateObjects(std::chrono::time_point<std::chrono::steady_clock> _time) {
     for (auto object = this->objects.begin(); object != this->objects.end(); ++object) {
         if (!object->second->update(_time)) {
-            this->objects.erase(object);
-            object--;
+            this->objects.erase(object--);
         }
     }
     checkCollisions();
 }
-
-void Map::setObjectDirection(unsigned int _id, MoveDirection direction, std::chrono::time_point<std::chrono::steady_clock> _time) {
+void Map::setButton(unsigned int _id, Command _button, bool pressed, std::chrono::time_point<std::chrono::steady_clock> _time){
     std::shared_ptr<GameObject> obj(this->objects.at(_id));
-    obj->setDirection(direction);
+    obj->setButton(_button, pressed);
     obj->setTime(_time);
 }
 

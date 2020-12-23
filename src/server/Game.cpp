@@ -4,7 +4,7 @@ using namespace std::literals::chrono_literals;
 
 Game::Game(){
     defaults = std::make_unique<defaultValues>();
-    this->config_name = "./config.json";
+    this->config_name = "/home/altana/tp_lk_2d_mp_shooter/src/server/config.json";
     this->parseConfig();
     time = std::chrono::steady_clock::now();
     map = std::make_shared<Map>(defaults->map_height, defaults->map_width);
@@ -21,25 +21,6 @@ Game::Game(){
 }
 
 Game::~Game(){}
-
-MoveDirection Game::getDirection(Command _command, int args) const {
-    if (args == 0)
-        return NO_MOVE;
-    switch (_command){
-        case BUTTON_UP: {
-            return FORWARD;
-        }
-        case BUTTON_LEFT: {
-            return LEFT;
-        }
-        case BUTTON_RIGHT: {
-            return RIGHT;
-        }
-        case BUTTON_DOWN: {
-            return BACK;
-        }
-    }
-}
 
 void Game::updateObject(unsigned int _id, Command _command, int args){
     const std::lock_guard<std::mutex> lock(mutex);
@@ -60,7 +41,6 @@ void Game::updateObject(unsigned int _id, Command _command, int args){
                     Coordinates(0, 0),
                     BULLET,
                     this->time,
-                    FORWARD,
                     0,
                     defaults->defaults_bullet.at("hp"),
                     defaults->defaults_bullet.at("width"),
@@ -74,8 +54,8 @@ void Game::updateObject(unsigned int _id, Command _command, int args){
             break;
         }
         default: {
-            auto direction = getDirection(_command, args);
-            map->setObjectDirection(_id, direction, this->time);
+            bool pressed = args != 0;
+            map->setButton(_id, _command, pressed, this->time);
         }
     }
 }
@@ -95,7 +75,6 @@ unsigned int Game::createPlayer() {
                 defaults->player_default_coord.front(),
                 PLAYER,
                 this->time,
-                NO_MOVE,
                 defaults->player_default_angles.front(),
                 defaults->defaults_player.at("hp"),
                 defaults->defaults_player.at("width"),
@@ -120,7 +99,7 @@ void Game::createTechnics(Coordinates _coordinates, float _angle) {
             _coordinates,
             TECHNICS,
             this->time,
-            NO_MOVE,
+        //    NO_MOVE,
             _angle,
             defaults->defaults_technics.at("hp"),
             defaults->defaults_technics.at("width"),
@@ -137,7 +116,6 @@ void Game::createObstacle(Coordinates _coordinates, float _angle) {
             _coordinates,
             OBSTACLE,
             this->time,
-            NO_MOVE,
             _angle,
             defaults->defaults_obstacle.at("hp"),
             defaults->defaults_obstacle.at("width"),
