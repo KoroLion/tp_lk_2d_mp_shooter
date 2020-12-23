@@ -302,15 +302,15 @@ void Game::handleEvent(SDL_Event* event) {
             mouseX -= width/2;
             SetCursorPos(WINDOW_X_INIT + width/2, WINDOW_Y_INIT + height/2);
             player->rotateRelative(mouseX * MOUSE_SENSIVITY);
-            if ((time % 1000 < 200) && (player != NULL)) {
+            //if ((time % 1000 < 200) && (player != NULL)) {
                 sendJson(ClientCommands::ROTATE, player->getRotation());
-            }
+            //}
         } else {
             SDL_GetMouseState(&mouseX, &mouseY);
             player->setRotation(getAngle(width/2, height/2, mouseX, mouseY));
-            if ((time % 1000 < 200) && (player != NULL)) {
+            //if ((time % 1000 < 200) && (player != NULL)) {
                 sendJson(ClientCommands::ROTATE, getAngle(width/2, height/2, mouseX, mouseY));
-            }
+            //}
         }
         break;
     case SDL_MOUSEBUTTONDOWN:

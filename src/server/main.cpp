@@ -8,7 +8,7 @@ Copyright 2020 github.com/KoroLion, github.com/SergTyapkin, github.com/altanab
 
 const char VERSION[] = "0.2.1";
 const int DEFAULT_PORT = 23000;
-const int DEFAULT_NOTIFY_RATE = 20;
+const int DEFAULT_NOTIFY_RATE = 15;
 
 int main(int argc, char **argv) {
     std::cout << "LK 2D Shooter server (v. " << VERSION << ") by LioKor Team";
