@@ -17,7 +17,7 @@ Copyright 2020 LioKor Team (KoroLion, SergTyapkin, altanab)
 
 class Game {
  public:
-    Game(const char* title, int width, int height);
+    Game(const char* title, int width, int height, const std::string &IP, const std::string &port);
 
     bool start();
     void stop() { this->isRunning = false; }

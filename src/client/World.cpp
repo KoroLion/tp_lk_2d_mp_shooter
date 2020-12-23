@@ -78,28 +78,37 @@ void World::render(SDL_Renderer *renderer, float baseX, float baseY, float cente
     }
 }
 
-void World::update(unsigned int time) {
+void World::update(time_t &time, Entity* ignore) {
+    if (time < timeLastTarget)
+        time = timeLastTarget;
+    if (timeTarget-timeLastTarget == 0)
+        return;
+    auto targetEnd = target.end();
+    auto lastTargetEnd = lastTarget.end();
+    float percentage = ((float)(time-timeLastTarget))/((float)(timeTarget-timeLastTarget));
+
     for (auto itr = animations.begin(); itr != animations.end(); itr++) {
         if (!(*itr)->update()) {
             animations.erase(itr--);
         }
     }
 
-    auto targetEnd = target.end();
-    auto lastTargetEnd = lastTarget.end();
-    float percentage = ((float)(time-timeLastTarget))/((float)(timeTarget-timeLastTarget));
     for (auto itr = entities.begin(); itr != entities.end(); itr++) {
+        if (itr->second == ignore)
+            continue;
         auto targetItr = target.find(itr->first);
         auto lastTargetItr = lastTarget.find(itr->first);
-        if (targetItr != targetEnd && lastTargetItr != lastTargetEnd)
+        if (targetItr != targetEnd && lastTargetItr != lastTargetEnd) {
+            //SDL_Log("Perc: %f", percentage);
             itr->second->updateToTarget(lastTargetItr->second, targetItr->second, percentage);
-        else
+        } else {
             if (!itr->second->update()) {
                 for (auto ani = animations.begin(); ani != animations.end(); ani++)
                     if (itr->second == (*ani)->getTarget())
                         (*ani)->setTarget(NULL);
                 entities.erase(itr--);
             }
+        }
     }
 }
 
