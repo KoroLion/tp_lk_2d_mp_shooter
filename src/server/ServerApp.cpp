@@ -41,7 +41,7 @@ std::string ServerApp::_game_objects_to_json(const std::vector<std::shared_ptr<G
     return j.dump();
 }
 
-ServerApp::ServerApp(std::string bind_addr, int port) {
+ServerApp::ServerApp(int port, int notify_rate): _notify_delay(1000 / notify_rate) {
     world = std::make_unique<ServerWorld>();
     net_server = std::make_unique<TcpServer>(
         port,
@@ -71,7 +71,7 @@ void ServerApp::net_event_callback(NetEventType::NetEventType ev_type, unsigned 
         uid_to_objid.insert(std::make_pair(uid, objid));
     } else if (ev_type == NetEventType::RECEIVED) {
         unsigned objid = uid_to_objid[uid];
-        std::cout << "Received from " << uid << " (" << objid << ")" << ": " << data << std::endl;
+        // std::cout << "Received from " << uid << " (" << objid << ")" << ": " << data << std::endl;
 
         auto j = json::parse(data);
         switch ((ClientCommands::ClientCommands)j["cmd"]) {
@@ -125,12 +125,12 @@ void ServerApp::net_notify() {
 
             std::string data = _game_objects_to_json(game_objects);
 
-            std::cout << data << std::endl;
+            // std::cout << data << std::endl;
             net_server->send_all(data);
         }
-        
-        _cur_time += 500;
-        sleep_ms(500);
+
+        _cur_time += _notify_delay;
+        sleep_ms(_notify_delay);
     }
 }
 

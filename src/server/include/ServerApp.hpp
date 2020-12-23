@@ -20,6 +20,7 @@ class ServerApp {
     bool running = true;
     std::map<unsigned, unsigned> uid_to_objid;
     time_t _cur_time = 0;
+    unsigned short _notify_delay;
 
     std::unique_ptr<ServerWorld> world;
     std::unique_ptr<TcpServer> net_server;
@@ -36,7 +37,7 @@ class ServerApp {
     void game_world();
     void handle_cmd();
  public:
-    ServerApp(std::string bind_addr, int port);
+    ServerApp(int port, int notify_rate);
     ~ServerApp() {}
 
     void stop();
