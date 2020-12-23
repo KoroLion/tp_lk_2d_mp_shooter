@@ -1,0 +1,16 @@
+cmake-build-debug
+.idea
+main.cpp.DS_Store
+
+build
+lib/
+build/
+
+*.exe
+*.dll
+*.o
+*.out
+*.txt
+*.save
+*.save-failed
+*.rar

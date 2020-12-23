@@ -1,0 +1,66 @@
+{
+        "mapWidth": 1000,
+        "mapHeight": 1000,
+        "obstacleCoordinates": [
+                {
+                        "x": 300,
+                        "y": 70
+                },
+                {
+                        "x": 190,
+                        "y": 50
+                }
+        ],
+        "technicsCoordinates": [
+        ],
+        "playerCoordinates": [
+                {
+                        "x": 40,
+                        "y": 40
+                },
+                {
+                        "x": 300,
+                        "y": 300
+                }
+        ],
+        "obstacleAngles": [
+                0,
+                0,
+                0,
+                0
+        ],
+        "technicsAngles": [
+        ],
+        "playerAngles": [
+                0,
+                0
+        ],
+        "player": {
+                "hp": 100,
+                "width": 40,
+                "height": 40,
+                "speed": 250,
+                "bullets": 40
+        },
+        "bullet": {
+                "hp": 0,
+                "width": 15,
+                "height": 10,
+                "speed" : 200,
+                "damage": 60,
+                "acceleration": 1,
+                "minSpeed": 5
+        },
+        "obstacle": {
+                "hp": 100,
+                "width": 50,
+                "height": 50
+        },
+        "technics": {
+                "hp": 100,
+                "width": 30,
+                "height": 30,
+                "speed": 8,
+                "capacity" : 1
+        }
+}
