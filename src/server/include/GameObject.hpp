@@ -1,19 +1,12 @@
 #ifndef TP_LK_2D_MP_SHOOTER_GAMEOBJECT_H
 
 #include "Coordinates.hpp"
+#include "Command.hpp"
 #include <memory>
 #include <cmath>
 #include <thread>
 #include <chrono>
 #include <iostream>
-
-enum MoveDirection{
-    NO_MOVE,
-    FORWARD,
-    BACK,
-    LEFT,
-    RIGHT
-};
 
 enum Type {
     PLAYER,
@@ -22,13 +15,14 @@ enum Type {
     BULLET
 };
 
+
+
 class GameObject{
 public:
     GameObject(unsigned int _id,
             Coordinates _coord,
             Type _type,
             std::chrono::time_point<std::chrono::steady_clock> _time,
-            MoveDirection _direction,
             float _angle,
             float _hp,
             float _width,
@@ -61,8 +55,7 @@ public:
     void setHp(float _hp);
     void reduceHp(float _damage);
 
-    MoveDirection getDirection() const;
-    void setDirection(MoveDirection _direction);
+    virtual void setButton(Command _button, bool pressed);
 
     float getAngle() const;
     void setAngle(float _angle);
@@ -77,13 +70,14 @@ public:
     virtual void reload(unsigned int _bullets);
     virtual bool shoot();
     virtual unsigned int getOwner() const;
+
+    virtual bool isMoving() const;
 private:
     unsigned int id;
     Coordinates coordinates;
     Coordinates previousCoordinates;
     Type type;
     std::chrono::time_point<std::chrono::steady_clock> timeModified;
-    MoveDirection direction;
     float angle;
     float hp;
     float width;

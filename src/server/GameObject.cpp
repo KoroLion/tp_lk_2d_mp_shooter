@@ -4,7 +4,6 @@ GameObject::GameObject(unsigned int _id,
                        Coordinates _coord,
                        Type _type,
                        std::chrono::time_point<std::chrono::steady_clock> _time,
-                       MoveDirection _direction,
                        float _angle,
                        float _hp,
                        float _width,
@@ -14,7 +13,6 @@ GameObject::GameObject(unsigned int _id,
     previousCoordinates(_coord),
     type(_type),
     timeModified(_time),
-    direction(_direction),
     angle(_angle),
     hp(_hp),
     width(_width),
@@ -45,15 +43,6 @@ std::chrono::time_point<std::chrono::steady_clock> GameObject::getTime() const{
 void GameObject::setTime(std::chrono::time_point<std::chrono::steady_clock> _time){
     this->timeModified = _time;
 }
-
-MoveDirection GameObject::getDirection() const{
-    return this->direction;
-}
-
-void GameObject::setDirection(MoveDirection _direction){
-    this->direction = _direction;
-}
-
 
 float GameObject::getAngle() const{
     return this->angle;
@@ -129,4 +118,12 @@ float GameObject::getY() const{
 
 unsigned int GameObject::getOwner() const{
     return this->id;
+}
+
+bool GameObject::isMoving() const{
+    return false;
+}
+
+void GameObject::setButton(Command _button, bool pressed) {
+    return;
 }

@@ -4,10 +4,10 @@
         "obstacleCoordinates": [
                 {
                         "x": 300,
-                        "y": 70
+                        "y": 75
                 },
                 {
-                        "x": 190,
+                        "x": 70,
                         "y": 50
                 }
         ],
@@ -45,8 +45,6 @@
         ],
         "obstacleAngles": [
                 0,
-                0,
-                0,
                 0
         ],
         "technicsAngles": [
@@ -63,12 +61,12 @@
                 "bullets": 40
         },
         "bullet": {
-                "hp": 0,
-                "width": 15,
+                "hp": 10,
+                "width": 10,
                 "height": 10,
                 "speed" : 200,
-                "damage": 60,
-                "acceleration": 1,
+                "damage": 10,
+                "acceleration": 10,
                 "minSpeed": 5
         },
         "obstacle": {
@@ -80,7 +78,7 @@
                 "hp": 100,
                 "width": 30,
                 "height": 30,
-                "speed": 8,
+                "speed": 80,
                 "capacity" : 1
         }
 }

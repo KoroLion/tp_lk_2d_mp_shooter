@@ -18,7 +18,7 @@ public:
 
     void updateObjects(std::chrono::time_point<std::chrono::steady_clock> _time);
 
-    void setObjectDirection(unsigned int _id, MoveDirection direction, std::chrono::time_point<std::chrono::steady_clock> _time);
+    void setButton(unsigned int _id, Command _button, bool pressed, std::chrono::time_point<std::chrono::steady_clock> _time);
     void turnObject(unsigned int _id, float angle, std::chrono::time_point<std::chrono::steady_clock> _time);
     void reload(unsigned int _id, unsigned int _bullets, std::chrono::time_point<std::chrono::steady_clock> _time);
 
@@ -34,6 +34,7 @@ public:
     std::vector<std::shared_ptr<GameObject>> getObjects(unsigned int _id);
 
     bool isValid(unsigned int _id) const ;
+
 private:
     //checks collision for all obejcts
     void checkCollisions();

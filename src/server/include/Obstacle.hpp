@@ -8,7 +8,6 @@ public:
              Coordinates coord,
              Type _type,
              std::chrono::time_point<std::chrono::steady_clock> _time,
-             MoveDirection _direction,
              float _angle,
              float _hp,
              float _width,
