@@ -31,8 +31,8 @@ std::string ServerApp::_game_objects_to_json(const std::vector<std::shared_ptr<G
         json_obj["tid"] = obj->getType();
         json_obj["x"] = (int)round(obj->getX());
         json_obj["y"] = (int)round(obj->getY());
-        json_obj["rot"] = 0;
-        json_obj["hp"] = 100;
+        json_obj["rot"] = (int)obj->getAngle();
+        json_obj["hp"] = (int)obj->getHp();
         json_objects.push_back(json_obj);
     }
 
@@ -129,8 +129,8 @@ void ServerApp::net_notify() {
             net_server->send_all(data);
         }
         
-        _cur_time += 1000;
-        sleep_ms(1000);
+        _cur_time += 500;
+        sleep_ms(500);
     }
 }
 

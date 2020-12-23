@@ -208,10 +208,6 @@ bool Game::start() {
         render();
         SDL_RenderPresent(renderer);
 
-        if (((time / 1000) != ((time + 1000/FPS) / 1000)) && (player != NULL)) {
-            sendJson(ClientCommands::ROTATE, player->getRotation());
-        }
-
         time += 1000/FPS;
         SDL_Delay(1000/FPS);
     }
@@ -306,15 +302,21 @@ void Game::handleEvent(SDL_Event* event) {
             mouseX -= width/2;
             SetCursorPos(WINDOW_X_INIT + width/2, WINDOW_Y_INIT + height/2);
             player->rotateRelative(mouseX * MOUSE_SENSIVITY);
+            if ((time % 1000 < 200) && (player != NULL)) {
+                sendJson(ClientCommands::ROTATE, player->getRotation());
+            }
         } else {
             SDL_GetMouseState(&mouseX, &mouseY);
             player->setRotation(getAngle(width/2, height/2, mouseX, mouseY));
+            if ((time % 1000 < 200) && (player != NULL)) {
+                sendJson(ClientCommands::ROTATE, getAngle(width/2, height/2, mouseX, mouseY));
+            }
         }
         break;
     case SDL_MOUSEBUTTONDOWN:
         switch (event->button.button) {
         case SDL_BUTTON_LEFT:
-            player->shoot(world, textures[BULLET_TEXTURE_ID], textures[LIGHT_TRASSER_TEXTURE_ID], textures[STRAIGHT_TRASSER_TEXTURE_ID]);
+            //player->shoot(world, textures[BULLET_TEXTURE_ID], textures[LIGHT_TRASSER_TEXTURE_ID], textures[STRAIGHT_TRASSER_TEXTURE_ID]);
             sendJson(ClientCommands::ROTATE, player->getRotation());
             sendJson(ClientCommands::SHOOT, true);
             break;
@@ -369,9 +371,9 @@ void Game::recieveJson(std::string message) {
             bool found = (world->getEntity(ent["objid"]) != NULL);
             switch ((int)ent["tid"]) {
             case EntityType::PLAYER:
-                newTarget.insert(std::pair<const int, Entity*>(ent["objid"], new Player(ent["x"], ent["y"], 1, 50,50, ent["rot"], NULL, 5)));
+                newTarget.insert(std::pair<const int, Entity*>(ent["objid"], new Player(ent["x"], ent["y"], 1, 40,40, ent["rot"], NULL, 5)));
                 if (!found) {
-                    world->addEntity(ent["objid"], new Player(ent["x"], ent["y"], 1, 50, 50, ent["rot"], textures[PLAYER_TEXTURE_ID], 5));
+                    world->addEntity(ent["objid"], new Player(ent["x"], ent["y"], 1, 40, 40, ent["rot"], textures[PLAYER_TEXTURE_ID], 5));
                 }
                 break;
             case EntityType::BULLET:
@@ -408,10 +410,10 @@ void Game::recieveJson(std::string message) {
     }
 }
 
-void Game::sendJson(ClientCommands::ClientCommands command, int action) {
+void Game::sendJson(ClientCommands::ClientCommands command, int value) {
     nlohmann::json j;
     j["cmd"] = command;
-    j["arg"] = action;
+    j["arg"] = value;
     net_client.send(j.dump());
     SDL_Log("SEND: %s", j.dump().c_str());
 }

@@ -29,29 +29,28 @@ bool Bullet::update(std::chrono::time_point<std::chrono::steady_clock> _time) {
     if (this->getDirection() == NO_MOVE)
         return true;
     GameObject::update(_time);
-    this->speed -= this->acceleration * deltaTime.count();
+    this->speed -= this->acceleration;// * deltaTime.count();
     if (speed < minSpeed)
         return false;
     float deltaCoord = deltaTime.count() * this->speed;
     float curAngle = this->getAngle();
     switch (this->getDirection()) {
         case BACK :
-        curAngle += 180;
-        break;
+            curAngle += 180;
+            break;
         case RIGHT :
-        curAngle += 90;
-        break;
+            curAngle += 90;
+            break;
         case LEFT :
-        curAngle -= 90;
-        break;
+            curAngle -= 90;
+            break;
     }
     Coordinates coord = this->getCoordinates();
-    coord.x += deltaCoord * std::sin(curAngle);
-    coord.y += deltaCoord * std::cos(curAngle);
+    coord.x += deltaCoord * std::cos(curAngle/180*M_PI);
+    coord.y += deltaCoord * std::sin(curAngle/180*M_PI);
     this->setCoordinates(coord);
     return true;
 }
-
 Type Bullet::getType() const {
     return BULLET;
 }

@@ -43,6 +43,8 @@ MoveDirection Game::getDirection(Command _command, int args) const {
 
 void Game::updateObject(unsigned int _id, Command _command, int args){
     const std::lock_guard<std::mutex> lock(mutex);
+    if (!this->map->isValid(_id))
+        return;
     switch (_command) {
         case MOUSE_ANGLE: {
             map->turnObject(_id, float(args), this->time);
@@ -157,7 +159,7 @@ void Game::end() {
 
 void Game::updateMap() {
     while (this->running) {
-        std::this_thread::sleep_for(10ms);
+        std::this_thread::sleep_for(20ms);
         const std::lock_guard<std::mutex> lock(mutex);
         time = std::chrono::steady_clock::now();
         map->updateObjects(time);

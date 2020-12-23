@@ -37,7 +37,7 @@ class Game {
     void setPlayerId(int id);
 
     void recieveJson(std::string message);
-    void sendJson(ClientCommands::ClientCommands command, int action);
+    void sendJson(ClientCommands::ClientCommands command, int value);
 
     const char* title;
     int width, height;

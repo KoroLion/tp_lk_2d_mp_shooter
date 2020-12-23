@@ -42,8 +42,8 @@ bool Player::update(std::chrono::time_point<std::chrono::steady_clock> _time){
             break;
     }
     Coordinates coord = this->getCoordinates();
-    coord.x += deltaCoord * std::sin(curAngle);
-    coord.y += deltaCoord * std::cos(curAngle);
+    coord.x += deltaCoord * std::cos(curAngle/180*M_PI);
+    coord.y += deltaCoord * std::sin(curAngle/180*M_PI);
     this->setCoordinates(coord);
     return true;
 }

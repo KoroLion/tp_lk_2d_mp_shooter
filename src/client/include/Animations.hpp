@@ -25,7 +25,7 @@ public:
 
     void setTarget(Entity* newTarget) {target = newTarget;}
 
-    ~Animation() {;}
+    virtual ~Animation() {;}
 
 protected:
     Entity* target;

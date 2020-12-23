@@ -35,8 +35,8 @@ namespace ClientCommands {
 namespace EntityType {
     enum EntityType {
         PLAYER,
-        BOX_SMALL,
         BOX_BIG,
+        BOX_SMALL,
         BULLET
     };
 }

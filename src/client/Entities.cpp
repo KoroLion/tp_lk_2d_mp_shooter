@@ -230,6 +230,13 @@ void Entity::render(SDL_Renderer *renderer, float baseX, float baseY, float cent
 }
 
 void Entity::updateToTarget(Entity* lastTarget, Entity* target, float percentage) {
+    /*x = target->x;
+    y = target->y;
+    z = target->z;
+    rotation = target->rotation;
+    width = target->width;
+    height = target->height;*/
+
     x = (target->x - lastTarget->x)*percentage + lastTarget->x;
     y = (target->y - lastTarget->y)*percentage + lastTarget->y;
     z = (target->z - lastTarget->z)*percentage + lastTarget->z;
@@ -303,6 +310,7 @@ void Bullet::render(SDL_Renderer *renderer, float baseX, float baseY, float cent
 }
 
 bool Bullet::update() {
+    return false;
     moveRelative(0);
     speed -= acceleration;
     if (speed < minSpeed)
