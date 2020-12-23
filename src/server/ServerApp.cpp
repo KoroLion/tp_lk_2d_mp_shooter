@@ -23,15 +23,15 @@ std::string ServerApp::_game_objects_to_json(const std::vector<std::shared_ptr<G
     json j, json_objects, json_obj;
 
     j["cmd"] = "objs";
-    j["time"] = time += 1000;
+    j["time"] = time += 500;
 
     for (auto obj: game_objects) {
         json_obj["objid"] = obj->getId();
         json_obj["tid"] = obj->getType();
-        json_obj["x"] = obj->getX();
-        json_obj["y"] = obj->getY();
-        json_obj["rot"] = 0;//time/100;
-        json_obj["hp"] = 100;
+        json_obj["x"] = (int)obj->getX();
+        json_obj["y"] = (int)obj->getY();
+        json_obj["rot"] = (int)obj->getAngle();
+        json_obj["hp"] = (int)obj->getHp();
         json_objects.push_back(json_obj);
     }
 
@@ -71,7 +71,6 @@ void ServerApp::net_event_callback(NetEventType::NetEventType ev_type, unsigned 
     } else if (ev_type == NetEventType::RECEIVED) {
         unsigned objid = uid_to_objid[uid];
         std::cout << "Received from " << uid << " (" << objid << ")" << ": " << data << std::endl;
-
         auto j = json::parse(data);
         switch ((ClientCommands::ClientCommands)j["cmd"]) {
             case ClientCommands::MOVE_UP:
@@ -85,6 +84,15 @@ void ServerApp::net_event_callback(NetEventType::NetEventType ev_type, unsigned 
                 break;
             case ClientCommands::MOVE_RIGHT:
                 world->addEvent(objid, BUTTON_RIGHT, j["arg"]);
+                break;
+            case ClientCommands::ROTATE:
+                world->addEvent(objid, MOUSE_ANGLE, j["arg"]);
+                break;
+            case ClientCommands::SHOOT:
+                world->addEvent(objid, COMMAND_SHOOT, j["arg"]);
+                break;
+            case ClientCommands::RELOAD:
+                world->addEvent(objid, COMMAND_RELOAD, j["arg"]);
                 break;
             default:
                 break;
@@ -116,7 +124,7 @@ void ServerApp::net_notify() {
             std::cout << data << std::endl;
             net_server->send_all(data);
         }
-        sleep_ms(1000);
+        sleep_ms(500);
     }
 }
 

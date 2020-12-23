@@ -23,7 +23,7 @@ class Entity {
         x(_x), y(_y), z(_z), width(_width), height(_height), rotation(_rotation), texture(_texture) {;}
 
     virtual void render(SDL_Renderer *renderer, float baseX, float baseY, float centerRotation, float centerX, float centerY, float altitude, float angleX);
-    virtual bool update() {return true;}
+    virtual bool update() {return false;}
     void updateToTarget(Entity* lastTarget, Entity* target, float percentage);
 
     virtual void moveAbsolute(float toForward, float toSide, float absoluteAngle = 0);

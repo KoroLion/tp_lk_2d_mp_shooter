@@ -89,13 +89,15 @@ void World::update(time_t &time, Entity* ignore) {
 
     for (auto itr = animations.begin(); itr != animations.end(); itr++) {
         if (!(*itr)->update()) {
+            delete (*itr);
             animations.erase(itr--);
         }
     }
 
+
     for (auto itr = entities.begin(); itr != entities.end(); itr++) {
         if (itr->second == ignore)
-            continue;
+            ;//continue;
         auto targetItr = target.find(itr->first);
         auto lastTargetItr = lastTarget.find(itr->first);
         if (targetItr != targetEnd && lastTargetItr != lastTargetEnd) {
@@ -106,6 +108,8 @@ void World::update(time_t &time, Entity* ignore) {
                 for (auto ani = animations.begin(); ani != animations.end(); ani++)
                     if (itr->second == (*ani)->getTarget())
                         (*ani)->setTarget(NULL);
+
+                delete itr->second;
                 entities.erase(itr--);
             }
         }

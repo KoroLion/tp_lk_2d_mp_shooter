@@ -55,7 +55,8 @@ void ServerWorld::handleEvents() {
             events.pop();
         }
         mutex.unlock();
-        if (!event.isEmpty)
+        if (!event.isEmpty) {
             game->updateObject(event.id, event.command, event.args);
+        }
     }
 }
