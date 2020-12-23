@@ -9,6 +9,7 @@ Copyright 2020 github.com/KoroLion, github.com/SergTyapkin, github.com/altanab
 #include <thread>
 #include <utility>
 #include <map>
+#include <cmath>
 
 #include "include/TcpServer.hpp"
 #include "include/utils.hpp"
@@ -28,8 +29,8 @@ std::string ServerApp::_game_objects_to_json(const std::vector<std::shared_ptr<G
     for (auto obj: game_objects) {
         json_obj["objid"] = obj->getId();
         json_obj["tid"] = obj->getType();
-        json_obj["x"] = obj->getX();
-        json_obj["y"] = obj->getY();
+        json_obj["x"] = (int)round(obj->getX());
+        json_obj["y"] = (int)round(obj->getY());
         json_obj["rot"] = 0;
         json_obj["hp"] = 100;
         json_objects.push_back(json_obj);
