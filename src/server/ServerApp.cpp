@@ -128,8 +128,9 @@ void ServerApp::net_notify() {
             std::cout << data << std::endl;
             net_server->send_all(data);
         }
-        _cur_time += 500;
-        sleep_ms(500);
+        
+        _cur_time += 1000;
+        sleep_ms(1000);
     }
 }
 
