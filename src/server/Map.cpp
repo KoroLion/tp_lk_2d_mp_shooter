@@ -11,9 +11,10 @@ Map::Map(float _height, float _width) {
 Map::~Map(){}
 
 void Map::updateObjects(std::chrono::time_point<std::chrono::steady_clock> _time) {
-    for (auto object : this->objects ) {
-        if (!object.second->update(_time)) {
-            this->objects.erase(object.first);
+    for (auto object = this->objects.begin(); object != this->objects.end(); ++object) {
+        if (!object->second->update(_time)) {
+            this->objects.erase(object);
+            object--;
         }
     }
     checkCollisions();
@@ -80,34 +81,51 @@ void Map::checkCollisions(){
             a->second->reverseUpdate();
         if (a->second->maxCoord() > Coordinates(this->width, this->height))
             a->second->reverseUpdate();
-        for (auto b = a; b != this->objects.end(); ++b) {
-            if(a == b)
-                continue;
 
-            a_max = a->second->maxCoord();
+        auto b = a;
+        ++b;
+        for (; b != this->objects.end(); ++b) {
+            auto radiusA = a->second->getWidth() / sqrt(2);
+            auto radiusB = b->second->getWidth() / sqrt(2);
+
+            auto dx = a->second->getX() - b->second->getX();
+            auto dy = a->second->getY() - b->second->getY();
+            if (sqrt(dx * dx + dy * dy) < radiusA + radiusB && (a->second->getOwner() == b->second->getId() || a->second->getId() == b->second->getOwner())) {
+                resolveCollision(a->second, b->second);
+                if (b->second->getHp() <= 0) {
+                    this->objects.erase(b--);
+                }
+                if (a->second->getHp() <= 0) {
+                    this->objects.erase(a--);
+                    break;
+                }
+            }
+            /*a_max = a->second->maxCoord();
             b_max = b->second->maxCoord();
             a_min = a->second->minCoord();
             b_min = b->second->minCoord();
 
             if (a_min.x < b_max.x && a_max.x > b_min.x && a_min.y < b_max.y && a_max.y > b_min.y) {
                 resolveCollision(a->second, b->second);
-            }
+            }*/
         }
     }
 }
 
 //resolve collision for two objects with ids: _id1 and _id2
 void Map::resolveCollision(std::shared_ptr<GameObject> a, std::shared_ptr<GameObject> b){
-    if (a->getOwner() == b->getId() || a->getId() == b->getOwner())
-        return;
     a->reverseUpdate();
     b->reverseUpdate();
     a->reduceHp(b->getDamage());
     b->reduceHp(a->getDamage());
-    if (a->getHp() <= 0) {
-        this->objects.erase(a->getId());
-    }
-    if (b->getHp() <= 0) {
-        this->objects.erase(b->getId());
+}
+
+
+bool Map::isValid(unsigned int _id) {
+    try {
+        objects.at(_id);
+        return true;
+    } catch(...) {
+        return false;
     }
 }

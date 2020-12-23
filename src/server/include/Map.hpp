@@ -33,6 +33,8 @@ public:
     //returns all objects, which object with id == _id can see
     std::vector<std::shared_ptr<GameObject>> getObjects(unsigned int _id);
 
+    bool isValid(unsigned int _id);
+
 
 private:
     //checks collision for all obejcts

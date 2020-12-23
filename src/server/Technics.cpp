@@ -1,5 +1,8 @@
 #include "Technics.hpp"
 
+#ifndef M_PI
+#define M_PI (3.14159265358979323846)
+#endif
 
 Technics::Technics(unsigned int _id,
                    Coordinates _coord,
@@ -29,19 +32,21 @@ bool Technics::update(std::chrono::time_point<std::chrono::steady_clock> _time) 
     float deltaCoord = deltaTime.count() * this->speed;
     float curAngle = this->getAngle();
     switch (this->getDirection()) {
-        case BACK :
-            curAngle += 180;
-            break;
-        case RIGHT :
-            curAngle += 90;
-            break;
-        case LEFT :
-            curAngle -= 90;
-            break;
-    }
-    Coordinates coord = this->getCoordinates();
-    coord.x += deltaCoord * std::sin(curAngle);
-    coord.y += deltaCoord * std::cos(curAngle);
+            case BACK :
+                curAngle += 180;
+                break;
+            case RIGHT :
+                curAngle += 90;
+                break;
+            case LEFT :
+                curAngle -= 90;
+                break;
+            default:
+                break;
+        }
+        Coordinates coord = this->getCoordinates();
+        coord.x += deltaCoord * std::cos(curAngle/180 * M_PI);
+        coord.y += deltaCoord * std::sin(curAngle/180 * M_PI);
     this->setCoordinates(coord);
     return true;
 }

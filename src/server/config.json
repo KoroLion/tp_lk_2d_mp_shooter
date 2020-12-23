@@ -1,53 +1,33 @@
 {
-        "mapWidth": 10000,
-        "mapHeight": 10000,
+        "mapWidth": 1000,
+        "mapHeight": 1000,
         "obstacleCoordinates": [
                 {
-                        "x": 1100,
-                        "y": 300
+                        "x": 300,
+                        "y": 75
                 },
                 {
-                        "x": 3300,
-                        "y": 2500
-                },
-                {
-                        "x": 400,
-                        "y": 5000
-                },
-                {
-                        "x": 6000,
-                        "y": 800
+                        "x": 70,
+                        "y": 50
                 }
         ],
         "technicsCoordinates": [
-                {
-                        "x": 100,
-                        "y": 3000
-                },
-                {
-                        "x": 5500,
-                        "y": 700
-                }
         ],
         "playerCoordinates": [
                 {
-                        "x": 100,
-                        "y": 100
+                        "x": 40,
+                        "y": 40
                 },
                 {
-                        "x": 3000,
-                        "y": 3000
+                        "x": 300,
+                        "y": 300
                 }
         ],
         "obstacleAngles": [
                 0,
-                0,
-                0,
                 0
         ],
         "technicsAngles": [
-                0,
-                0
         ],
         "playerAngles": [
                 0,
@@ -57,28 +37,28 @@
                 "hp": 100,
                 "width": 40,
                 "height": 40,
-                "speed": 5,
+                "speed": 250,
                 "bullets": 40
         },
         "bullet": {
                 "hp": 0,
-                "width": 15,
+                "width": 10,
                 "height": 10,
-                "speed" : 12,
+                "speed" : 200,
                 "damage": 10,
-                "acceleration": 0.1,
+                "acceleration": 10,
                 "minSpeed": 5
         },
         "obstacle": {
                 "hp": 100,
-                "width": 500,
-                "height": 500
+                "width": 50,
+                "height": 50
         },
         "technics": {
                 "hp": 100,
-                "width": 200,
-                "height": 200,
-                "speed": 8,
+                "width": 30,
+                "height": 30,
+                "speed": 80,
                 "capacity" : 1
         }
 }

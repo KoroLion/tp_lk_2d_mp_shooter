@@ -22,6 +22,7 @@ public:
 
     bool update(std::chrono::time_point<std::chrono::steady_clock> _time) override;
     void reverseUpdate() override;
+
     Type getType() const override ;
 
     float getDamage() const override ;
