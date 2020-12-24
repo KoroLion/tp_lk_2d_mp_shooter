@@ -1,6 +1,6 @@
 language: cpp
 install: pip3 install cpplint && mkdir -p src/common/include/lib/nlohmann && wget -O src/common/include/lib/nlohmann/json.hpp https://github.com/nlohmann/json/releases/download/v3.9.1/json.hpp
-script: cd src/server && make check && make build/server.out
+script: cd src/server && make check && make test && make build/server.out
 cache: packages
 
 addons:
@@ -10,3 +10,4 @@ addons:
       - libboost-all-dev
       - cppcheck
       - python3-pip
+      - libgtest-dev

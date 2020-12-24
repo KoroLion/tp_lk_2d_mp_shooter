@@ -21,7 +21,7 @@ void TcpClient::read_header() {
         std::bind(
             &TcpClient::handle_read_header,
             this,
-            std::placeholders::_1    // error
+            std::placeholders::_1  // error
         )
     );
 }
@@ -33,7 +33,7 @@ void TcpClient::read_body() {
         std::bind(
             &TcpClient::handle_read_body,
             this,
-            std::placeholders::_1    // error
+            std::placeholders::_1  // error
         )
     );
 }
@@ -61,7 +61,7 @@ void TcpClient::write_next() {
         std::bind(
             &TcpClient::handle_write,
             this,
-            std::placeholders::_1    // error
+            std::placeholders::_1  // error
         )
     );
 }
@@ -108,7 +108,7 @@ TcpClient::TcpClient(const std::string &host, const std::string &port, net_clien
         std::bind(
             &TcpClient::handle_connect,
             this,
-            std::placeholders::_1    // error
+            std::placeholders::_1  // error
         )
     );
 }

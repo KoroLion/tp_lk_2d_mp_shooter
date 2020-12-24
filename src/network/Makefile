@@ -13,5 +13,10 @@ check:
 	cppcheck *.cpp include/*.hpp
 	cpplint *.cpp include/*.hpp
 
+tests/test.out: tests/unit_tests.cpp Packet.o
+	$(CC) $(CFLAGS) $^ -o $@ -I. -lgtest -lgtest_main -pthread
+test: tests/test.out
+	./$<
+
 build:
 	mkdir build
