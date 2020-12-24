@@ -19,8 +19,9 @@ float distance(float x1, float y1, float x2, float y2);
 // 1st floor --------
 class Entity {
  public:
-    Entity(float _x, float _y, float _z, float _width, float _height, float _rotation, SDL_Texture* _texture):
-        x(_x), y(_y), z(_z), width(_width), height(_height), rotation(_rotation), texture(_texture) {;}
+    Entity(float _x, float _y, float _z, float _width, float _height, float _rotation, float _hp, SDL_Texture* _texture):
+        x(_x), y(_y), z(_z), width(_width), height(_height), rotation(_rotation), hp(_hp), texture(_texture),
+        maxHp(100) {;}
 
     virtual void render(SDL_Renderer *renderer, float baseX, float baseY, float centerRotation, float centerX, float centerY, float altitude, float angleX);
     virtual bool update() {return false;}
@@ -41,13 +42,14 @@ class Entity {
  protected:
     float x, y, z, width, height, rotation, hp;
     SDL_Texture *texture;
+    const float maxHp;
 };
 
 // 2nd floor --------
 class Player: public Entity {
  public:
-    Player(float _x, float _y, float _z, float _width, float _height, float _rotation, SDL_Texture* _texture, float _speed):
-        Entity(_x, _y, _z, _width, _height, _rotation, _texture), speed(_speed), bulletsOnMap(0) {
+    Player(float _x, float _y, float _z, float _width, float _height, float _rotation, float _hp, SDL_Texture* _texture, float _speed):
+        Entity(_x, _y, _z, _width, _height, _rotation, _hp, _texture), speed(_speed), bulletsOnMap(0) {
     }
 
     virtual void render(SDL_Renderer *renderer, float baseX, float baseY, float centerRotation, float centerX, float centerY, float altitude, float angleX);
@@ -67,8 +69,8 @@ class Player: public Entity {
 
 class Bullet: public Entity {
  public:
-    Bullet(float _x, float _y, float _z, float _width, float _height, float _rotation, SDL_Texture* _texture, float _speed):
-        Entity(_x, _y, _z, _width, _height, _rotation, _texture), speed(_speed) {
+    Bullet(float _x, float _y, float _z, float _width, float _height, float _rotation, float _hp, SDL_Texture* _texture, float _speed):
+        Entity(_x, _y, _z, _width, _height, _rotation, _hp, _texture), speed(_speed) {
     }
 
     void moveRelative(float addAngle);
@@ -86,8 +88,8 @@ class Bullet: public Entity {
 
 class Technic: public Entity {
  public:
-    Technic(float _x, float _y, float _z, float _width, float _height, float _rotation, SDL_Texture* _texture, float _speed, int _capacity):
-        Entity(_x, _y, _z, _width, _height, _rotation, _texture), speed(_speed), capacity(_capacity) {;}
+    Technic(float _x, float _y, float _z, float _width, float _height, float _rotation, float _hp, SDL_Texture* _texture, float _speed, int _capacity):
+        Entity(_x, _y, _z, _width, _height, _rotation, _hp, _texture), speed(_speed), capacity(_capacity) {;}
 
     //virtual void render(SDL_Renderer *renderer, float baseX, float baseY, float centerRotation, float centerX, float centerY);
     //virtual int update();
@@ -101,8 +103,8 @@ class Technic: public Entity {
 
 class Object: public Entity {
  public:
-    Object(float _x, float _y, float _z, float _width, float _height, float _rotation, SDL_Texture* _texture):
-        Entity(_x, _y, _z, _width, _height, _rotation, _texture) {;}
+    Object(float _x, float _y, float _z, float _width, float _height, float _rotation, float _hp, SDL_Texture* _texture):
+        Entity(_x, _y, _z, _width, _height, _rotation, _hp, _texture) {;}
 
     //virtual void render(SDL_Renderer *renderer, float baseX, float baseY, float centerRotation, float centerX, float centerY);
     //virtual int update();
@@ -115,8 +117,8 @@ class Object: public Entity {
 // 3rd floor --------
 class Tank: public Technic {
  public:
-    Tank(float _x, float _y, float _z, float _width, float _height, float _rotation, float _speed, SDL_Texture* _texture):
-        Technic(_x, _y, _z, _width, _height, _rotation, _texture, _speed, 1) {;}
+    Tank(float _x, float _y, float _z, float _width, float _height, float _rotation, float _speed, float _hp, SDL_Texture* _texture):
+        Technic(_x, _y, _z, _width, _height, _rotation, _hp, _texture, _speed, 1) {;}
 
     //virtual void render(SDL_Renderer *renderer, float baseX, float baseY, float centerRotation, float centerX, float centerY);
     //virtual int update();
@@ -127,8 +129,8 @@ class Tank: public Technic {
 
 class Machine: public Technic {
  public:
-    Machine(float _x, float _y, float _z, float _width, float _height, float _rotation, float _speed, SDL_Texture* _texture):
-        Technic(_x, _y, _z, _width, _height, _rotation, _texture, _speed, 3) {;}
+    Machine(float _x, float _y, float _z, float _width, float _height, float _rotation, float _speed, float _hp, SDL_Texture* _texture):
+        Technic(_x, _y, _z, _width, _height, _rotation, _hp, _texture, _speed, 3) {;}
 
     //virtual void render(SDL_Renderer *renderer, float baseX, float baseY, float centerRotation, float centerX, float centerY);
     //virtual int update();
@@ -139,8 +141,8 @@ class Machine: public Technic {
 
 class Copter: public Technic {
  public:
-    Copter(float _x, float _y, float _z, float _width, float _height, float _rotation, float _speed, SDL_Texture* _texture):
-        Technic(_x, _y, _z, _width, _height, _rotation, _texture, _speed, 2) {;}
+    Copter(float _x, float _y, float _z, float _width, float _height, float _rotation, float _speed, float _hp, SDL_Texture* _texture):
+        Technic(_x, _y, _z, _width, _height, _rotation, _hp, _texture, _speed, 2) {;}
 
     //virtual void render(SDL_Renderer *renderer, float baseX, float baseY, float centerRotation, float centerX, float centerY);
     //virtual int update();
@@ -152,8 +154,8 @@ class Copter: public Technic {
 
 class Obstacle: public Object {
  public:
-    Obstacle(float _x, float _y, float _z, float _width, float _height, float _rotation, SDL_Texture* _texture):
-        Object(_x, _y, _z, _width, _height, _rotation, _texture) {;}
+    Obstacle(float _x, float _y, float _z, float _width, float _height, float _rotation, float _hp, SDL_Texture* _texture):
+        Object(_x, _y, _z, _width, _height, _rotation, _hp, _texture) {;}
 
     ////virtual void render(SDL_Renderer *renderer, float baseX, float baseY, float centerRotation, float centerX, float centerY);
     //virtual int update();
@@ -165,8 +167,8 @@ class Obstacle: public Object {
 
 class Tree: public Object {
  public:
-    Tree(float _x, float _y, float _z, float _width, float _height, float _rotation, SDL_Texture* _texture):
-        Object(_x, _y, _z, _width, _height, _rotation, _texture) {;}
+    Tree(float _x, float _y, float _z, float _width, float _height, float _rotation, float _hp, SDL_Texture* _texture):
+        Object(_x, _y, _z, _width, _height, _rotation, _hp, _texture) {;}
 
     //virtual void render(SDL_Renderer *renderer, float baseX, float baseY, float centerRotation, float centerX, float centerY);
     //virtual int update();
@@ -177,8 +179,8 @@ class Tree: public Object {
 
 class House: public Object {
  public:
-    House(float _x, float _y, float _z, float _width, float _height, float _rotation, SDL_Texture* _texture):
-        Object(_x, _y, _z, _width, _height, _rotation, _texture) {;}
+    House(float _x, float _y, float _z, float _width, float _height, float _rotation, float _hp, SDL_Texture* _texture):
+        Object(_x, _y, _z, _width, _height, _rotation, _hp, _texture) {;}
 
     //virtual void render(SDL_Renderer *renderer, float baseX, float baseY, float centerRotation, float centerX, float centerY);
     //virtual int update();

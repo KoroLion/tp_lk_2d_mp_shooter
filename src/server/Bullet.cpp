@@ -32,7 +32,7 @@ bool Bullet::update(std::chrono::time_point<std::chrono::steady_clock> _time) {
     if (!this->isMoving())
         return true;
     GameObject::update(_time);
-    this->speed -= this->acceleration;
+    this->speed -= this->acceleration * deltaTime.count();
     if (speed < minSpeed)
         return false;
     float deltaCoord = deltaTime.count() * this->speed;

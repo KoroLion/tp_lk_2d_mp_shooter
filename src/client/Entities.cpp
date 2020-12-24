@@ -241,6 +241,7 @@ void Entity::updateToTarget(Entity* lastTarget, Entity* target, float percentage
     y = (target->y - lastTarget->y)*percentage + lastTarget->y;
     z = (target->z - lastTarget->z)*percentage + lastTarget->z;
     rotation = (target->rotation - lastTarget->rotation)*percentage + lastTarget->rotation;
+    hp = (target->hp - lastTarget->hp)*percentage + lastTarget->hp;
     width = (target->width - lastTarget->width)*percentage + lastTarget->width;
     height = (target->height - lastTarget->height)*percentage + lastTarget->height;
 }
@@ -270,6 +271,9 @@ void Player::render(SDL_Renderer *renderer, float baseX, float baseY, float cent
 
     SDL_Rect render_rect {(int)(resX - width/2), (int)(resY - height/2), (int)(width), (int)(height)};
     SDL_RenderCopyEx(renderer, texture, NULL, &render_rect, centerRotation, NULL, SDL_FLIP_NONE);
+    drawLine(renderer, resX - width/2 - 1, resY - height/2 - 10, resX + width/2 + 1,                  resY - height/2 - 10, 5, DARK_GREY_RGBA);
+    drawLine(renderer, resX - width/2,     resY - height/2 - 10, resX - width/2 + width * (hp/maxHp), resY - height/2 - 10, 3, RED_RGBA);
+
     drawPoint(renderer, centerX, centerY, 5, BLUE_RGBA);
 }
 
@@ -281,12 +285,12 @@ void Player::moveRelative(float addAngle) {
 void Player::shoot(World* world, SDL_Texture* bullet_texture, SDL_Texture* trasser_texture, SDL_Texture* small_trasser_texture) {
     bulletsOnMap++;
     Entity* e;
-    world->addEntity(10+bulletsOnMap*3+0, e = new Bullet(x, y, z, 15, 10, rotation, bullet_texture, 12));
+    world->addEntity(10+bulletsOnMap*3+0, e = new Bullet(x, y, z, 15, 10, rotation, 100, bullet_texture, 12));
     world->addAnimation(new LightTrasser(e, x, y, 12, rotation, trasser_texture));
 
-    world->addEntity(10+bulletsOnMap*3+1, e = new Bullet(x, y, z, 10, 5, rotation-10, bullet_texture, 8));
+    world->addEntity(10+bulletsOnMap*3+1, e = new Bullet(x, y, z, 10, 5, rotation-10, 100, bullet_texture, 8));
     //world->addAnimation(new LightTrasser(ent, x, y, 8, rotation-10, small_trasser_texture));
-    world->addEntity(10+bulletsOnMap*3+2, e = new Bullet(x, y, z, 10, 5, rotation+10, bullet_texture, 8));
+    world->addEntity(10+bulletsOnMap*3+2, e = new Bullet(x, y, z, 10, 5, rotation+10, 100, bullet_texture, 8));
     //world->addAnimation(new LightTrasser(ent, x, y, 8, rotation+10, small_trasser_texture));
 }
 

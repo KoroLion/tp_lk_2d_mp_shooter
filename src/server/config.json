@@ -51,22 +51,27 @@
         ],
         "playerAngles": [
                 0,
-                0
+                30,
+		60,
+		90,
+		120,
+		150,
+		180
         ],
         "player": {
                 "hp": 100,
                 "width": 40,
                 "height": 40,
                 "speed": 250,
-                "bullets": 40
+                "bullets": 20
         },
         "bullet": {
                 "hp": 10,
                 "width": 10,
                 "height": 10,
                 "speed" : 200,
-                "damage": 10,
-                "acceleration": 10,
+                "damage": 40,
+                "acceleration": 50,
                 "minSpeed": 5
         },
         "obstacle": {

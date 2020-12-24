@@ -371,29 +371,29 @@ void Game::recieveJson(std::string message) {
             bool found = (world->getEntity(ent["objid"]) != NULL);
             switch ((int)ent["tid"]) {
             case EntityType::PLAYER:
-                newTarget.insert(std::pair<const int, Entity*>(ent["objid"], new Player(ent["x"], ent["y"], 1, 40,40, ent["rot"], NULL, 5)));
+                newTarget.insert(std::pair<const int, Entity*>(ent["objid"], new Player(ent["x"], ent["y"], 1, 40,40, ent["rot"], ent["hp"], NULL, 5)));
                 if (!found) {
-                    world->addEntity(ent["objid"], new Player(ent["x"], ent["y"], 1, 40, 40, ent["rot"], textures[PLAYER_TEXTURE_ID], 5));
+                    world->addEntity(ent["objid"], new Player(ent["x"], ent["y"], 1, 40, 40, ent["rot"], ent["hp"], textures[PLAYER_TEXTURE_ID], 5));
                 }
                 break;
             case EntityType::BULLET:
-                newTarget.insert(std::pair<const int, Entity*>(ent["objid"], new Bullet(ent["x"], ent["y"], 1, 10, 5, ent["rot"], NULL, 12)));
+                newTarget.insert(std::pair<const int, Entity*>(ent["objid"], new Bullet(ent["x"], ent["y"], 1, 10, 5, ent["rot"], ent["hp"], NULL, 12)));
                 if (!found) {
                     Entity* bul;
-                    world->addEntity(ent["objid"], bul = new Bullet(ent["x"], ent["y"], 1, 10, 5, ent["rot"], textures[BULLET_TEXTURE_ID], 12));
+                    world->addEntity(ent["objid"], bul = new Bullet(ent["x"], ent["y"], 1, 10, 5, ent["rot"], ent["hp"], textures[BULLET_TEXTURE_ID], 12));
                     world->addAnimation(new LightTrasser(bul, ent["x"], ent["y"], 12, ent["rot"], textures[LIGHT_TRASSER_TEXTURE_ID]));
                 }
                 break;
             case EntityType::BOX_SMALL:
-                newTarget.insert(std::pair<const int, Entity*>(ent["objid"], new Obstacle(ent["x"], ent["y"], 1,  50, 50, ent["rot"], NULL)));
+                newTarget.insert(std::pair<const int, Entity*>(ent["objid"], new Obstacle(ent["x"], ent["y"], 1,  50, 50, ent["rot"], ent["hp"], NULL)));
                 if (!found) {
-                    world->addEntity(ent["objid"], new Obstacle(ent["x"], ent["y"], 1,  50, 50, ent["rot"], textures[BOX_TEXTURE_ID]));
+                    world->addEntity(ent["objid"], new Obstacle(ent["x"], ent["y"], 1,  50, 50, ent["rot"], ent["hp"], textures[BOX_TEXTURE_ID]));
                 }
                 break;
             case EntityType::BOX_BIG:
-                newTarget.insert(std::pair<const int, Entity*>(ent["objid"], new Obstacle(ent["x"], ent["y"], 2, 100,100, ent["rot"], NULL)));
+                newTarget.insert(std::pair<const int, Entity*>(ent["objid"], new Obstacle(ent["x"], ent["y"], 2, 100,100, ent["rot"], ent["hp"], NULL)));
                 if (!found) {
-                    world->addEntity(ent["objid"], new Obstacle(ent["x"], ent["y"], 2, 100,100, ent["rot"], textures[BOX_TEXTURE_ID]));
+                    world->addEntity(ent["objid"], new Obstacle(ent["x"], ent["y"], 2, 100,100, ent["rot"], ent["hp"], textures[BOX_TEXTURE_ID]));
                 }
                 break;
             }
