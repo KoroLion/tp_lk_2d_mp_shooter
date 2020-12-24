@@ -1,3 +1,6 @@
+CC = g++
+CFLAGS = -Wall -Werror -Wpedantic -std=c++14
+
 build/%.o: %.cpp include/%.hpp
 	$(CC) $(CFLAGS) -lboost_system -c -o $@ $<
 

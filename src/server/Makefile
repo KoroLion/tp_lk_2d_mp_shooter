@@ -1,5 +1,5 @@
 CC = g++
-CFLAGS = -Wall -Werror -Wpedantic
+CFLAGS = -Wall -Werror -Wpedantic -std=c++14
 
 build/server.out: build/main.o build/utils.o build/ServerApp.o ../network/build/TcpServer.a build/MockWorld.o | build
 	$(CC) $(CFLAGS) -o $@ $^ -lpthread -I"../network" -lboost_system
