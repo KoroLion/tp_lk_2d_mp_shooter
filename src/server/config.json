@@ -3,20 +3,20 @@
         "mapHeight": 1000,
         "obstacleCoordinates": [
                 {
-                        "x": 300,
+                        "x": 900,
                         "y": 75
                 },
                 {
-                        "x": 70,
-                        "y": 50
+                        "x": 10,
+                        "y": 10
                 }
         ],
         "technicsCoordinates": [
         ],
         "playerCoordinates": [
                 {
-                        "x": 40,
-                        "y": 40
+                        "x": 90,
+                        "y": 90
                 },
                 {
                         "x": 300,

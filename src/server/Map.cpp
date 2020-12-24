@@ -88,24 +88,26 @@ void Map::checkCollisions(){
 
             auto dx = a->second->getX() - b->second->getX();
             auto dy = a->second->getY() - b->second->getY();
-            if (sqrt(dx * dx + dy * dy) < radiusA + radiusB && (a->second->getOwner() == b->second->getId() || a->second->getId() == b->second->getOwner())) {
-                resolveCollision(a->second, b->second);
-                if (b->second->getHp() <= 0) {
-                    this->objects.erase(b--);
+            if (sqrt(dx * dx + dy * dy) < radiusA + radiusB) {
+                if (a->second->getOwner() != b->second->getId() && a->second->getId() != b->second->getOwner()) {
+                    resolveCollision(a->second, b->second);
+                    if (b->second->getHp() <= 0) {
+                        this->objects.erase(b--);
+                    }
+                    if (a->second->getHp() <= 0) {
+                        this->objects.erase(a--);
+                        break;
+                    }
                 }
-                if (a->second->getHp() <= 0) {
-                    this->objects.erase(a--);
-                    break;
-                }
-            }
-            /*a_max = a->second->maxCoord();
-            b_max = b->second->maxCoord();
-            a_min = a->second->minCoord();
-            b_min = b->second->minCoord();
+                /*a_max = a->second->maxCoord();
+                b_max = b->second->maxCoord();
+                a_min = a->second->minCoord();
+                b_min = b->second->minCoord();
 
-            if (a_min.x < b_max.x && a_max.x > b_min.x && a_min.y < b_max.y && a_max.y > b_min.y) {
-                resolveCollision(a->second, b->second);
-            }*/
+                if (a_min.x < b_max.x && a_max.x > b_min.x && a_min.y < b_max.y && a_max.y > b_min.y) {
+                    resolveCollision(a->second, b->second);
+                }*/
+            }
         }
     }
 }

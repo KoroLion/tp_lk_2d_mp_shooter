@@ -63,3 +63,7 @@ unsigned int Bullet::getOwner() const{
 float Bullet::getHp() {
     return 0;
 }
+
+bool Bullet::isMoving() const {
+    return true;
+}
