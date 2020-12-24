@@ -29,6 +29,8 @@ public:
     float getDamage() const override ;
     unsigned int getOwner() const override ;
 
+    bool isMoving() const override ;
+
 private:
     float speed;
     float damage;
