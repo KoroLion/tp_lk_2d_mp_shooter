@@ -19,3 +19,4 @@ TEST(BasicTest, ConnectDisconnectPlayer) {
     EXPECT_EQ(num_objects, num_objects_without_player);
     sw.endGame();
 }
+
