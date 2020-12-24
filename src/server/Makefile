@@ -4,7 +4,7 @@ CFLAGS = -Wall -Werror -Wpedantic -std=c++14
 build/server.out: build/main.o build/utils.o build/ServerApp.o ../network/build/TcpServer.a build/MockWorld.o | build
 	$(CC) $(CFLAGS) -o $@ $^ -lpthread -I"../network" -lboost_system
 
-build/main.o: main.cpp
+build/main.o: main.cpp | build
 	$(CC) $(CFLAGS) -I"../network" -I"../common" -lboost_system -c -o $@ $<
 build/%.o: %.cpp include/%.hpp | build
 	$(CC) $(CFLAGS) -I"../network" -I"../common" -lboost_system -c -o $@ $<
