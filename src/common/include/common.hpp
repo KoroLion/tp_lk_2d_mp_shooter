@@ -1,14 +1,6 @@
 #ifndef SRC_COMMON_HPP_
 #define SRC_COMMON_HPP_
 
-namespace NetEventType {
-    enum NetEventType {
-        CONNECTED,
-        RECEIVED,
-        DISCONNECTED
-    };
-}
-
 namespace ClientCommands {
     enum ClientCommands {
         MOVE_LEFT,

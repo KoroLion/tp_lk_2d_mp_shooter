@@ -38,7 +38,7 @@ void Room::send_all(const Packet& packet) {
 }
 
 void Room::send(unsigned uid, const Packet& packet) {
-    for (auto player: _players) {
+    for (auto player : _players) {
         if (player->get_uid() == uid) {
             player->send(packet);
             break;
@@ -92,7 +92,7 @@ void PlayerSession::handle_read_header(const boost::system::error_code& error) {
             std::bind(
                 &PlayerSession::handle_read_body,
                 shared_from_this(),
-                std::placeholders::_1  //error
+                std::placeholders::_1  // error
             )
         );
     } else {

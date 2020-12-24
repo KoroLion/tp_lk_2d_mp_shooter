@@ -1,5 +1,8 @@
-#ifndef SRC_CHAT_MESSAGE_HPP_
-#define SRC_CHAT_MESSAGE_HPP_
+/*
+Copyright 2020 github.com/KoroLion, github.com/SergTyapkin, github.com/altanab
+*/
+#ifndef SRC_NETWORK_INCLUDE_PACKET_HPP_
+#define SRC_NETWORK_INCLUDE_PACKET_HPP_
 
 #include <string>
 
@@ -18,11 +21,11 @@ class Packet {
     const char* get_body() const { return _data + header_length; }
     char *get_body() { return _data + header_length; }
 
-    const char* get_data() const { return _data; };
-    char* get_data() { return _data; };
+    const char* get_data() const { return _data; }
+    char* get_data() { return _data; }
 
-    size_t get_header_length() { return header_length; };
-    size_t get_body_length() { return _body_length; };
+    size_t get_header_length() { return header_length; }
+    size_t get_body_length() { return _body_length; }
     void set_body_length(size_t new_length);
 
     size_t size() const {
@@ -30,9 +33,10 @@ class Packet {
     }
     bool decode_header();
     void encode_header();
+
  private:
     char _data[header_length + max_body_length];
     size_t _body_length;
 };
 
-#endif    // SRC_CHAT_MESSAGE_HPP_
+#endif    // SRC_NETWORK_INCLUDE_PACKET_HPP_

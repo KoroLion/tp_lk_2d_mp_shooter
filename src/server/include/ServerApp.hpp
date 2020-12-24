@@ -10,9 +10,8 @@ Copyright 2020 github.com/KoroLion, github.com/SergTyapkin, github.com/altanab
 #include <string>
 
 #include "MockWorld.hpp"
-#include "TcpServer.hpp"
 
-#include "include/common.hpp"
+#include "include/TcpServer.hpp"
 
 class ServerApp {
  private:

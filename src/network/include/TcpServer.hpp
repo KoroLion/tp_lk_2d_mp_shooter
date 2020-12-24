@@ -1,8 +1,8 @@
 /*
 Copyright 2020 github.com/KoroLion, github.com/SergTyapkin, github.com/altanab
 */
-#ifndef SRC_SERVER_INCLUDE_TCPSERVER_HPP_
-#define SRC_SERVER_INCLUDE_TCPSERVER_HPP_
+#ifndef SRC_NETWORK_INCLUDE_TCPSERVER_HPP_
+#define SRC_NETWORK_INCLUDE_TCPSERVER_HPP_
 
 #include <algorithm>
 #include <deque>
@@ -15,8 +15,8 @@ Copyright 2020 github.com/KoroLion, github.com/SergTyapkin, github.com/altanab
 
 #include <boost/asio.hpp>
 
-#include "include/Packet.hpp"
-#include "include/common.hpp"
+#include "Packet.hpp"
+#include "constants.hpp"
 
 typedef std::function<void(NetEventType::NetEventType, unsigned, std::string)> net_server_event_callback;
 
@@ -104,4 +104,4 @@ class TcpServer {
     void send(unsigned uid, std::string data);
 };
 
-#endif  // SRC_SERVER_INCLUDE_TCPSERVER_HPP_
+#endif  // SRC_NETWORK_INCLUDE_TCPSERVER_HPP_
