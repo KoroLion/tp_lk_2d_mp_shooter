@@ -10,7 +10,7 @@ Copyright 2020 LioKor Team (KoroLion, SergTyapkin, altanab)
 
 
 void Camera::render(SDL_Renderer *renderer) {
-    world->render(renderer, x - width/2, y - height/2, rotation, x, y, z, angle);
+    world->render(renderer, x - width/2, y - height/2, rotation, x, y, z, angle, width, height);
 }
 
 void Camera::update() {

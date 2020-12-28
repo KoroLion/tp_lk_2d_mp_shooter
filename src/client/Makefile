@@ -1,6 +1,6 @@
 CC = g++.exe
 CFLAGS_LITE =
-CFLAGS =  -Wall -Werror -Wpedantic
+CFLAGS = -Wall -Werror -Wpedantic
 sdl_include = lib/x86_64-w64-mingw32/include/SDL2
 sdl_lib = lib/x86_64-w64-mingw32/lib
 boost_root = D:/Programs/boost_1_75_0
@@ -8,8 +8,8 @@ boost_root = D:/Programs/boost_1_75_0
 run: build/client.exe
 	./$<
 
-build/client.exe: build/main.o build/Game.o build/Entities.o build/World.o build/Equipments.o build/Camera.o build/Animations.o build/tcpclient.a
-	$(CC) $(CFLAGS) -o $@ $^ -L$(sdl_lib) -lmingw32 -lSDL2main -lSDL2 -mwindows -lws2_32
+build/client.exe: build/main.o build/Game.o build/Entities.o build/World.o build/Equipments.o build/Camera.o build/Animations.o build/Buttons.o build/tcpclient.a
+	$(CC) $(CFLAGS) -o $@ $^ -L$(sdl_lib) -lmingw32 -lSDL2main -lSDL2 -mwindows -lws2_32 -lSDL2_ttf
 build/main.o: main.cpp
 	$(CC) $(CFLAGS) -c -o $@ $< -I$(sdl_include) -I"../common" -I$(boost_root) -Wno-deprecated-declarations
 build/Game.o: Game.cpp
@@ -23,6 +23,8 @@ build/Equipments.o: Equipments.cpp
 build/Camera.o: Camera.cpp
 	$(CC) $(CFLAGS) -c -o $@ $< -I$(sdl_include)
 build/Animations.o: Animations.cpp
+	$(CC) $(CFLAGS) -c -o $@ $< -I$(sdl_include)
+build/Buttons.o: Buttons.cpp
 	$(CC) $(CFLAGS) -c -o $@ $< -I$(sdl_include)
 
 build/Packet.o: ../common/Packet.cpp ../common/include/Packet.hpp

@@ -294,6 +294,14 @@ void Player::shoot(World* world, SDL_Texture* bullet_texture, SDL_Texture* trass
     //world->addAnimation(new LightTrasser(ent, x, y, 8, rotation+10, small_trasser_texture));
 }
 
+void Player::updateTime(float dTime) {
+    timeToReload -= dTime;
+    if (timeToReload < 0)
+        timeToReload = 0;
+    else
+        ammo = maxAmmo * (1 - timeToReload / reloadingTime);
+}
+
 void Bullet::render(SDL_Renderer *renderer, float baseX, float baseY, float centerRotation, float centerX, float centerY, float altitude, float angleX) {
     if (texture == NULL)
         return;

@@ -15,6 +15,7 @@ class Entity;
 
 float getAngle(float centerX, float centerY, float x, float y);
 float distance(float x1, float y1, float x2, float y2);
+void drawLine(SDL_Renderer* renderer, float x1, float y1, float x2, float y2, int width, Uint8 r, Uint8 g, Uint8 b, Uint8 a);
 
 // 1st floor --------
 class Entity {
@@ -35,6 +36,7 @@ class Entity {
     float getWidth() {return width;}
     float getHeight() {return height;}
     float getRotation() {return rotation;}
+    float getHp() {return hp;}
     void setRotation(float _rotation) {rotation = _rotation;}
 
     virtual ~Entity() {;}
@@ -49,7 +51,8 @@ class Entity {
 class Player: public Entity {
  public:
     Player(float _x, float _y, float _z, float _width, float _height, float _rotation, float _hp, SDL_Texture* _texture, float _speed):
-        Entity(_x, _y, _z, _width, _height, _rotation, _hp, _texture), speed(_speed), bulletsOnMap(0) {
+        Entity(_x, _y, _z, _width, _height, _rotation, _hp, _texture), speed(_speed),
+        maxAmmo(10), ammo(0), bulletsOnMap(0), reloadingTime(3000), timeToReload(reloadingTime) {
     }
 
     virtual void render(SDL_Renderer *renderer, float baseX, float baseY, float centerRotation, float centerX, float centerY, float altitude, float angleX);
@@ -57,14 +60,23 @@ class Player: public Entity {
 
     void moveRelative(float addAngle);
     virtual void shoot(World* world, SDL_Texture* bullet_texture, SDL_Texture* trasser_texture, SDL_Texture* small_trasser_texture);
+    void reduceAmmo(int val) {ammo -= val; if (ammo < 0) ammo = 0;}
+    bool isReloaded() {return timeToReload <= 0;}
+    void updateTime(float dTime);
+    void startReload() {timeToReload = reloadingTime;}
 
     float getSpeed() {return speed;}
+    int getAmmo() {return ammo;}
 
     ~Player() {;}
  protected:
     float speed;
+    const int maxAmmo;
+    int ammo;
     int bulletsOnMap;
-    std::vector<Equipment*> equipment;
+    const float reloadingTime;
+    float timeToReload;
+    std::vector<Equipment*> equipments;
 };
 
 class Bullet: public Entity {

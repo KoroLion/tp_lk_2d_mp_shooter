@@ -68,6 +68,16 @@ void ServerApp::net_event_callback(NetEventType::NetEventType ev_type, unsigned 
         j["arg"] = json_arg;
         net_server->send(uid, j.dump());
 
+        json j2, json2_arg;
+        json2_arg["arg"] = EntityType::PLAYER;
+        json2_arg["objid"] = objid;
+        json2_arg["tid"] = ActionType::NEW_OBJECT;
+        j2["cmd"] = "act";
+        j2["time"] = _cur_time;
+        j2["arg"] = json2_arg;
+        net_server->send_all(j2.dump());
+        std::cout << "To all: " << j2.dump() << std::endl;
+
         uid_to_objid.insert(std::make_pair(uid, objid));
     } else if (ev_type == NetEventType::RECEIVED) {
         unsigned objid = uid_to_objid[uid];
@@ -103,6 +113,16 @@ void ServerApp::net_event_callback(NetEventType::NetEventType ev_type, unsigned 
     } else if (ev_type == NetEventType::DISCONNECTED) {
         unsigned objid = uid_to_objid[uid];
         std::cout << "Player " << uid << " (" << objid << ")" << " disconnected!" << std::endl;
+
+        json j, json_arg;
+        json_arg["arg"] = EntityType::PLAYER;
+        json_arg["objid"] = objid;
+        json_arg["tid"] = ActionType::DESTROYED;
+        j["cmd"] = "act";
+        j["time"] = _cur_time;
+        j["arg"] = json_arg;
+        net_server->send_all(j.dump());
+        std::cout << "To all: " << j.dump() << std::endl;
 
         world->disconnectPlayer(objid);
         uid_to_objid.erase(uid);
@@ -144,7 +164,7 @@ void ServerApp::handle_cmd() {
         std::cin >> command;
         // todo: improve command parsing
         if (command == "stop") {
-            std::cout << "Shutting down server..." << std::endl;
+            std::cout << "Shutting down server:" << std::endl;
             stop();
         } else if (command == "online") {
             std::cout << net_server->get_players_amount() << " players are online." << std::endl;

@@ -45,7 +45,7 @@ public:
 
 protected:
     const int timeToFade = 100;
-    const float patterns = 2;
+    const float patterns = 3;
     float xEnd, yEnd;
     int width;
     float rotation;
