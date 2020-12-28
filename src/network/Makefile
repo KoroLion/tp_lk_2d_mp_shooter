@@ -9,6 +9,9 @@ build/TcpServer.a: build/TcpServer.o build/Packet.o | build
 build/TcpClient.a: build/TcpClient.o build/Packet.o | build
 	ar rcs $@ $^
 
+build/server_example.out: server_example.cpp build/TcpServer.a | build
+	$(CC) $(CFLAGS) $^ -o $@ -lboost_system
+
 check:
 	cppcheck *.cpp include/*.hpp
 	cpplint *.cpp include/*.hpp
