@@ -18,11 +18,14 @@ class World {
  public:
     World(unsigned int _width, unsigned int _height, SDL_Texture* _bgTexture = NULL, SDL_Texture* _bgVignetteTexture = NULL);
 
-    void render(SDL_Renderer *renderer, float baseX = 0, float baseY = 0, float centerRotation = 0, float centerX = 0, float centerY = 0, float altitude = 10, float angle = 60);
+    void render(SDL_Renderer *renderer, float baseX = 0, float baseY = 0, float centerRotation = 0, float centerX = 0, float centerY = 0,
+                float altitude = 10, float angle = 60, int widthBg = 1000, int heightBg = 500);
     void update(time_t &time, Entity* ignore);
     void addEntity(int id, Entity* entity);
     void addAnimation(Animation* animation);
     void setTarget(std::map<int, Entity*> _target, unsigned int _time);
+    void clearAll() {entities.clear(); animations.clear(); target.clear(); lastTarget.clear();}
+    bool isInEntities(Entity* targ) {for (auto ent: entities) if (ent.second == targ) return true; return false;}
     Entity* getEntity(int key);
 
     ~World();

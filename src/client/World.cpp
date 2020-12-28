@@ -7,6 +7,9 @@ Copyright 2020 LioKor Team (KoroLion, SergTyapkin, altanab)
 #include "SDL.h"
 #include "include/World.hpp"
 #include "include/Animations.hpp"
+#include "include/Colors.hpp"
+
+extern void drawLine(SDL_Renderer* renderer, float x1, float y1, float x2, float y2, int width, Uint8 r, Uint8 g, Uint8 b, Uint8 a);
 
 World::World(unsigned int _width, unsigned int _height, SDL_Texture* _bgTexture, SDL_Texture* _bgVignetteTexture):
     width(_width), height(_height), bgTexture(_bgTexture), bgVignetteTexture(_bgVignetteTexture) {
@@ -32,11 +35,11 @@ void World::setTarget(std::map<int, Entity*> _target, unsigned int _time) {
     timeTarget = _time;
 }
 
-void World::render(SDL_Renderer *renderer, float baseX, float baseY, float centerRotation, float centerX, float centerY, float altitude, float angle) {
+void World::render(SDL_Renderer *renderer, float baseX, float baseY, float centerRotation, float centerX, float centerY, float altitude, float angle, int widthBg, int heightBg) {
     float radAngle = -centerRotation/180*M_PI;
 
-    int widthBg = width;
-    int heightBg = height;
+    //int widthBg = width;
+    //int heightBg = height;
     int y = - (int)centerY % heightBg - heightBg;
     if (centerY < 0)
         y -= heightBg;
@@ -66,6 +69,32 @@ void World::render(SDL_Renderer *renderer, float baseX, float baseY, float cente
         }
         y += heightBg;
     }
+    // border
+    float difX0 = 0 - centerX;
+    float difY0 = 0 - centerY;
+    float resX0 = difX0*cos(radAngle) - difY0*sin(radAngle) + centerX - baseX;
+    float resY0 = difX0*sin(radAngle) + difY0*cos(radAngle) + centerY - baseY;
+    float difX1 = width - centerX;
+    float difY1 = 0 - centerY;
+    float resX1 = difX1*cos(radAngle) - difY1*sin(radAngle) + centerX - baseX;
+    float resY1 = difX1*sin(radAngle) + difY1*cos(radAngle) + centerY - baseY;
+    float difX2 = width - centerX;
+    float difY2 = height - centerY;
+    float resX2 = difX2*cos(radAngle) - difY2*sin(radAngle) + centerX - baseX;
+    float resY2 = difX2*sin(radAngle) + difY2*cos(radAngle) + centerY - baseY;
+    float difX3 = 0 - centerX;
+    float difY3 = height - centerY;
+    float resX3 = difX3*cos(radAngle) - difY3*sin(radAngle) + centerX - baseX;
+    float resY3 = difX3*sin(radAngle) + difY3*cos(radAngle) + centerY - baseY;
+    drawLine(renderer, resX0,resY0, resX1,resY1, 5, RED_RGB, 0x33);
+    drawLine(renderer, resX1,resY1, resX2,resY2, 5, RED_RGB, 0x33);
+    drawLine(renderer, resX2,resY2, resX3,resY3, 5, RED_RGB, 0x33);
+    drawLine(renderer, resX3,resY3, resX0,resY0, 5, RED_RGB, 0x33);
+    drawLine(renderer, resX0,resY0, resX1,resY1, 2, ORANGE_RGB, 0x33);
+    drawLine(renderer, resX1,resY1, resX2,resY2, 2, ORANGE_RGB, 0x33);
+    drawLine(renderer, resX2,resY2, resX3,resY3, 2, ORANGE_RGB, 0x33);
+    drawLine(renderer, resX3,resY3, resX0,resY0, 2, ORANGE_RGB, 0x33);
+    // vignette
     SDL_Rect render_rect {0, 0, (int)(width), (int)(height)};
     SDL_RenderCopy(renderer, bgVignetteTexture, NULL, &render_rect);
 
@@ -94,8 +123,9 @@ void World::update(time_t &time, Entity* ignore) {
         }
     }
 
-
+    int i = 0;
     for (auto itr = entities.begin(); itr != entities.end(); itr++) {
+        i++;
         if (itr->second == ignore)
             ;//continue;
         auto targetItr = target.find(itr->first);
