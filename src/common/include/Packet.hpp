@@ -6,7 +6,7 @@
 class Packet {
  public:
     enum { header_length = 4 };
-    enum { max_body_length = 512 };
+    enum { max_body_length = 1400 };
 
     Packet(): _body_length(0) {}
     Packet(std::string);

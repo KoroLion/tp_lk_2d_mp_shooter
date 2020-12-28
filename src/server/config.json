@@ -1,10 +1,18 @@
 {
-        "mapWidth": 1000,
-        "mapHeight": 1000,
+        "mapWidth": 2000,
+        "mapHeight": 2000,
         "obstacleCoordinates": [
                 {
-                        "x": 900,
-                        "y": 75
+                        "x": 1900,
+                        "y": 1900
+                },
+                {
+                        "x": 500,
+                        "y": 500
+                },
+                {
+                        "x": 600,
+                        "y": 600
                 },
                 {
                         "x": 10,
@@ -52,25 +60,25 @@
         "playerAngles": [
                 0,
                 30,
-		60,
-		90,
-		120,
-		150,
-		180
+        		60,
+        		90,
+        		120,
+        		150,
+        		180
         ],
         "player": {
                 "hp": 100,
                 "width": 40,
                 "height": 40,
-                "speed": 250,
+                "speed": 200,
                 "bullets": 20
         },
         "bullet": {
                 "hp": 10,
                 "width": 10,
                 "height": 10,
-                "speed" : 200,
-                "damage": 40,
+                "speed" : 300,
+                "damage": 35,
                 "acceleration": 50,
                 "minSpeed": 5
         },
