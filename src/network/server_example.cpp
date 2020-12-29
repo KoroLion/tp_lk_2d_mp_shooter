@@ -1,3 +1,7 @@
+/*
+Copyright 2020 github.com/KoroLion, github.com/SergTyapkin, github.com/altanab
+*/
+#include
 #include <iostream>
 #include "include/constants.hpp"
 #include "include/TcpServer.hpp"
