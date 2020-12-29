@@ -1,0 +1,9 @@
+.DS_Store
+
+build
+lib/
+
+*.exe
+*.dll
+*.o
+*.out
