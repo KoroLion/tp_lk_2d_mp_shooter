@@ -11,6 +11,8 @@ build/TcpClient.a: build/TcpClient.o build/Packet.o | build
 
 build/server_example.out: server_example.cpp build/TcpServer.a | build
 	$(CC) $(CFLAGS) $^ -o $@ -lboost_system
+build/client_example.out: client_example.cpp build/TcpClient.a | build
+	$(CC) $(CFLAGS) $^ -o $@ -lboost_system -lpthread
 
 check:
 	cppcheck *.cpp include/*.hpp

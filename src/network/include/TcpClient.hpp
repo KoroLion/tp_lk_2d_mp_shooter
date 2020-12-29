@@ -11,8 +11,8 @@ Copyright 2020 github.com/KoroLion, github.com/SergTyapkin, github.com/altanab
 #include <deque>
 #include <boost/asio.hpp>
 
-#include "include/common.hpp"
-#include "include/Packet.hpp"
+#include "constants.hpp"
+#include "Packet.hpp"
 
 typedef std::function<void(NetEventType::NetEventType, std::string)> net_client_event_callback;
 typedef std::deque<Packet> Packet_queue;

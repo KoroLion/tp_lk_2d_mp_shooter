@@ -2,7 +2,7 @@
 Copyright 2020 github.com/KoroLion, github.com/SergTyapkin, github.com/altanab
 */
 #include "include/TcpClient.hpp"
-#include "include/common.hpp"
+#include "include/constants.hpp"
 
 void TcpClient::handle_connect(const boost::system::error_code& error) {
     if (!error) {
